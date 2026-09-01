@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Award,
   ArrowRight,
   BarChart3,
   BookOpen,
   BriefcaseBusiness,
+  Building2,
   Check,
   CheckCircle2,
   ChevronDown,
+  GraduationCap,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -219,7 +221,213 @@ const defaultQuestions = (skill) => [
     answer: "Being able to apply the skill",
   },
 ];
+const collegeStudents = [
+  {
+    id: 1,
+    name: "Rahul Kumar",
+    email: "rahul@annauniv.edu",
+    college: "Anna University",
+    department: "CSE",
+    graduationYear: "2027",
 
+    careers: [
+      "Java Backend Developer",
+      "Full Stack Developer",
+    ],
+
+    skills: [
+      {
+        name: "Java",
+        level: 87,
+        verified: true,
+        verificationScore: 87,
+        assessmentScore: 90,
+        practicalScore: 85,
+        evidenceScore: 95,
+        projectName: "Student Management System",
+        projectDescription:
+          "Built a student management backend using Java and REST APIs.",
+      },
+      {
+        name: "SQL",
+        level: 81,
+        verified: true,
+        verificationScore: 81,
+      },
+      {
+        name: "React",
+        level: 65,
+        verified: false,
+      },
+      {
+        name: "Spring Boot",
+        level: 72,
+        verified: true,
+        verificationScore: 72,
+      },
+      {
+        name: "Git & GitHub",
+        level: 78,
+        verified: true,
+        verificationScore: 78,
+      },
+    ],
+  },
+
+  {
+    id: 2,
+    name: "Priya Sharma",
+    email: "priya@annauniv.edu",
+    college: "Anna University",
+    department: "IT",
+    graduationYear: "2027",
+
+    careers: [
+      "Full Stack Developer",
+      "Frontend Developer",
+    ],
+
+    skills: [
+      {
+        name: "JavaScript",
+        level: 89,
+        verified: true,
+        verificationScore: 89,
+      },
+      {
+        name: "React",
+        level: 84,
+        verified: true,
+        verificationScore: 84,
+      },
+      {
+        name: "HTML & CSS",
+        level: 91,
+        verified: true,
+        verificationScore: 91,
+      },
+      {
+        name: "SQL",
+        level: 70,
+        verified: false,
+      },
+    ],
+  },
+
+  {
+    id: 3,
+    name: "Arun Kumar",
+    email: "arun@annauniv.edu",
+    college: "Anna University",
+    department: "CSE",
+    graduationYear: "2026",
+
+    careers: [
+      "Python Developer",
+      "AI/ML Engineer",
+    ],
+
+    skills: [
+      {
+        name: "Python",
+        level: 88,
+        verified: true,
+        verificationScore: 88,
+      },
+      {
+        name: "Machine Learning",
+        level: 79,
+        verified: true,
+        verificationScore: 79,
+      },
+      {
+        name: "Data Analysis",
+        level: 82,
+        verified: true,
+        verificationScore: 82,
+      },
+      {
+        name: "SQL",
+        level: 75,
+        verified: false,
+      },
+    ],
+  },
+
+  {
+    id: 4,
+    name: "Sneha R",
+    email: "sneha@annauniv.edu",
+    college: "Anna University",
+    department: "ECE",
+    graduationYear: "2027",
+
+    careers: [
+      "Frontend Developer",
+      "Full Stack Developer",
+    ],
+
+    skills: [
+      {
+        name: "JavaScript",
+        level: 76,
+        verified: true,
+        verificationScore: 76,
+      },
+      {
+        name: "React",
+        level: 73,
+        verified: false,
+      },
+      {
+        name: "HTML & CSS",
+        level: 88,
+        verified: true,
+        verificationScore: 88,
+      },
+    ],
+  },
+
+  {
+    id: 5,
+    name: "Vignesh S",
+    email: "vignesh@annauniv.edu",
+    college: "Anna University",
+    department: "CSE",
+    graduationYear: "2026",
+
+    careers: [
+      "Cloud Engineer",
+      "Java Backend Developer",
+    ],
+
+    skills: [
+      {
+        name: "AWS",
+        level: 85,
+        verified: true,
+        verificationScore: 85,
+      },
+      {
+        name: "Docker",
+        level: 78,
+        verified: true,
+        verificationScore: 78,
+      },
+      {
+        name: "Linux",
+        level: 81,
+        verified: true,
+        verificationScore: 81,
+      },
+      {
+        name: "Java",
+        level: 68,
+        verified: false,
+      },
+    ],
+  },
+];
 const emptyStudent = {
   name: "",
   email: "",
@@ -231,11 +439,51 @@ const emptyStudent = {
   skills: [],
 };
 
+
+const API_BASE = "https://skillproof-backend-1.onrender.com/api";
+
+async function apiRequest(path, options = {}) {
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok || data.success === false) {
+    throw new Error(
+      data?.error?.message ||
+      data?.message ||
+      "Request failed"
+    );
+  }
+
+  return data;
+}
+
 function App() {
   const [screen, setScreen] = useState("landing");
   const [activePage, setActivePage] = useState("dashboard");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userRole, setUserRole] = useState("student");
+  const [collegePage, setCollegePage] = useState("dashboard");
+  const [collegeToken, setCollegeToken] = useState(
+    () => localStorage.getItem("skillproof_college_token") || ""
+  );
+  const [collegeUser, setCollegeUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem("skillproof_college_user");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
 
+  const [selectedCollegeStudent, setSelectedCollegeStudent] =
+    useState(null);
   const [student, setStudent] = useState(() => {
     const saved = localStorage.getItem("skillproof_student");
 
@@ -258,22 +506,65 @@ function App() {
     }));
   };
 
-  const login = (e) => {
+  const login = async (e) => {
     e.preventDefault();
 
-    const saved = localStorage.getItem("skillproof_student");
+    try {
+      const data = await apiRequest("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          email: student.email,
+          password: student.password,
+        }),
+      });
 
-    if (!saved) {
-      alert("No SkillProof profile found. Please create an account first.");
-      return;
+      localStorage.setItem("skillproof_token", data.token);
+
+      const backendStudent = data.user?.profile;
+      const saved = localStorage.getItem("skillproof_student");
+
+      let nextStudent = student;
+
+      if (saved) {
+        try {
+          nextStudent = JSON.parse(saved);
+        } catch {
+          nextStudent = student;
+        }
+      }
+
+      if (backendStudent) {
+        nextStudent = {
+          ...nextStudent,
+          name: data.user.name || nextStudent.name,
+          email: data.user.email || nextStudent.email,
+          college:
+            backendStudent.institution_name ||
+            backendStudent.college ||
+            nextStudent.college,
+          department:
+            backendStudent.department ||
+            nextStudent.department,
+          graduationYear:
+            backendStudent.graduation_year ||
+            nextStudent.graduationYear,
+        };
+      }
+
+      setStudent(nextStudent);
+      localStorage.setItem(
+        "skillproof_student",
+        JSON.stringify(nextStudent)
+      );
+
+      setScreen("app");
+      setActivePage("dashboard");
+    } catch (error) {
+      alert(error.message || "Student login failed.");
     }
-
-    setStudent(JSON.parse(saved));
-    setScreen("app");
-    setActivePage("dashboard");
   };
 
-  const register = (e) => {
+  const register = async (e) => {
     e.preventDefault();
 
     const normalized = {
@@ -282,41 +573,444 @@ function App() {
       skills: student.skills || [],
     };
 
-    saveStudent(normalized);
-    setScreen("app");
-    setActivePage("dashboard");
+    try {
+      const data = await apiRequest("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          name: normalized.name,
+          email: normalized.email,
+          password: normalized.password,
+          role: "student",
+          college: normalized.college,
+          college_id: normalized.collegeId,
+          department: normalized.department,
+        }),
+      });
+
+      if (data.user) {
+        localStorage.setItem("skillproof_token", data.token || "");
+      }
+
+      saveStudent(normalized);
+      setScreen("app");
+      setActivePage("dashboard");
+    } catch (error) {
+      alert(error.message || "Registration failed.");
+    }
   };
 
-  if (screen === "landing") {
+if (screen === "landing") {
+  return (
+    <Landing
+      onLogin={() => setScreen("roleSelection")}
+      onRegister={() => setScreen("roleSelection")}
+    />
+  );
+}
+
+if (screen === "college") {
+  if (selectedCollegeStudent) {
     return (
-      <Landing
-        onLogin={() => setScreen("login")}
-        onRegister={() => setScreen("register")}
+      <CollegeStudentProfile
+        student={selectedCollegeStudent}
+        onBack={() =>
+          setSelectedCollegeStudent(null)
+        }
       />
     );
   }
 
-  if (screen === "login") {
-    return (
-      <Login
-        student={student}
-        updateStudent={updateStudent}
-        onLogin={login}
-        onRegister={() => setScreen("register")}
-      />
-    );
-  }
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
 
-  if (screen === "register") {
-    return (
-      <Register
-        student={student}
-        updateStudent={updateStudent}
-        onRegister={register}
-        onLogin={() => setScreen("login")}
-      />
-    );
-  }
+      {/* College Sidebar */}
+
+      <aside className="fixed z-40 inset-y-0 left-0 w-64 bg-white border-r border-slate-200 hidden lg:block">
+
+        <div className="h-full flex flex-col">
+
+          {/* Logo */}
+
+          <div className="h-20 px-5 flex items-center border-b border-slate-100">
+            <Logo dark />
+          </div>
+
+          {/* College information */}
+
+          <div className="px-5 py-5 border-b border-slate-100">
+
+            <div className="flex items-center gap-3">
+
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                <Building2
+                  size={19}
+                />
+              </div>
+
+              <div className="min-w-0">
+
+                <p className="text-sm font-bold truncate">
+                  {collegeUser?.profile?.institution_name || "College Portal"}
+                </p>
+
+                <p className="text-xs text-slate-400">
+                  College Portal
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Navigation */}
+
+          <nav className="flex-1 p-4">
+
+            <p className="px-3 text-[10px] font-bold tracking-[0.16em] text-slate-400 mb-2">
+              COLLEGE
+            </p>
+
+            <NavItem
+              active={
+                collegePage ===
+                "dashboard"
+              }
+              onClick={() =>
+                setCollegePage(
+                  "dashboard"
+                )
+              }
+              icon={LayoutDashboard}
+              label="Dashboard"
+            />
+
+            <NavItem
+              active={
+                collegePage ===
+                "students"
+              }
+              onClick={() =>
+                setCollegePage(
+                  "students"
+                )
+              }
+              icon={GraduationCap}
+              label="Students"
+            />
+
+            <NavItem
+              active={
+                collegePage ===
+                "analytics"
+              }
+              onClick={() =>
+                setCollegePage(
+                  "analytics"
+                )
+              }
+              icon={BarChart3}
+              label="Skill Analytics"
+            />
+
+            <NavItem
+              active={
+                collegePage ===
+                "readiness"
+              }
+              onClick={() =>
+                setCollegePage(
+                  "readiness"
+                )
+              }
+              icon={Target}
+              label="Placement Readiness"
+            />
+
+            <div className="pt-5 mt-5 border-t border-slate-100">
+
+              <NavItem
+                active={
+                  collegePage ===
+                  "profile"
+                }
+                onClick={() =>
+                  setCollegePage(
+                    "profile"
+                  )
+                }
+                icon={Building2}
+                label="College Profile"
+              />
+
+              <NavItem
+                active={
+                  collegePage ===
+                  "settings"
+                }
+                onClick={() =>
+                  setCollegePage(
+                    "settings"
+                  )
+                }
+                icon={Settings}
+                label="Settings"
+              />
+
+            </div>
+
+          </nav>
+
+          {/* Sign out */}
+
+          <div className="p-4 border-t border-slate-100">
+
+            <button
+              onClick={() => {
+                setSelectedCollegeStudent(null);
+                setCollegePage("dashboard");
+                setCollegeToken("");
+                setCollegeUser(null);
+                localStorage.removeItem("skillproof_college_token");
+                localStorage.removeItem("skillproof_college_user");
+                setScreen("landing");
+              }}
+              className="w-full h-10 rounded-xl px-3 flex items-center gap-3 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+            >
+              <LogOut
+                size={17}
+              />
+              Sign out
+            </button>
+
+          </div>
+
+        </div>
+
+      </aside>
+
+      {/* Main content */}
+
+      <div className="lg:ml-64 min-h-screen">
+
+        {/* Header */}
+
+        <header className="h-20 bg-white border-b border-slate-200 sticky top-0 z-30">
+
+          <div className="h-full px-5 md:px-8 flex items-center justify-between">
+
+            <div>
+
+              <p className="text-xs text-slate-400">
+                SkillProof · College workspace
+              </p>
+
+              <p className="font-semibold text-sm mt-0.5">
+                {collegePage ===
+                "dashboard"
+                  ? "Dashboard"
+                  : collegePage ===
+                    "students"
+                  ? "Students"
+                  : collegePage ===
+                    "analytics"
+                  ? "Skill Analytics"
+                  : collegePage ===
+                    "readiness"
+                  ? "Placement Readiness"
+                  : collegePage ===
+                    "profile"
+                  ? "College Profile"
+                  : "Settings"}
+              </p>
+
+            </div>
+
+            <div className="flex items-center gap-3">
+
+              <div className="hidden sm:block text-right">
+
+                <p className="text-sm font-semibold">
+                  {collegeUser?.profile?.institution_name || "College Administrator"}
+                </p>
+
+                <p className="text-xs text-slate-400">
+                  College Administrator
+                </p>
+
+              </div>
+
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                <Building2
+                  size={18}
+                />
+              </div>
+
+            </div>
+
+          </div>
+
+        </header>
+
+        {/* Page */}
+
+        <main className="p-5 md:p-8 max-w-[1500px] mx-auto">
+
+          {collegePage ===
+            "dashboard" && (
+            <CollegeDashboardPage
+              backendToken={collegeToken}
+              onStudents={() =>
+                setCollegePage(
+                  "students"
+                )
+              }
+            />
+          )}
+
+          {collegePage ===
+            "students" && (
+            <CollegeStudentsPage
+              backendToken={collegeToken}
+              onViewStudent={(
+                student
+              ) =>
+                setSelectedCollegeStudent(
+                  student
+                )
+              }
+            />
+          )}
+
+          {collegePage ===
+            "analytics" && (
+            <CollegeSkillAnalytics backendToken={collegeToken} />
+          )}
+
+          {collegePage ===
+            "readiness" && (
+            <CollegeReadinessPage backendToken={collegeToken} />
+          )}
+
+          {collegePage ===
+            "profile" && (
+            <CollegeProfilePage />
+          )}
+
+          {collegePage ===
+            "settings" && (
+            <CollegeSettingsPage />
+          )}
+
+        </main>
+
+      </div>
+
+    </div>
+  );
+}
+
+if (screen === "roleSelection") {
+  return (
+    <RoleSelection
+      onSelect={(role) => {
+        setUserRole(role);
+
+        if (role === "student") {
+          setScreen("login");
+        } else if (role === "college") {
+          setScreen("collegeLogin");
+        } else if (role === "industry") {
+          setScreen("industryLogin");
+        }
+      }}
+    />
+  );
+}
+
+if (screen === "login") {
+  return (
+    <Login
+      student={student}
+      updateStudent={updateStudent}
+      onLogin={login}
+      onRegister={() => setScreen("register")}
+    />
+  );
+}
+
+if (screen === "register") {
+  return (
+    <Register
+      student={student}
+      updateStudent={updateStudent}
+      onRegister={register}
+      onLogin={() => setScreen("login")}
+    />
+  );
+}
+
+if (screen === "collegeLogin") {
+  return (
+    <CollegeLogin
+      onBack={() => setScreen("roleSelection")}
+      onLogin={async (email, password) => {
+        try {
+          const data = await apiRequest("/auth/login", {
+            method: "POST",
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+          });
+
+          if (data.user?.role !== "college") {
+            throw new Error(
+              "This account is not registered as a college account."
+            );
+          }
+
+          setCollegeToken(data.token);
+          setCollegeUser(data.user);
+
+          localStorage.setItem(
+            "skillproof_college_token",
+            data.token
+          );
+          localStorage.setItem(
+            "skillproof_college_user",
+            JSON.stringify(data.user)
+          );
+
+          setCollegePage("dashboard");
+          setSelectedCollegeStudent(null);
+          setScreen("college");
+        } catch (error) {
+          alert(error.message || "College login failed.");
+        }
+      }}
+    />
+  );
+}
+
+if (screen === "industryLogin") {
+  return (
+    <IndustryLogin
+      onBack={() => setScreen("roleSelection")}
+      onLogin={() => {
+        setScreen("industryApp");
+      }}
+    />
+  );
+}
+
+if (screen === "industryApp") {
+  return (
+    <IndustryDashboard
+      onLogout={() => setScreen("landing")}
+    />
+  );
+}
 
   return (
     <AppShell
@@ -368,7 +1062,96 @@ function App() {
     </AppShell>
   );
 }
+/* =========================================================
+   ROLE SELECTION
+========================================================= */
 
+function RoleSelection({ onSelect }) {
+  const roles = [
+    {
+      id: "student",
+      title: "Student",
+      description:
+        "Build your profile, verify your skills and discover career opportunities.",
+      icon: GraduationCap,
+    },
+    {
+      id: "college",
+      title: "College",
+      description:
+        "Track student skills, identify skill gaps and improve placement readiness.",
+      icon: Building2,
+    },
+    {
+      id: "industry",
+      title: "Industry",
+      description:
+        "Define job requirements and discover students who match your needs.",
+      icon: BriefcaseBusiness,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center px-5 py-10">
+      <div className="w-full max-w-5xl">
+
+        <div className="flex justify-center mb-8">
+          <Logo dark />
+        </div>
+
+        <div className="text-center mb-10">
+          <p className="text-xs font-bold tracking-[0.18em] text-teal-700 uppercase">
+            SkillProof
+          </p>
+
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mt-3">
+            Choose your account type
+          </h1>
+
+          <p className="text-slate-500 mt-3 max-w-xl mx-auto">
+            Choose how you want to use SkillProof.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {roles.map((role) => {
+            const Icon = role.icon;
+
+            return (
+              <button
+                key={role.id}
+                type="button"
+                onClick={() => onSelect(role.id)}
+                className="group text-left bg-white border border-slate-200 rounded-3xl p-6 md:p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                  <Icon size={28} />
+                </div>
+
+                <h2 className="text-xl font-bold mt-6">
+                  {role.title}
+                </h2>
+
+                <p className="text-sm text-slate-500 leading-6 mt-3">
+                  {role.description}
+                </p>
+
+                <div className="flex items-center gap-2 mt-6 text-sm font-bold text-teal-700">
+                  Continue
+                  <ArrowRight size={16} />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="text-center text-xs text-slate-400 mt-8">
+          You can change your account type later as SkillProof expands.
+        </p>
+      </div>
+    </div>
+  );
+}
 /* =========================================================
    LANDING
 ========================================================= */
@@ -585,24 +1368,141 @@ function Login({
     </Auth>
   );
 }
+function CollegeLogin({ onBack, onLogin }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
+  const submit = (e) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      alert("Please enter your college email and password.");
+      return;
+    }
+
+    onLogin(email.trim(), password);
+  };
+
+  return (
+    <Auth
+      title="College login"
+      subtitle="Access your institution's SkillProof dashboard."
+    >
+      <form onSubmit={submit} className="space-y-5">
+        <Field
+          label="College email"
+          value={email}
+          onChange={setEmail}
+          placeholder="college@example.edu"
+          type="email"
+        />
+
+        <Field
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          placeholder="Enter your password"
+          type="password"
+        />
+
+        <button
+          type="submit"
+          className="w-full h-12 rounded-xl bg-slate-900 text-white font-semibold flex items-center justify-center gap-2 hover:bg-slate-800"
+        >
+          Continue
+          <ArrowRight size={17} />
+        </button>
+      </form>
+
+      <button
+        type="button"
+        onClick={onBack}
+        className="w-full mt-4 text-sm text-slate-500 hover:text-teal-700"
+      >
+        ← Back to account selection
+      </button>
+    </Auth>
+  );
+}
+function IndustryLogin({ onBack, onLogin }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const submit = (e) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      alert("Please enter your company email and password.");
+      return;
+    }
+
+    onLogin();
+  };
+
+  return (
+    <Auth
+      title="Industry login"
+      subtitle="Access SkillProof's talent matching workspace."
+    >
+      <form onSubmit={submit} className="space-y-5">
+        <Field
+          label="Company email"
+          value={email}
+          onChange={setEmail}
+          placeholder="hr@company.com"
+          type="email"
+        />
+
+        <Field
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          placeholder="Enter your password"
+          type="password"
+        />
+
+        <button
+          type="submit"
+          className="w-full h-12 rounded-xl bg-slate-900 text-white font-semibold flex items-center justify-center gap-2 hover:bg-slate-800"
+        >
+          Continue
+          <ArrowRight size={17} />
+        </button>
+      </form>
+
+      <button
+        type="button"
+        onClick={onBack}
+        className="w-full mt-4 text-sm text-slate-500 hover:text-teal-700"
+      >
+        ← Back to account selection
+      </button>
+    </Auth>
+  );
+}
 function Register({
   student,
   updateStudent,
   onRegister,
   onLogin,
 }) {
-  const [collegeSearch, setCollegeSearch] = useState(
-    student.college || ""
-  );
-
+  const [collegeSearch, setCollegeSearch] = useState(student.college || "");
   const [showColleges, setShowColleges] = useState(false);
+  const [collegeOptions, setCollegeOptions] = useState([]);
+  const [collegeLoading, setCollegeLoading] = useState(true);
 
-  const filtered = colleges
+  useEffect(() => {
+    apiRequest("/students/colleges")
+      .then((data) => setCollegeOptions(data.colleges || []))
+      .catch((error) => console.error("College list failed:", error))
+      .finally(() => setCollegeLoading(false));
+  }, []);
+
+  const filtered = collegeOptions
     .filter((college) =>
-      college.toLowerCase().includes(collegeSearch.toLowerCase())
+      college.name.toLowerCase().includes(collegeSearch.toLowerCase())
     )
-    .slice(0, 6);
+    .slice(0, 8);
 
   const toggleCareer = (career) => {
     const current = student.careers || [];
@@ -622,6 +1522,7 @@ function Register({
     student.email &&
     student.password &&
     student.college &&
+    student.collegeId &&
     student.department &&
     student.graduationYear &&
     student.careers?.length;
@@ -684,7 +1585,7 @@ function Register({
                   setCollegeSearch(e.target.value);
                   updateStudent("college", e.target.value);
                 }}
-                placeholder="Type at least 2 letters..."
+                placeholder={collegeLoading ? "Loading colleges..." : "Type at least 2 letters..."}
                 className="w-full h-12 rounded-xl border border-slate-200 bg-white pl-11 pr-10 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-50 text-slate-900"
               />
 
@@ -701,10 +1602,11 @@ function Register({
                   {filtered.map((college) => (
                     <button
                       type="button"
-                      key={college}
+                      key={college.id}
                       onClick={() => {
-                        updateStudent("college", college);
-                        setCollegeSearch(college);
+                        updateStudent("college", college.name);
+                        updateStudent("collegeId", college.id);
+                        setCollegeSearch(college.name);
                         setShowColleges(false);
                       }}
                       className="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 text-slate-700"
@@ -1023,6 +1925,260 @@ function AppShell({
           {children}
         </main>
       </div>
+    </div>
+  );
+}
+function CollegeDashboard({ onLogout }) {
+  const students = [
+    {
+      name: "Student A",
+      department: "CSE",
+      skills: 8,
+      verified: 5,
+      readiness: 86,
+    },
+    {
+      name: "Student B",
+      department: "IT",
+      skills: 7,
+      verified: 4,
+      readiness: 79,
+    },
+    {
+      name: "Student C",
+      department: "CSE",
+      skills: 9,
+      verified: 7,
+      readiness: 91,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="h-20 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto h-full px-5 md:px-8 flex items-center justify-between">
+          <Logo dark />
+
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900"
+          >
+            <LogOut size={17} />
+            Sign out
+          </button>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-5 md:px-8 py-8">
+        <PageHeader
+          eyebrow="ACADEMIA"
+          title="College Dashboard"
+          subtitle="Monitor student skills, verification and placement readiness."
+        />
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+          <MetricCard
+            icon={User}
+            label="Students"
+            value="248"
+          />
+
+          <MetricCard
+            icon={ShieldCheck}
+            label="Verified skills"
+            value="731"
+          />
+
+          <MetricCard
+            icon={BarChart3}
+            label="Avg readiness"
+            value="78%"
+          />
+
+          <MetricCard
+            icon={BriefcaseBusiness}
+            label="Industry roles"
+            value="24"
+          />
+        </div>
+
+        <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6 mt-6">
+          <Panel
+            title="Student skill readiness"
+            subtitle="Overview of students prepared for industry opportunities."
+          >
+            <div className="space-y-3">
+              {students.map((student) => (
+                <div
+                  key={student.name}
+                  className="p-4 rounded-2xl border border-slate-100 bg-slate-50/60"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="font-semibold text-sm">
+                        {student.name}
+                      </p>
+
+                      <p className="text-xs text-slate-400 mt-1">
+                        {student.department} ·{" "}
+                        {student.verified} verified skills
+                      </p>
+                    </div>
+
+                    <span className="font-bold text-teal-700">
+                      {student.readiness}%
+                    </span>
+                  </div>
+
+                  <Progress value={student.readiness} />
+                </div>
+              ))}
+            </div>
+          </Panel>
+
+          <Panel
+            title="Skill gaps"
+            subtitle="Skills your students may need to strengthen."
+          >
+            <div className="space-y-3">
+              {[
+                ["Spring Boot", "42 students"],
+                ["Docker", "37 students"],
+                ["AWS", "31 students"],
+                ["Machine Learning", "26 students"],
+              ].map(([skill, count]) => (
+                <div
+                  key={skill}
+                  className="flex items-center justify-between p-4 rounded-xl border border-slate-100"
+                >
+                  <span className="font-semibold text-sm">
+                    {skill}
+                  </span>
+
+                  <span className="text-xs text-rose-600 font-semibold">
+                    {count}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function IndustryDashboard({ onLogout }) {
+  const opportunities = [
+    {
+      role: "Java Backend Developer Intern",
+      skills: ["Java", "SQL", "Spring Boot", "REST API"],
+      candidates: 18,
+    },
+    {
+      role: "Full Stack Developer Intern",
+      skills: ["JavaScript", "React", "Node.js", "SQL"],
+      candidates: 24,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="h-20 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto h-full px-5 md:px-8 flex items-center justify-between">
+          <Logo dark />
+
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900"
+          >
+            <LogOut size={17} />
+            Sign out
+          </button>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-5 md:px-8 py-8">
+        <PageHeader
+          eyebrow="INDUSTRY"
+          title="Industry Dashboard"
+          subtitle="Find students whose verified skills match your hiring requirements."
+          action="Create opportunity"
+        />
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+          <MetricCard
+            icon={BriefcaseBusiness}
+            label="Active roles"
+            value="6"
+          />
+
+          <MetricCard
+            icon={User}
+            label="Matched students"
+            value="84"
+          />
+
+          <MetricCard
+            icon={ShieldCheck}
+            label="Verified candidates"
+            value="61"
+          />
+
+          <MetricCard
+            icon={Target}
+            label="Avg match"
+            value="82%"
+          />
+        </div>
+
+        <Panel
+          title="Your opportunities"
+          subtitle="Each opportunity can be matched against verified student skills."
+        >
+          <div className="grid lg:grid-cols-2 gap-4">
+            {opportunities.map((opportunity) => (
+              <div
+                key={opportunity.role}
+                className="p-5 rounded-2xl border border-slate-200"
+              >
+                <div className="flex justify-between gap-4">
+                  <div>
+                    <p className="font-bold">
+                      {opportunity.role}
+                    </p>
+
+                    <p className="text-sm text-slate-500 mt-1">
+                      {opportunity.candidates} matching candidates
+                    </p>
+                  </div>
+
+                  <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
+                    <BriefcaseBusiness size={18} />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2 mt-5">
+                  {opportunity.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="px-2.5 py-1 rounded-lg bg-slate-100 text-xs font-medium text-slate-600"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+
+                <button
+                  className="w-full h-11 mt-5 rounded-xl bg-slate-900 text-white text-sm font-semibold"
+                >
+                  Find matching students
+                </button>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </main>
     </div>
   );
 }
@@ -2832,6 +3988,987 @@ function Logo({ dark = false }) {
 }
 
 /* =========================================================
+   COLLEGE DASHBOARD
+========================================================= */
+
+async function loadCollegeStudentsFromBackend(token) {
+  const data = await apiRequest("/students/college/list", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return (data.students || []).map((student) => ({
+    ...student,
+    graduationYear: student.graduationYear || student.graduation_year || "",
+    graduation_year: student.graduation_year || student.graduationYear || "",
+    careers: student.careers || [],
+    skills: student.skills || [],
+  }));
+}
+
+function CollegeDashboardPage({ onStudents, backendToken }) {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+        setStudents(await loadCollegeStudentsFromBackend(backendToken));
+      } catch (err) {
+        setError(err.message || "Unable to load college data.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [backendToken]);
+
+  const getReadiness = (student) => {
+    if (!student.careers?.length) return 0;
+    return Math.max(
+      ...student.careers.map((career) => careerAnalysis(student, career).readiness),
+      0
+    );
+  };
+
+  const totalVerifiedSkills = students.reduce(
+    (total, student) =>
+      total + (student.skills || []).filter((skill) => skill.verified).length,
+    0
+  );
+
+  const averageReadiness = students.length
+    ? Math.round(
+        students.reduce((total, student) => total + getReadiness(student), 0) /
+          students.length
+      )
+    : 0;
+
+  const skillTotals = {};
+  students.forEach((student) => {
+    (student.skills || []).forEach((skill) => {
+      if (!skillTotals[skill.name]) skillTotals[skill.name] = { total: 0, count: 0 };
+      skillTotals[skill.name].total += Number(skill.level || 0);
+      skillTotals[skill.name].count += 1;
+    });
+  });
+
+  const weakestSkills = Object.entries(skillTotals)
+    .map(([name, item]) => ({ name, average: Math.round(item.total / item.count) }))
+    .sort((a, b) => a.average - b.average)
+    .slice(0, 5);
+
+  if (loading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-slate-200 border-t-teal-500 rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-slate-500 mt-4">Loading college data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader eyebrow="COLLEGE · OVERVIEW" title="College Dashboard" subtitle="Monitor your registered students." action="View students" onAction={onStudents} />
+        <div className="bg-white border border-rose-200 rounded-2xl p-6">
+          <p className="font-semibold text-rose-700">Unable to load college data</p>
+          <p className="text-sm text-slate-500 mt-2">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const rankedStudents = [...students].sort((a, b) => getReadiness(b) - getReadiness(a));
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="COLLEGE · OVERVIEW"
+        title="College Dashboard"
+        subtitle="Monitor student skill development, verification and placement readiness."
+        action="View students"
+        onAction={onStudents}
+      />
+
+      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <MetricCard icon={GraduationCap} label="Total students" value={students.length} />
+        <MetricCard icon={ShieldCheck} label="Verified students" value={students.filter((student) => (student.skills || []).some((skill) => skill.verified)).length} />
+        <MetricCard icon={BookOpen} label="Verified skills" value={totalVerifiedSkills} />
+        <MetricCard icon={Target} label="Avg readiness" value={`${averageReadiness}%`} />
+      </div>
+
+      <div className="grid xl:grid-cols-[1.4fr_1fr] gap-6">
+        <Panel title="Placement readiness" subtitle="Student readiness based on current skills and target careers." action="View students" onAction={onStudents}>
+          <div className="space-y-4">
+            {rankedStudents.length ? rankedStudents.map((student) => (
+              <div key={student.id} className="p-4 rounded-2xl border border-slate-100 bg-slate-50/70">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
+                      {student.name?.charAt(0)?.toUpperCase() || "S"}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">{student.name}</p>
+                      <p className="text-xs text-slate-400 mt-1">{student.department || "Department not set"} · {student.graduationYear || "Year not set"}</p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-teal-700">{getReadiness(student)}%</span>
+                </div>
+                <Progress value={getReadiness(student)} />
+              </div>
+            )) : (
+              <EmptyState title="No students yet" text="Students will appear here after they register with this college." />
+            )}
+          </div>
+        </Panel>
+
+        <Panel title="Skill gaps" subtitle="Lowest current skill levels across your students.">
+          <div className="space-y-3">
+            {weakestSkills.length ? weakestSkills.map((skill) => (
+              <div key={skill.name} className="flex items-center justify-between p-4 rounded-xl border border-slate-100">
+                <span className="font-semibold text-sm">{skill.name}</span>
+                <span className="text-xs text-rose-600 font-semibold">{skill.average}% avg</span>
+              </div>
+            )) : (
+              <p className="text-sm text-slate-500">No skill data has been submitted yet.</p>
+            )}
+          </div>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+function CollegeSkillAnalytics({ backendToken }) {
+  const [students, setStudents] = useState([]);
+  useEffect(() => { loadCollegeStudentsFromBackend(backendToken).then(setStudents).catch(console.error); }, [backendToken]);
+  const skills = {};
+  students.forEach((student) => (student.skills || []).forEach((skill) => {
+    if (!skills[skill.name]) skills[skill.name] = { total: 0, count: 0, verified: 0 };
+    skills[skill.name].total += Number(skill.level || 0);
+    skills[skill.name].count += 1;
+    if (skill.verified) skills[skill.name].verified += 1;
+  }));
+  const data = Object.entries(skills).map(([name, item]) => ({ name, average: Math.round(item.total / item.count), verified: item.verified, students: item.count })).sort((a,b) => b.average-a.average);
+  return (
+    <div className="space-y-6">
+      <PageHeader eyebrow="COLLEGE · ANALYTICS" title="Skill Analytics" subtitle="Understand skill distribution and verification across your students." />
+      <Panel title="Skill overview" subtitle="Average skill level and verification coverage.">
+        <div className="space-y-5">
+          {data.length ? data.map((skill) => (
+            <div key={skill.name} className="p-4 rounded-2xl border border-slate-100">
+              <div className="flex justify-between"><div><p className="font-bold">{skill.name}</p><p className="text-xs text-slate-400 mt-1">{skill.students} student{skill.students === 1 ? "" : "s"} · {skill.verified} verified</p></div><span className="font-bold text-teal-700">{skill.average}%</span></div>
+              <Progress value={skill.average} />
+            </div>
+          )) : <p className="text-sm text-slate-500">No student skill data yet.</p>}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+function CollegeReadinessPage({ backendToken }) {
+  const [students, setStudents] = useState([]);
+  useEffect(() => { loadCollegeStudentsFromBackend(backendToken).then(setStudents).catch(console.error); }, [backendToken]);
+  const ranked = students.map((student) => ({ ...student, readiness: Math.max(...(student.careers || []).map((career) => careerAnalysis(student, career).readiness), 0) })).sort((a,b) => b.readiness-a.readiness);
+  return (
+    <div className="space-y-6">
+      <PageHeader eyebrow="COLLEGE · PLACEMENTS" title="Placement Readiness" subtitle="Identify students closest to meeting their target career requirements." />
+      <div className="grid sm:grid-cols-3 gap-4">
+        <MetricCard icon={CheckCircle2} label="Strong match" value={ranked.filter((s) => s.readiness >= 80).length} />
+        <MetricCard icon={Target} label="Needs improvement" value={ranked.filter((s) => s.readiness >= 60 && s.readiness < 80).length} />
+        <MetricCard icon={BarChart3} label="Skill gaps detected" value={ranked.filter((s) => s.readiness < 60).length} />
+      </div>
+      <Panel title="Student readiness" subtitle="Ranked by highest career readiness.">
+        <div className="space-y-3">
+          {ranked.length ? ranked.map((student) => (
+            <div key={student.id} className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-slate-100"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">{student.name?.charAt(0)?.toUpperCase() || "S"}</div><div><p className="font-semibold">{student.name}</p><p className="text-xs text-slate-400 mt-1">{student.department}</p></div></div><span className="font-bold text-teal-700">{student.readiness}%</span></div>
+          )) : <p className="text-sm text-slate-500">No students yet.</p>}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+function CollegeProfilePage() {
+  return (
+    <div className="max-w-4xl space-y-6">
+
+      <PageHeader
+        eyebrow="COLLEGE · PROFILE"
+        title="College Profile"
+        subtitle="Information about the institution using SkillProof."
+      />
+
+      <Panel title="Institution information">
+
+        <div className="grid md:grid-cols-2 gap-6">
+
+          <ProfileValue
+            label="Institution"
+            value="Anna University"
+            editing={false}
+          />
+
+          <ProfileValue
+            label="Institution type"
+            value="University"
+            editing={false}
+          />
+
+          <ProfileValue
+            label="Location"
+            value="Chennai, Tamil Nadu"
+            editing={false}
+          />
+
+          <ProfileValue
+            label="Administrator"
+            value="Placement Cell"
+            editing={false}
+          />
+
+        </div>
+
+      </Panel>
+
+    </div>
+  );
+}
+
+
+/* =========================================================
+   COLLEGE SETTINGS
+========================================================= */
+
+function CollegeSettingsPage() {
+  return (
+    <div className="max-w-3xl space-y-6">
+
+      <PageHeader
+        eyebrow="COLLEGE · SETTINGS"
+        title="Settings"
+        subtitle="Manage college SkillProof preferences."
+      />
+
+      <Panel title="College preferences">
+
+        <div className="space-y-4">
+
+          <SettingRow
+            title="Student verification tracking"
+            text="Track verified skills across registered students."
+          />
+
+          <SettingRow
+            title="Placement readiness"
+            text="Use student skill data to calculate career readiness."
+          />
+
+          <SettingRow
+            title="Industry matching"
+            text="Allow verified student skills to be used for opportunity matching."
+          />
+
+        </div>
+
+      </Panel>
+
+    </div>
+  );
+}
+
+/* =========================================================
+   COLLEGE STUDENTS
+========================================================= */
+
+function CollegeStudentsPage({ onViewStudent, backendToken }) {
+  const [search, setSearch] = useState("");
+  const [department, setDepartment] = useState("All");
+  const [year, setYear] = useState("All");
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadStudents = async () => {
+    if (!backendToken) {
+      setError("College session is missing. Please sign in again.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const data = await apiRequest("/students/college/list", {
+        headers: {
+          Authorization: `Bearer ${backendToken}`,
+        },
+      });
+
+      const normalized = (data.students || []).map((student) => ({
+        ...student,
+        graduationYear:
+          student.graduationYear ||
+          student.graduation_year ||
+          "",
+        graduation_year:
+          student.graduation_year ||
+          student.graduationYear ||
+          "",
+        careers: student.careers || [],
+        skills: student.skills || [],
+      }));
+
+      setStudents(normalized);
+    } catch (err) {
+      console.error("Failed to load college students:", err);
+      setError(err.message || "Unable to load students.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadStudents();
+  }, [backendToken]);
+
+  const departments = [
+    "All",
+    ...new Set(
+      students
+        .map((student) => student.department)
+        .filter(Boolean)
+    ),
+  ];
+
+  const years = [
+    "All",
+    ...new Set(
+      students
+        .map((student) => student.graduationYear)
+        .filter(Boolean)
+    ),
+  ];
+
+  const filteredStudents = students.filter((student) => {
+    const name = String(student.name || "");
+    const email = String(student.email || "");
+
+    const matchesSearch =
+      name.toLowerCase().includes(search.toLowerCase()) ||
+      email.toLowerCase().includes(search.toLowerCase());
+
+    const matchesDepartment =
+      department === "All" ||
+      student.department === department;
+
+    const matchesYear =
+      year === "All" ||
+      String(student.graduationYear) === String(year);
+
+    return matchesSearch && matchesDepartment && matchesYear;
+  });
+
+  const getVerifiedCount = (student) =>
+    (student.skills || []).filter(
+      (skill) => skill.verified
+    ).length;
+
+  const getReadiness = (student) => {
+    if (!student.careers?.length) return 0;
+
+    const results = student.careers.map(
+      (career) =>
+        careerAnalysis(student, career).readiness
+    );
+
+    return Math.max(...results, 0);
+  };
+
+  const averageReadiness = students.length
+    ? Math.round(
+        students.reduce(
+          (total, student) =>
+            total + getReadiness(student),
+          0
+        ) / students.length
+      )
+    : 0;
+
+  if (loading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-slate-200 border-t-teal-500 rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-slate-500 mt-4">
+            Loading students...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="COLLEGE · STUDENTS"
+          title="Student Directory"
+          subtitle="View students registered with your college."
+        />
+
+        <div className="bg-white border border-rose-200 rounded-2xl p-6">
+          <p className="font-semibold text-rose-700">
+            Unable to load students
+          </p>
+          <p className="text-sm text-slate-500 mt-2">
+            {error}
+          </p>
+
+          <button
+            onClick={loadStudents}
+            className="mt-4 h-10 px-4 rounded-xl bg-slate-900 text-white text-sm font-semibold"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="COLLEGE · STUDENTS"
+        title="Student Directory"
+        subtitle="View student academic profiles, skills, verification status and career readiness."
+      />
+
+      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <MetricCard
+          icon={User}
+          label="Total students"
+          value={students.length}
+        />
+
+        <MetricCard
+          icon={ShieldCheck}
+          label="Verified students"
+          value={
+            students.filter((student) =>
+              (student.skills || []).some(
+                (skill) => skill.verified
+              )
+            ).length
+          }
+        />
+
+        <MetricCard
+          icon={BookOpen}
+          label="Verified skills"
+          value={students.reduce(
+            (total, student) =>
+              total + getVerifiedCount(student),
+            0
+          )}
+        />
+
+        <MetricCard
+          icon={Target}
+          label="Avg readiness"
+          value={`${averageReadiness}%`}
+        />
+      </div>
+
+      <Panel
+        title="Find students"
+        subtitle="Search and filter students by name, department or graduation year."
+      >
+        <div className="grid md:grid-cols-[1fr_180px_180px] gap-3">
+          <div className="relative">
+            <Search
+              size={17}
+              className="absolute left-4 top-3.5 text-slate-400"
+            />
+
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search student..."
+              className="w-full h-12 rounded-xl border border-slate-200 bg-white pl-11 pr-4 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-50"
+            />
+          </div>
+
+          <select
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
+            className="h-12 rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-teal-500"
+          >
+            {departments.map((item) => (
+              <option key={item} value={item}>
+                {item === "All"
+                  ? "All departments"
+                  : item}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            className="h-12 rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-teal-500"
+          >
+            {years.map((item) => (
+              <option key={item} value={item}>
+                {item === "All"
+                  ? "All years"
+                  : item}
+              </option>
+            ))}
+          </select>
+        </div>
+      </Panel>
+
+      <div className="space-y-3">
+        {filteredStudents.map((student) => {
+          const verified = getVerifiedCount(student);
+          const readiness = getReadiness(student);
+
+          return (
+            <div
+              key={student.id}
+              className="bg-white border border-slate-200 rounded-2xl p-5 hover:border-teal-300 hover:shadow-sm transition"
+            >
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
+                    {student.name
+                      ?.charAt(0)
+                      ?.toUpperCase() || "S"}
+                  </div>
+
+                  <div>
+                    <h3 className="font-bold text-slate-900">
+                      {student.name}
+                    </h3>
+
+                    <p className="text-sm text-slate-500 mt-1">
+                      {student.department || "Department not set"} ·{" "}
+                      {student.graduationYear || "Year not set"}
+                    </p>
+
+                    <p className="text-xs text-slate-400 mt-1">
+                      {student.email}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="px-4 py-3 rounded-xl bg-slate-50 text-center">
+                    <p className="text-lg font-bold">
+                      {(student.skills || []).length}
+                    </p>
+                    <p className="text-[11px] text-slate-400">
+                      Skills
+                    </p>
+                  </div>
+
+                  <div className="px-4 py-3 rounded-xl bg-teal-50 text-center">
+                    <p className="text-lg font-bold text-teal-700">
+                      {verified}
+                    </p>
+                    <p className="text-[11px] text-teal-600">
+                      Verified
+                    </p>
+                  </div>
+
+                  <div className="px-4 py-3 rounded-xl bg-slate-50 text-center">
+                    <p className="text-lg font-bold">
+                      {readiness}%
+                    </p>
+                    <p className="text-[11px] text-slate-400">
+                      Readiness
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onViewStudent(student)}
+                  className="h-11 px-5 rounded-xl bg-slate-900 text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-slate-800"
+                >
+                  View profile
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+
+        {!filteredStudents.length && (
+          <EmptyState
+            title="No students found"
+            text="No students have registered with this college yet, or your filters do not match."
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   COLLEGE STUDENT PROFILE
+========================================================= */
+
+function CollegeStudentProfile({
+  student,
+  onBack,
+}) {
+  const verifiedSkills =
+    student.skills.filter(
+      (skill) => skill.verified
+    );
+
+  const readiness = Math.max(
+    ...(student.careers || []).map(
+      (career) =>
+        careerAnalysis(student, career).readiness
+    ),
+    0
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="max-w-6xl mx-auto px-5 md:px-8 py-8 space-y-6">
+
+        {/* Back button */}
+
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-slate-900 transition"
+        >
+          <ArrowRight
+            size={16}
+            className="rotate-180"
+          />
+          Back to students
+        </button>
+
+        {/* Profile Header */}
+
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+            <div className="flex items-center gap-5">
+
+              <div className="w-20 h-20 rounded-3xl bg-teal-50 text-teal-700 flex items-center justify-center text-2xl font-bold">
+                {student.name
+                  .charAt(0)
+                  .toUpperCase()}
+              </div>
+
+              <div>
+
+                <p className="text-xs font-bold tracking-wider text-teal-700 uppercase">
+                  Student Profile
+                </p>
+
+                <h1 className="text-3xl font-bold text-slate-900 mt-1">
+                  {student.name}
+                </h1>
+
+                <p className="text-slate-600 mt-2">
+                  {student.college} ·{" "}
+                  {student.department} ·{" "}
+                  {student.graduationYear}
+                </p>
+
+                <p className="text-sm text-slate-400 mt-1">
+                  {student.email}
+                </p>
+
+              </div>
+
+            </div>
+
+            <div className="text-left md:text-right">
+
+              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">
+                Career readiness
+              </p>
+
+              <p className="text-5xl font-bold text-teal-700 mt-2">
+                {readiness}%
+              </p>
+
+              <p className="text-sm text-slate-500 mt-1">
+                {statusText(readiness)}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Statistics */}
+
+        <div className="grid sm:grid-cols-3 gap-4">
+
+          <MetricCard
+            icon={BookOpen}
+            label="Skills"
+            value={student.skills.length}
+          />
+
+          <MetricCard
+            icon={ShieldCheck}
+            label="Verified skills"
+            value={verifiedSkills.length}
+          />
+
+          <MetricCard
+            icon={Target}
+            label="Target careers"
+            value={
+              student.careers?.length || 0
+            }
+          />
+
+        </div>
+
+        {/* Academic Information */}
+
+        <Panel
+          title="Academic information"
+          subtitle="Student information registered with SkillProof."
+        >
+
+          <div className="grid md:grid-cols-3 gap-5">
+
+            <ProfileValue
+              label="College"
+              value={student.college}
+              editing={false}
+            />
+
+            <ProfileValue
+              label="Department"
+              value={student.department}
+              editing={false}
+            />
+
+            <ProfileValue
+              label="Graduation year"
+              value={student.graduationYear}
+              editing={false}
+            />
+
+          </div>
+
+        </Panel>
+
+        {/* Skills & Verification */}
+
+        <Panel
+          title="Skills & verification"
+          subtitle="The college can see the student's current skill status."
+        >
+
+          <div className="grid md:grid-cols-2 gap-4">
+
+            {student.skills.map((skill) => (
+
+              <div
+                key={skill.name}
+                className="p-5 rounded-2xl border border-slate-200 bg-white"
+              >
+
+                <div className="flex justify-between gap-3">
+
+                  <div>
+
+                    <div className="flex items-center gap-2">
+
+                      <h3 className="font-bold text-slate-900">
+                        {skill.name}
+                      </h3>
+
+                      {skill.verified && (
+                        <Badge>
+                          ✓ Verified
+                        </Badge>
+                      )}
+
+                    </div>
+
+                    <p className="text-xs text-slate-500 mt-1">
+                      {skill.verified
+                        ? `Verification score ${skill.verificationScore}%`
+                        : "Self declared"}
+                    </p>
+
+                  </div>
+
+                  <p className="font-bold text-teal-700">
+                    {skill.level}%
+                  </p>
+
+                </div>
+
+                <Progress value={skill.level} />
+
+                {skill.verified &&
+                  skill.assessmentScore !== undefined && (
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+
+                      <Score
+                        label="Assessment"
+                        value={
+                          skill.assessmentScore
+                        }
+                      />
+
+                      <Score
+                        label="Practical"
+                        value={
+                          skill.practicalScore
+                        }
+                      />
+
+                      <Score
+                        label="Evidence"
+                        value={
+                          skill.evidenceScore
+                        }
+                      />
+
+                    </div>
+                  )}
+
+              </div>
+
+            ))}
+
+          </div>
+
+        </Panel>
+
+        {/* Target Careers */}
+
+        <Panel
+          title="Target careers"
+          subtitle="Career goals selected by the student."
+        >
+
+          <div className="flex flex-wrap gap-3">
+
+            {(student.careers || []).map(
+              (career) => (
+
+                <div
+                  key={career}
+                  className="px-4 py-3 rounded-xl bg-teal-50 text-teal-800 font-semibold text-sm"
+                >
+
+                  <Target
+                    size={15}
+                    className="inline mr-2"
+                  />
+
+                  {career}
+
+                </div>
+
+              )
+            )}
+
+          </div>
+
+        </Panel>
+
+        {/* Project Evidence */}
+
+        <Panel
+          title="Project evidence"
+          subtitle="Projects associated with verified skills."
+        >
+
+          <div className="space-y-3">
+
+            {verifiedSkills
+              .filter(
+                (skill) =>
+                  skill.projectName
+              )
+              .map((skill) => (
+
+                <div
+                  key={skill.name}
+                  className="p-5 rounded-2xl border border-slate-200 bg-white"
+                >
+
+                  <div className="flex items-start justify-between gap-4">
+
+                    <div>
+
+                      <p className="text-xs font-bold uppercase tracking-wider text-teal-700">
+                        {skill.name}
+                      </p>
+
+                      <h3 className="font-bold text-lg text-slate-900 mt-1">
+                        {skill.projectName}
+                      </h3>
+
+                      <p className="text-sm text-slate-600 leading-6 mt-2">
+                        {skill.projectDescription}
+                      </p>
+
+                    </div>
+
+                    <CheckCircle2
+                      size={20}
+                      className="text-teal-600 shrink-0"
+                    />
+
+                  </div>
+
+                </div>
+
+              ))}
+
+            {!verifiedSkills.some(
+              (skill) => skill.projectName
+            ) && (
+
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+
+                <p className="text-sm text-slate-500">
+                  No project evidence has been added yet.
+                </p>
+
+              </div>
+
+            )}
+
+          </div>
+
+        </Panel>
+
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
    LOGIC
 ========================================================= */
 
@@ -2942,4 +5079,4 @@ function roadmapText(skill) {
   );
 }
 
-export default App;
+export default App; 
