@@ -564,40 +564,88 @@ function App() {
     }
   };
 
-  const register = async (e) => {
-    e.preventDefault();
+const API_BASE =
+  "https://skillproof-backend-1.onrender.com/api";
 
-    const normalized = {
-      ...student,
-      careers: student.careers || [],
-      skills: student.skills || [],
-    };
+const register = async (e) => {
+  e.preventDefault();
 
-    try {
-      const data = await apiRequest("/auth/register", {
+  const normalized = {
+    ...student,
+    name: student.name.trim(),
+    email: student.email.trim().toLowerCase(),
+    password: student.password,
+    college: student.college.trim(),
+    department: student.department.trim(),
+    graduationYear: Number(student.graduationYear),
+    careers: student.careers || [],
+    skills: student.skills || [],
+  };
+
+  if (
+    !normalized.name ||
+    !normalized.email ||
+    !normalized.password ||
+    !normalized.college ||
+    !normalized.department ||
+    !normalized.graduationYear ||
+    !normalized.careers.length
+  ) {
+    alert(
+      "Please complete your name, email, password, college, department, graduation year and select at least one target career."
+    );
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/auth/register`,
+      {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           name: normalized.name,
           email: normalized.email,
           password: normalized.password,
           role: "student",
           college: normalized.college,
-          college_id: normalized.collegeId,
           department: normalized.department,
         }),
-      });
-
-      if (data.user) {
-        localStorage.setItem("skillproof_token", data.token || "");
       }
+    );
 
-      saveStudent(normalized);
-      setScreen("app");
-      setActivePage("dashboard");
-    } catch (error) {
-      alert(error.message || "Registration failed.");
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error?.message ||
+        "Registration failed"
+      );
     }
-  };
+
+    const savedStudent = {
+      ...normalized,
+      id: data.user?.id || null,
+      backendUserId: data.user?.id || null,
+    };
+
+    saveStudent(savedStudent);
+
+    alert("SkillProof profile created successfully!");
+
+    setScreen("app");
+    setActivePage("dashboard");
+  } catch (error) {
+    console.error("Registration failed:", error);
+
+    alert(
+      error.message ||
+      "Unable to create profile. Please try again."
+    );
+  }
+};
 
 if (screen === "landing") {
   return (
