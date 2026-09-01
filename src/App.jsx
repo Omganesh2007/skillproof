@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Award,
   ArrowRight,
   BarChart3,
   BookOpen,
   BriefcaseBusiness,
-  Building2,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -21,6 +20,7 @@ import {
   Target,
   Trash2,
   User,
+  X,
   XCircle,
   Zap,
 } from "lucide-react";
@@ -73,66 +73,14 @@ const skillList = [
 ];
 
 const careerRequirements = {
-  "Java Backend Developer": {
-    Java: 80,
-    SQL: 75,
-    "Spring Boot": 70,
-    "REST API": 70,
-    "Git & GitHub": 60,
-    Docker: 60,
-  },
-
-  "Full Stack Developer": {
-    JavaScript: 80,
-    React: 75,
-    "HTML & CSS": 80,
-    SQL: 70,
-    "Node.js": 65,
-    "Git & GitHub": 60,
-  },
-
-  "Frontend Developer": {
-    JavaScript: 80,
-    React: 75,
-    "HTML & CSS": 85,
-    "Git & GitHub": 60,
-  },
-
-  "Python Developer": {
-    Python: 80,
-    SQL: 70,
-    "REST API": 65,
-    "Git & GitHub": 60,
-  },
-
-  "AI/ML Engineer": {
-    Python: 85,
-    "Machine Learning": 80,
-    "Data Analysis": 75,
-    SQL: 65,
-    "Git & GitHub": 60,
-  },
-
-  "Data Analyst": {
-    Python: 70,
-    SQL: 80,
-    "Data Analysis": 85,
-    "Git & GitHub": 50,
-  },
-
-  "Cloud Engineer": {
-    AWS: 80,
-    Docker: 75,
-    "Git & GitHub": 65,
-    Linux: 70,
-  },
-
-  "Cybersecurity Analyst": {
-    Python: 65,
-    SQL: 60,
-    Linux: 75,
-    "Git & GitHub": 55,
-  },
+  "Java Backend Developer": { Java: 80, SQL: 75, "Spring Boot": 70, "REST API": 70, "Git & GitHub": 60, Docker: 60 },
+  "Full Stack Developer": { JavaScript: 80, React: 75, "HTML & CSS": 80, SQL: 70, "Node.js": 65, "Git & GitHub": 60 },
+  "Frontend Developer": { JavaScript: 80, React: 75, "HTML & CSS": 85, "Git & GitHub": 60 },
+  "Python Developer": { Python: 80, SQL: 70, "REST API": 65, "Git & GitHub": 60 },
+  "AI/ML Engineer": { Python: 85, "Machine Learning": 80, "Data Analysis": 75, SQL: 65, "Git & GitHub": 60 },
+  "Data Analyst": { Python: 70, SQL: 80, "Data Analysis": 85, "Git & GitHub": 50 },
+  "Cloud Engineer": { AWS: 80, Docker: 75, "Git & GitHub": 65, Linux: 70 },
+  "Cybersecurity Analyst": { Python: 65, SQL: 60, Linux: 75, "Git & GitHub": 55 },
 };
 
 const javaQuestions = [
@@ -152,14 +100,8 @@ const javaQuestions = [
     answer: "main()",
   },
   {
-    question:
-      "Which concept allows the same method name with different parameters?",
-    options: [
-      "Inheritance",
-      "Overloading",
-      "Encapsulation",
-      "Abstraction",
-    ],
+    question: "Which concept allows the same method name with different parameters?",
+    options: ["Inheritance", "Overloading", "Encapsulation", "Abstraction"],
     answer: "Overloading",
   },
   {
@@ -172,262 +114,31 @@ const javaQuestions = [
 const defaultQuestions = (skill) => [
   {
     question: `Which approach best demonstrates practical ${skill} knowledge?`,
-    options: [
-      "Only watching tutorials",
-      "Building and testing a project",
-      "Memorizing definitions",
-      "Reading documentation only",
-    ],
+    options: ["Only watching tutorials", "Building and testing a project", "Memorizing definitions", "Reading documentation only"],
     answer: "Building and testing a project",
   },
   {
     question: `Why is testing important when using ${skill}?`,
-    options: [
-      "It makes code longer",
-      "It validates expected behavior",
-      "It removes documentation",
-      "It avoids using tools",
-    ],
+    options: ["It makes code longer", "It validates expected behavior", "It removes documentation", "It avoids using tools"],
     answer: "It validates expected behavior",
   },
   {
     question: `Which is strongest evidence of ${skill} ability?`,
-    options: [
-      "A project they built",
-      "A random social media post",
-      "A copied tutorial",
-      "A blank certificate",
-    ],
+    options: ["A project they built", "A random social media post", "A copied tutorial", "A blank certificate"],
     answer: "A project they built",
   },
   {
     question: "What should a developer do when facing an unfamiliar problem?",
-    options: [
-      "Ignore it",
-      "Research, test and iterate",
-      "Copy without understanding",
-      "Stop development",
-    ],
+    options: ["Ignore it", "Research, test and iterate", "Copy without understanding", "Stop development"],
     answer: "Research, test and iterate",
   },
   {
     question: "Which best represents skill mastery?",
-    options: [
-      "Knowing terminology",
-      "Being able to apply the skill",
-      "Having many bookmarks",
-      "Watching many videos",
-    ],
+    options: ["Knowing terminology", "Being able to apply the skill", "Having many bookmarks", "Watching many videos"],
     answer: "Being able to apply the skill",
   },
 ];
-const collegeStudents = [
-  {
-    id: 1,
-    name: "Rahul Kumar",
-    email: "rahul@annauniv.edu",
-    college: "Anna University",
-    department: "CSE",
-    graduationYear: "2027",
 
-    careers: [
-      "Java Backend Developer",
-      "Full Stack Developer",
-    ],
-
-    skills: [
-      {
-        name: "Java",
-        level: 87,
-        verified: true,
-        verificationScore: 87,
-        assessmentScore: 90,
-        practicalScore: 85,
-        evidenceScore: 95,
-        projectName: "Student Management System",
-        projectDescription:
-          "Built a student management backend using Java and REST APIs.",
-      },
-      {
-        name: "SQL",
-        level: 81,
-        verified: true,
-        verificationScore: 81,
-      },
-      {
-        name: "React",
-        level: 65,
-        verified: false,
-      },
-      {
-        name: "Spring Boot",
-        level: 72,
-        verified: true,
-        verificationScore: 72,
-      },
-      {
-        name: "Git & GitHub",
-        level: 78,
-        verified: true,
-        verificationScore: 78,
-      },
-    ],
-  },
-
-  {
-    id: 2,
-    name: "Priya Sharma",
-    email: "priya@annauniv.edu",
-    college: "Anna University",
-    department: "IT",
-    graduationYear: "2027",
-
-    careers: [
-      "Full Stack Developer",
-      "Frontend Developer",
-    ],
-
-    skills: [
-      {
-        name: "JavaScript",
-        level: 89,
-        verified: true,
-        verificationScore: 89,
-      },
-      {
-        name: "React",
-        level: 84,
-        verified: true,
-        verificationScore: 84,
-      },
-      {
-        name: "HTML & CSS",
-        level: 91,
-        verified: true,
-        verificationScore: 91,
-      },
-      {
-        name: "SQL",
-        level: 70,
-        verified: false,
-      },
-    ],
-  },
-
-  {
-    id: 3,
-    name: "Arun Kumar",
-    email: "arun@annauniv.edu",
-    college: "Anna University",
-    department: "CSE",
-    graduationYear: "2026",
-
-    careers: [
-      "Python Developer",
-      "AI/ML Engineer",
-    ],
-
-    skills: [
-      {
-        name: "Python",
-        level: 88,
-        verified: true,
-        verificationScore: 88,
-      },
-      {
-        name: "Machine Learning",
-        level: 79,
-        verified: true,
-        verificationScore: 79,
-      },
-      {
-        name: "Data Analysis",
-        level: 82,
-        verified: true,
-        verificationScore: 82,
-      },
-      {
-        name: "SQL",
-        level: 75,
-        verified: false,
-      },
-    ],
-  },
-
-  {
-    id: 4,
-    name: "Sneha R",
-    email: "sneha@annauniv.edu",
-    college: "Anna University",
-    department: "ECE",
-    graduationYear: "2027",
-
-    careers: [
-      "Frontend Developer",
-      "Full Stack Developer",
-    ],
-
-    skills: [
-      {
-        name: "JavaScript",
-        level: 76,
-        verified: true,
-        verificationScore: 76,
-      },
-      {
-        name: "React",
-        level: 73,
-        verified: false,
-      },
-      {
-        name: "HTML & CSS",
-        level: 88,
-        verified: true,
-        verificationScore: 88,
-      },
-    ],
-  },
-
-  {
-    id: 5,
-    name: "Vignesh S",
-    email: "vignesh@annauniv.edu",
-    college: "Anna University",
-    department: "CSE",
-    graduationYear: "2026",
-
-    careers: [
-      "Cloud Engineer",
-      "Java Backend Developer",
-    ],
-
-    skills: [
-      {
-        name: "AWS",
-        level: 85,
-        verified: true,
-        verificationScore: 85,
-      },
-      {
-        name: "Docker",
-        level: 78,
-        verified: true,
-        verificationScore: 78,
-      },
-      {
-        name: "Linux",
-        level: 81,
-        verified: true,
-        verificationScore: 81,
-      },
-      {
-        name: "Java",
-        level: 68,
-        verified: false,
-      },
-    ],
-  },
-];
 const emptyStudent = {
   name: "",
   email: "",
@@ -439,54 +150,13 @@ const emptyStudent = {
   skills: [],
 };
 
-
-const API_BASE = "https://skillproof-backend-1.onrender.com/api";
-
-async function apiRequest(path, options = {}) {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-  });
-
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok || data.success === false) {
-    throw new Error(
-      data?.error?.message ||
-      data?.message ||
-      "Request failed"
-    );
-  }
-
-  return data;
-}
-
 function App() {
   const [screen, setScreen] = useState("landing");
   const [activePage, setActivePage] = useState("dashboard");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [userRole, setUserRole] = useState("student");
-  const [collegePage, setCollegePage] = useState("dashboard");
-  const [collegeToken, setCollegeToken] = useState(
-    () => localStorage.getItem("skillproof_college_token") || ""
-  );
-  const [collegeUser, setCollegeUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem("skillproof_college_user");
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
 
-  const [selectedCollegeStudent, setSelectedCollegeStudent] =
-    useState(null);
   const [student, setStudent] = useState(() => {
     const saved = localStorage.getItem("skillproof_student");
-
     try {
       return saved ? JSON.parse(saved) : emptyStudent;
     } catch {
@@ -500,565 +170,36 @@ function App() {
   };
 
   const updateStudent = (field, value) => {
-    setStudent((current) => ({
-      ...current,
-      [field]: value,
-    }));
+    setStudent((current) => ({ ...current, [field]: value }));
   };
 
-  const login = async (e) => {
+  const login = (e) => {
     e.preventDefault();
-
-    try {
-      const data = await apiRequest("/auth/login", {
-        method: "POST",
-        body: JSON.stringify({
-          email: student.email,
-          password: student.password,
-        }),
-      });
-
-      localStorage.setItem("skillproof_token", data.token);
-
-      const backendStudent = data.user?.profile;
-      const saved = localStorage.getItem("skillproof_student");
-
-      let nextStudent = student;
-
-      if (saved) {
-        try {
-          nextStudent = JSON.parse(saved);
-        } catch {
-          nextStudent = student;
-        }
-      }
-
-      if (backendStudent) {
-        nextStudent = {
-          ...nextStudent,
-          name: data.user.name || nextStudent.name,
-          email: data.user.email || nextStudent.email,
-          college:
-            backendStudent.institution_name ||
-            backendStudent.college ||
-            nextStudent.college,
-          department:
-            backendStudent.department ||
-            nextStudent.department,
-          graduationYear:
-            backendStudent.graduation_year ||
-            nextStudent.graduationYear,
-        };
-      }
-
-      setStudent(nextStudent);
-      localStorage.setItem(
-        "skillproof_student",
-        JSON.stringify(nextStudent)
-      );
-
-      setScreen("app");
-      setActivePage("dashboard");
-    } catch (error) {
-      alert(error.message || "Student login failed.");
+    const saved = localStorage.getItem("skillproof_student");
+    if (!saved) {
+      alert("No SkillProof profile found. Please create an account first.");
+      return;
     }
-  };
-
-const API_BASE =
-  "https://skillproof-backend-1.onrender.com/api";
-
-const register = async (e) => {
-  e.preventDefault();
-
-  const normalized = {
-    ...student,
-    name: student.name.trim(),
-    email: student.email.trim().toLowerCase(),
-    password: student.password,
-    college: student.college.trim(),
-    department: student.department.trim(),
-    graduationYear: Number(student.graduationYear),
-    careers: student.careers || [],
-    skills: student.skills || [],
-  };
-
-  if (
-    !normalized.name ||
-    !normalized.email ||
-    !normalized.password ||
-    !normalized.college ||
-    !normalized.department ||
-    !normalized.graduationYear ||
-    !normalized.careers.length
-  ) {
-    alert(
-      "Please complete your name, email, password, college, department, graduation year and select at least one target career."
-    );
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      `${API_BASE}/auth/register`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: normalized.name,
-          email: normalized.email,
-          password: normalized.password,
-          role: "student",
-          college: normalized.college,
-          department: normalized.department,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data?.error?.message ||
-        "Registration failed"
-      );
-    }
-
-    const savedStudent = {
-      ...normalized,
-      id: data.user?.id || null,
-      backendUserId: data.user?.id || null,
-    };
-
-    saveStudent(savedStudent);
-
-    alert("SkillProof profile created successfully!");
-
+    setStudent(JSON.parse(saved));
     setScreen("app");
     setActivePage("dashboard");
-  } catch (error) {
-    console.error("Registration failed:", error);
-
-    alert(
-      error.message ||
-      "Unable to create profile. Please try again."
-    );
-  }
-};
-
-if (screen === "landing") {
-  return (
-    <Landing
-      onLogin={() => setScreen("roleSelection")}
-      onRegister={() => setScreen("roleSelection")}
-    />
-  );
-}
-
-if (screen === "college") {
-  if (selectedCollegeStudent) {
-    return (
-      <CollegeStudentProfile
-        student={selectedCollegeStudent}
-        onBack={() =>
-          setSelectedCollegeStudent(null)
-        }
-      />
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-
-      {/* College Sidebar */}
-
-      <aside className="fixed z-40 inset-y-0 left-0 w-64 bg-white border-r border-slate-200 hidden lg:block">
-
-        <div className="h-full flex flex-col">
-
-          {/* Logo */}
-
-          <div className="h-20 px-5 flex items-center border-b border-slate-100">
-            <Logo dark />
-          </div>
-
-          {/* College information */}
-
-          <div className="px-5 py-5 border-b border-slate-100">
-
-            <div className="flex items-center gap-3">
-
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
-                <Building2
-                  size={19}
-                />
-              </div>
-
-              <div className="min-w-0">
-
-                <p className="text-sm font-bold truncate">
-                  {collegeUser?.profile?.institution_name || "College Portal"}
-                </p>
-
-                <p className="text-xs text-slate-400">
-                  College Portal
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* Navigation */}
-
-          <nav className="flex-1 p-4">
-
-            <p className="px-3 text-[10px] font-bold tracking-[0.16em] text-slate-400 mb-2">
-              COLLEGE
-            </p>
-
-            <NavItem
-              active={
-                collegePage ===
-                "dashboard"
-              }
-              onClick={() =>
-                setCollegePage(
-                  "dashboard"
-                )
-              }
-              icon={LayoutDashboard}
-              label="Dashboard"
-            />
-
-            <NavItem
-              active={
-                collegePage ===
-                "students"
-              }
-              onClick={() =>
-                setCollegePage(
-                  "students"
-                )
-              }
-              icon={GraduationCap}
-              label="Students"
-            />
-
-            <NavItem
-              active={
-                collegePage ===
-                "analytics"
-              }
-              onClick={() =>
-                setCollegePage(
-                  "analytics"
-                )
-              }
-              icon={BarChart3}
-              label="Skill Analytics"
-            />
-
-            <NavItem
-              active={
-                collegePage ===
-                "readiness"
-              }
-              onClick={() =>
-                setCollegePage(
-                  "readiness"
-                )
-              }
-              icon={Target}
-              label="Placement Readiness"
-            />
-
-            <div className="pt-5 mt-5 border-t border-slate-100">
-
-              <NavItem
-                active={
-                  collegePage ===
-                  "profile"
-                }
-                onClick={() =>
-                  setCollegePage(
-                    "profile"
-                  )
-                }
-                icon={Building2}
-                label="College Profile"
-              />
-
-              <NavItem
-                active={
-                  collegePage ===
-                  "settings"
-                }
-                onClick={() =>
-                  setCollegePage(
-                    "settings"
-                  )
-                }
-                icon={Settings}
-                label="Settings"
-              />
-
-            </div>
-
-          </nav>
-
-          {/* Sign out */}
-
-          <div className="p-4 border-t border-slate-100">
-
-            <button
-              onClick={() => {
-                setSelectedCollegeStudent(null);
-                setCollegePage("dashboard");
-                setCollegeToken("");
-                setCollegeUser(null);
-                localStorage.removeItem("skillproof_college_token");
-                localStorage.removeItem("skillproof_college_user");
-                setScreen("landing");
-              }}
-              className="w-full h-10 rounded-xl px-3 flex items-center gap-3 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-            >
-              <LogOut
-                size={17}
-              />
-              Sign out
-            </button>
-
-          </div>
-
-        </div>
-
-      </aside>
-
-      {/* Main content */}
-
-      <div className="lg:ml-64 min-h-screen">
-
-        {/* Header */}
-
-        <header className="h-20 bg-white border-b border-slate-200 sticky top-0 z-30">
-
-          <div className="h-full px-5 md:px-8 flex items-center justify-between">
-
-            <div>
-
-              <p className="text-xs text-slate-400">
-                SkillProof · College workspace
-              </p>
-
-              <p className="font-semibold text-sm mt-0.5">
-                {collegePage ===
-                "dashboard"
-                  ? "Dashboard"
-                  : collegePage ===
-                    "students"
-                  ? "Students"
-                  : collegePage ===
-                    "analytics"
-                  ? "Skill Analytics"
-                  : collegePage ===
-                    "readiness"
-                  ? "Placement Readiness"
-                  : collegePage ===
-                    "profile"
-                  ? "College Profile"
-                  : "Settings"}
-              </p>
-
-            </div>
-
-            <div className="flex items-center gap-3">
-
-              <div className="hidden sm:block text-right">
-
-                <p className="text-sm font-semibold">
-                  {collegeUser?.profile?.institution_name || "College Administrator"}
-                </p>
-
-                <p className="text-xs text-slate-400">
-                  College Administrator
-                </p>
-
-              </div>
-
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
-                <Building2
-                  size={18}
-                />
-              </div>
-
-            </div>
-
-          </div>
-
-        </header>
-
-        {/* Page */}
-
-        <main className="p-5 md:p-8 max-w-[1500px] mx-auto">
-
-          {collegePage ===
-            "dashboard" && (
-            <CollegeDashboardPage
-              backendToken={collegeToken}
-              onStudents={() =>
-                setCollegePage(
-                  "students"
-                )
-              }
-            />
-          )}
-
-          {collegePage ===
-            "students" && (
-            <CollegeStudentsPage
-              backendToken={collegeToken}
-              onViewStudent={(
-                student
-              ) =>
-                setSelectedCollegeStudent(
-                  student
-                )
-              }
-            />
-          )}
-
-          {collegePage ===
-            "analytics" && (
-            <CollegeSkillAnalytics backendToken={collegeToken} />
-          )}
-
-          {collegePage ===
-            "readiness" && (
-            <CollegeReadinessPage backendToken={collegeToken} />
-          )}
-
-          {collegePage ===
-            "profile" && (
-            <CollegeProfilePage />
-          )}
-
-          {collegePage ===
-            "settings" && (
-            <CollegeSettingsPage />
-          )}
-
-        </main>
-
-      </div>
-
-    </div>
-  );
-}
-
-if (screen === "roleSelection") {
-  return (
-    <RoleSelection
-      onSelect={(role) => {
-        setUserRole(role);
-
-        if (role === "student") {
-          setScreen("login");
-        } else if (role === "college") {
-          setScreen("collegeLogin");
-        } else if (role === "industry") {
-          setScreen("industryLogin");
-        }
-      }}
-    />
-  );
-}
-
-if (screen === "login") {
-  return (
-    <Login
-      student={student}
-      updateStudent={updateStudent}
-      onLogin={login}
-      onRegister={() => setScreen("register")}
-    />
-  );
-}
-
-if (screen === "register") {
-  return (
-    <Register
-      student={student}
-      updateStudent={updateStudent}
-      onRegister={register}
-      onLogin={() => setScreen("login")}
-    />
-  );
-}
-
-if (screen === "collegeLogin") {
-  return (
-    <CollegeLogin
-      onBack={() => setScreen("roleSelection")}
-      onLogin={async (email, password) => {
-        try {
-          const data = await apiRequest("/auth/login", {
-            method: "POST",
-            body: JSON.stringify({
-              email,
-              password,
-            }),
-          });
-
-          if (data.user?.role !== "college") {
-            throw new Error(
-              "This account is not registered as a college account."
-            );
-          }
-
-          setCollegeToken(data.token);
-          setCollegeUser(data.user);
-
-          localStorage.setItem(
-            "skillproof_college_token",
-            data.token
-          );
-          localStorage.setItem(
-            "skillproof_college_user",
-            JSON.stringify(data.user)
-          );
-
-          setCollegePage("dashboard");
-          setSelectedCollegeStudent(null);
-          setScreen("college");
-        } catch (error) {
-          alert(error.message || "College login failed.");
-        }
-      }}
-    />
-  );
-}
-
-if (screen === "industryLogin") {
-  return (
-    <IndustryLogin
-      onBack={() => setScreen("roleSelection")}
-      onLogin={() => {
-        setScreen("industryApp");
-      }}
-    />
-  );
-}
-
-if (screen === "industryApp") {
-  return (
-    <IndustryDashboard
-      onLogout={() => setScreen("landing")}
-    />
-  );
-}
+  };
+
+  const register = (e) => {
+    e.preventDefault();
+    const normalized = {
+      ...student,
+      careers: student.careers || [],
+      skills: student.skills || [],
+    };
+    saveStudent(normalized);
+    setScreen("app");
+    setActivePage("dashboard");
+  };
+
+  if (screen === "landing") return <Landing onLogin={() => setScreen("login")} onRegister={() => setScreen("register")} />;
+  if (screen === "login") return <Login student={student} updateStudent={updateStudent} onLogin={login} onRegister={() => setScreen("register")} />;
+  if (screen === "register") return <Register student={student} updateStudent={updateStudent} onRegister={register} onLogin={() => setScreen("login")} />;
 
   return (
     <AppShell
@@ -1072,158 +213,27 @@ if (screen === "industryApp") {
       setMobileOpen={setMobileOpen}
       logout={() => setScreen("landing")}
     >
-      {activePage === "dashboard" && (
-        <Dashboard student={student} setActivePage={setActivePage} />
-      )}
-
-      {activePage === "skills" && (
-        <MySkills
-          student={student}
-          saveStudent={saveStudent}
-          setActivePage={setActivePage}
-        />
-      )}
-
-      {activePage === "verify" && (
-        <Verification
-          student={student}
-          saveStudent={saveStudent}
-          setActivePage={setActivePage}
-        />
-      )}
-
+      {activePage === "dashboard" && <Dashboard student={student} setActivePage={setActivePage} />}
+      {activePage === "skills" && <MySkills student={student} saveStudent={saveStudent} setActivePage={setActivePage} />}
+      {activePage === "verify" && <Verification student={student} saveStudent={saveStudent} setActivePage={setActivePage} />}
       {activePage === "careers" && <CareersPage student={student} />}
-
       {activePage === "gaps" && <SkillGapPage student={student} />}
-
       {activePage === "roadmap" && <RoadmapPage student={student} />}
-
-      {activePage === "opportunities" && (
-        <OpportunitiesPage student={student} />
-      )}
-
-      {activePage === "profile" && (
-        <ProfilePage student={student} saveStudent={saveStudent} />
-      )}
-
+      {activePage === "opportunities" && <OpportunitiesPage student={student} />}
+      {activePage === "profile" && <ProfilePage student={student} saveStudent={saveStudent} />}
       {activePage === "settings" && <SettingsPage />}
     </AppShell>
   );
 }
-/* =========================================================
-   ROLE SELECTION
-========================================================= */
-
-function RoleSelection({ onSelect }) {
-  const roles = [
-    {
-      id: "student",
-      title: "Student",
-      description:
-        "Build your profile, verify your skills and discover career opportunities.",
-      icon: GraduationCap,
-    },
-    {
-      id: "college",
-      title: "College",
-      description:
-        "Track student skills, identify skill gaps and improve placement readiness.",
-      icon: Building2,
-    },
-    {
-      id: "industry",
-      title: "Industry",
-      description:
-        "Define job requirements and discover students who match your needs.",
-      icon: BriefcaseBusiness,
-    },
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center px-5 py-10">
-      <div className="w-full max-w-5xl">
-
-        <div className="flex justify-center mb-8">
-          <Logo dark />
-        </div>
-
-        <div className="text-center mb-10">
-          <p className="text-xs font-bold tracking-[0.18em] text-teal-700 uppercase">
-            SkillProof
-          </p>
-
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mt-3">
-            Choose your account type
-          </h1>
-
-          <p className="text-slate-500 mt-3 max-w-xl mx-auto">
-            Choose how you want to use SkillProof.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-5">
-          {roles.map((role) => {
-            const Icon = role.icon;
-
-            return (
-              <button
-                key={role.id}
-                type="button"
-                onClick={() => onSelect(role.id)}
-                className="group text-left bg-white border border-slate-200 rounded-3xl p-6 md:p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition-colors">
-                  <Icon size={28} />
-                </div>
-
-                <h2 className="text-xl font-bold mt-6">
-                  {role.title}
-                </h2>
-
-                <p className="text-sm text-slate-500 leading-6 mt-3">
-                  {role.description}
-                </p>
-
-                <div className="flex items-center gap-2 mt-6 text-sm font-bold text-teal-700">
-                  Continue
-                  <ArrowRight size={16} />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        <p className="text-center text-xs text-slate-400 mt-8">
-          You can change your account type later as SkillProof expands.
-        </p>
-      </div>
-    </div>
-  );
-}
-/* =========================================================
-   LANDING
-========================================================= */
 
 function Landing({ onLogin, onRegister }) {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <nav className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         <Logo dark />
-
         <div className="flex items-center gap-3">
-          <button
-            onClick={onLogin}
-            className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900"
-          >
-            Sign in
-          </button>
-
-          <button
-            onClick={onRegister}
-            className="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
-          >
-            Get started
-          </button>
+          <button onClick={onLogin} className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900">Sign in</button>
+          <button onClick={onRegister} className="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800">Get started</button>
         </div>
       </nav>
 
@@ -1231,35 +241,20 @@ function Landing({ onLogin, onRegister }) {
         <section className="grid lg:grid-cols-2 gap-14 items-center pt-16 pb-20">
           <div>
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100 text-xs font-semibold">
-              <ShieldCheck size={14} />
-              Evidence-based career readiness
+              <ShieldCheck size={14} /> Evidence-based career readiness
             </span>
-
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-[1.05] mt-6">
               Prove your skills.
-              <span className="block text-teal-600">
-                Build your future.
-              </span>
+              <span className="block text-teal-600">Build your future.</span>
             </h1>
-
             <p className="text-lg text-slate-500 leading-8 max-w-xl mt-6">
-              SkillProof connects verified student skills with career
-              requirements, skill gaps, learning roadmaps and opportunities.
+              SkillProof connects verified student skills with career requirements, skill gaps, learning roadmaps and opportunities.
             </p>
-
             <div className="flex flex-wrap gap-3 mt-8">
-              <button
-                onClick={onRegister}
-                className="px-6 py-3.5 rounded-xl bg-slate-900 text-white font-semibold flex items-center gap-2 hover:bg-slate-800"
-              >
-                Create profile
-                <ArrowRight size={17} />
+              <button onClick={onRegister} className="px-6 py-3.5 rounded-xl bg-slate-900 text-white font-semibold flex items-center gap-2 hover:bg-slate-800">
+                Create profile <ArrowRight size={17} />
               </button>
-
-              <button
-                onClick={onLogin}
-                className="px-6 py-3.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700"
-              >
+              <button onClick={onLogin} className="px-6 py-3.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700">
                 Sign in
               </button>
             </div>
@@ -1268,54 +263,31 @@ function Landing({ onLogin, onRegister }) {
           <div className="bg-white border border-slate-200 rounded-3xl shadow-xl shadow-slate-200/50 p-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-5">
               <div>
-                <p className="text-xs text-slate-400 uppercase tracking-wider">
-                  Student dashboard
-                </p>
-
-                <h3 className="font-bold text-lg mt-1">
-                  Career readiness
-                </h3>
+                <p className="text-xs text-slate-400 uppercase tracking-wider">Student dashboard</p>
+                <h3 className="font-bold text-lg mt-1">Career readiness</h3>
               </div>
-
               <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center">
                 <Target className="text-teal-600" size={19} />
               </div>
             </div>
-
             <div className="grid grid-cols-3 gap-3 mt-5">
               <MiniMetric value="8" label="Skills" />
               <MiniMetric value="4" label="Verified" />
               <MiniMetric value="76%" label="Ready" />
             </div>
-
             <div className="mt-5 p-4 rounded-2xl bg-slate-50 border border-slate-100">
               <div className="flex justify-between text-sm">
-                <span className="font-semibold">
-                  Java Backend Developer
-                </span>
-
+                <span className="font-semibold">Java Backend Developer</span>
                 <span className="text-teal-700 font-bold">76%</span>
               </div>
-
               <div className="h-2 bg-slate-200 rounded-full mt-3 overflow-hidden">
                 <div className="h-full w-[76%] bg-teal-500 rounded-full" />
               </div>
-
-              <p className="text-xs text-slate-500 mt-3">
-                Top gap: Spring Boot · 20 points
-              </p>
+              <p className="text-xs text-slate-500 mt-3">Top gap: Spring Boot · 20 points</p>
             </div>
-
             <div className="grid grid-cols-2 gap-3 mt-3">
-              <FeaturePreview
-                icon={ShieldCheck}
-                title="Verified skills"
-              />
-
-              <FeaturePreview
-                icon={Sparkles}
-                title="Smart roadmap"
-              />
+              <FeaturePreview icon={ShieldCheck} title="Verified skills" />
+              <FeaturePreview icon={Sparkles} title="Smart roadmap" />
             </div>
           </div>
         </section>
@@ -1323,40 +295,15 @@ function Landing({ onLogin, onRegister }) {
         <section className="py-14 border-t border-slate-200">
           <div className="grid md:grid-cols-4 gap-4">
             {[
-              [
-                "01",
-                "Build profile",
-                "Add academics, skills and career goals.",
-              ],
-              [
-                "02",
-                "Verify skills",
-                "Take assessments and submit evidence.",
-              ],
-              [
-                "03",
-                "Find gaps",
-                "Compare your profile with target roles.",
-              ],
-              [
-                "04",
-                "Take action",
-                "Follow a roadmap and find opportunities.",
-              ],
-            ].map(([number, title, description]) => (
-              <div
-                key={number}
-                className="bg-white border border-slate-200 rounded-2xl p-5"
-              >
-                <span className="text-xs font-bold text-teal-600">
-                  {number}
-                </span>
-
-                <h3 className="font-bold mt-3">{title}</h3>
-
-                <p className="text-sm text-slate-500 leading-6 mt-2">
-                  {description}
-                </p>
+              ["01", "Build profile", "Add academics, skills and career goals."],
+              ["02", "Verify skills", "Take assessments and submit evidence."],
+              ["03", "Find gaps", "Compare your profile with target roles."],
+              ["04", "Take action", "Follow a roadmap and find opportunities."],
+            ].map(([n, t, d]) => (
+              <div key={n} className="bg-white border border-slate-200 rounded-2xl p-5">
+                <span className="text-xs font-bold text-teal-600">{n}</span>
+                <h3 className="font-bold mt-3">{t}</h3>
+                <p className="text-sm text-slate-500 leading-6 mt-2">{d}</p>
               </div>
             ))}
           </div>
@@ -1366,265 +313,51 @@ function Landing({ onLogin, onRegister }) {
   );
 }
 
-/* =========================================================
-   AUTH
-========================================================= */
-
-function Login({
-  student,
-  updateStudent,
-  onLogin,
-  onRegister,
-}) {
+function Login({ student, updateStudent, onLogin, onRegister }) {
   return (
-    <Auth
-      title="Welcome back"
-      subtitle="Continue building your verified career profile."
-    >
+    <Auth title="Welcome back" subtitle="Continue building your verified career profile.">
       <form onSubmit={onLogin} className="space-y-5">
-        <Field
-          label="Email"
-          value={student.email}
-          onChange={(value) => updateStudent("email", value)}
-          placeholder="you@example.com"
-          type="email"
-        />
-
-        <Field
-          label="Password"
-          value={student.password}
-          onChange={(value) => updateStudent("password", value)}
-          placeholder="Enter your password"
-          type="password"
-        />
-
+        <Field label="Email" value={student.email} onChange={(v) => updateStudent("email", v)} placeholder="you@example.com" type="email" />
+        <Field label="Password" value={student.password} onChange={(v) => updateStudent("password", v)} placeholder="Enter your password" type="password" />
         <button className="w-full h-12 rounded-xl bg-slate-900 text-white font-semibold flex items-center justify-center gap-2 hover:bg-slate-800">
-          Sign in
-          <ArrowRight size={17} />
+          Sign in <ArrowRight size={17} />
         </button>
       </form>
-
-      <p className="text-center text-sm text-slate-500 mt-6">
-        Don't have an account?{" "}
-        <button
-          onClick={onRegister}
-          className="text-teal-700 font-semibold"
-        >
-          Create one
-        </button>
-      </p>
+      <p className="text-center text-sm text-slate-500 mt-6">Don't have an account? <button onClick={onRegister} className="text-teal-700 font-semibold">Create one</button></p>
     </Auth>
   );
 }
-function CollegeLogin({ onBack, onLogin }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const submit = (e) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      alert("Please enter your college email and password.");
-      return;
-    }
-
-    onLogin(email.trim(), password);
-  };
-
-  return (
-    <Auth
-      title="College login"
-      subtitle="Access your institution's SkillProof dashboard."
-    >
-      <form onSubmit={submit} className="space-y-5">
-        <Field
-          label="College email"
-          value={email}
-          onChange={setEmail}
-          placeholder="college@example.edu"
-          type="email"
-        />
-
-        <Field
-          label="Password"
-          value={password}
-          onChange={setPassword}
-          placeholder="Enter your password"
-          type="password"
-        />
-
-        <button
-          type="submit"
-          className="w-full h-12 rounded-xl bg-slate-900 text-white font-semibold flex items-center justify-center gap-2 hover:bg-slate-800"
-        >
-          Continue
-          <ArrowRight size={17} />
-        </button>
-      </form>
-
-      <button
-        type="button"
-        onClick={onBack}
-        className="w-full mt-4 text-sm text-slate-500 hover:text-teal-700"
-      >
-        ← Back to account selection
-      </button>
-    </Auth>
-  );
-}
-function IndustryLogin({ onBack, onLogin }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const submit = (e) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      alert("Please enter your company email and password.");
-      return;
-    }
-
-    onLogin();
-  };
-
-  return (
-    <Auth
-      title="Industry login"
-      subtitle="Access SkillProof's talent matching workspace."
-    >
-      <form onSubmit={submit} className="space-y-5">
-        <Field
-          label="Company email"
-          value={email}
-          onChange={setEmail}
-          placeholder="hr@company.com"
-          type="email"
-        />
-
-        <Field
-          label="Password"
-          value={password}
-          onChange={setPassword}
-          placeholder="Enter your password"
-          type="password"
-        />
-
-        <button
-          type="submit"
-          className="w-full h-12 rounded-xl bg-slate-900 text-white font-semibold flex items-center justify-center gap-2 hover:bg-slate-800"
-        >
-          Continue
-          <ArrowRight size={17} />
-        </button>
-      </form>
-
-      <button
-        type="button"
-        onClick={onBack}
-        className="w-full mt-4 text-sm text-slate-500 hover:text-teal-700"
-      >
-        ← Back to account selection
-      </button>
-    </Auth>
-  );
-}
-function Register({
-  student,
-  updateStudent,
-  onRegister,
-  onLogin,
-}) {
+function Register({ student, updateStudent, onRegister, onLogin }) {
   const [collegeSearch, setCollegeSearch] = useState(student.college || "");
   const [showColleges, setShowColleges] = useState(false);
-  const [collegeOptions, setCollegeOptions] = useState([]);
-  const [collegeLoading, setCollegeLoading] = useState(true);
 
-  useEffect(() => {
-    apiRequest("/students/colleges")
-      .then((data) => setCollegeOptions(data.colleges || []))
-      .catch((error) => console.error("College list failed:", error))
-      .finally(() => setCollegeLoading(false));
-  }, []);
-
-  const filtered = collegeOptions
-    .filter((college) =>
-      college.name.toLowerCase().includes(collegeSearch.toLowerCase())
-    )
-    .slice(0, 8);
+  const filtered = colleges.filter((c) => c.toLowerCase().includes(collegeSearch.toLowerCase())).slice(0, 6);
 
   const toggleCareer = (career) => {
     const current = student.careers || [];
-
-    if (current.includes(career)) {
-      updateStudent(
-        "careers",
-        current.filter((item) => item !== career)
-      );
-    } else if (current.length < 3) {
-      updateStudent("careers", [...current, career]);
-    }
+    if (current.includes(career)) updateStudent("careers", current.filter((x) => x !== career));
+    else if (current.length < 3) updateStudent("careers", [...current, career]);
   };
 
-  const valid =
-    student.name &&
-    student.email &&
-    student.password &&
-    student.college &&
-    student.collegeId &&
-    student.department &&
-    student.graduationYear &&
-    student.careers?.length;
+  const valid = student.name && student.email && student.password && student.college && student.department && student.graduationYear && student.careers?.length;
 
   return (
-    <Auth
-      wide
-      title="Create your profile"
-      subtitle="Tell SkillProof where you are today and where you want to go."
-    >
+    <Auth wide title="Create your profile" subtitle="Tell SkillProof where you are today and where you want to go.">
       <form onSubmit={onRegister}>
         <SectionTitle title="Personal information" number="01" />
-
         <div className="grid md:grid-cols-2 gap-4">
-          <Field
-            label="Full name"
-            value={student.name}
-            onChange={(value) => updateStudent("name", value)}
-            placeholder="Your name"
-          />
-
-          <Field
-            label="Email"
-            value={student.email}
-            onChange={(value) => updateStudent("email", value)}
-            placeholder="you@example.com"
-            type="email"
-          />
-
-          <Field
-            label="Password"
-            value={student.password}
-            onChange={(value) =>
-              updateStudent("password", value)
-            }
-            placeholder="Create a password"
-            type="password"
-          />
+          <Field label="Full name" value={student.name} onChange={(v) => updateStudent("name", v)} placeholder="Your name" />
+          <Field label="Email" value={student.email} onChange={(v) => updateStudent("email", v)} placeholder="you@example.com" type="email" />
+          <Field label="Password" value={student.password} onChange={(v) => updateStudent("password", v)} placeholder="Create a password" type="password" />
         </div>
 
         <SectionTitle title="Education" number="02" />
-
         <div className="grid md:grid-cols-2 gap-4">
           <div className="relative">
-            <label className="text-sm font-semibold text-slate-700">
-              College / Institution
-            </label>
-
+            <label className="text-sm font-semibold text-slate-700">College / Institution</label>
             <div className="relative mt-2">
-              <Search
-                size={17}
-                className="absolute left-4 top-3.5 text-slate-400"
-              />
-
+              <Search size={17} className="absolute left-4 top-3.5 text-slate-400" />
               <input
                 required
                 value={collegeSearch}
@@ -1633,1597 +366,403 @@ function Register({
                   setCollegeSearch(e.target.value);
                   updateStudent("college", e.target.value);
                 }}
-                placeholder={collegeLoading ? "Loading colleges..." : "Type at least 2 letters..."}
+                placeholder="Type at least 2 letters..."
                 className="w-full h-12 rounded-xl border border-slate-200 bg-white pl-11 pr-10 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-50 text-slate-900"
               />
-
-              <ChevronDown
-                size={16}
-                className="absolute right-4 top-3.5 text-slate-400"
-              />
+              <ChevronDown size={16} className="absolute right-4 top-3.5 text-slate-400" />
             </div>
-
-            {showColleges &&
-              collegeSearch.length >= 2 &&
-              filtered.length > 0 && (
-                <div className="absolute z-20 left-0 right-0 mt-2 rounded-xl overflow-hidden bg-white border border-slate-200 shadow-xl">
-                  {filtered.map((college) => (
-                    <button
-                      type="button"
-                      key={college.id}
-                      onClick={() => {
-                        updateStudent("college", college.name);
-                        updateStudent("collegeId", college.id);
-                        setCollegeSearch(college.name);
-                        setShowColleges(false);
-                      }}
-                      className="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 text-slate-700"
-                    >
-                      {college}
-                    </button>
-                  ))}
-                </div>
-              )}
+            {showColleges && collegeSearch.length >= 2 && filtered.length > 0 && (
+              <div className="absolute z-20 left-0 right-0 mt-2 rounded-xl overflow-hidden bg-white border border-slate-200 shadow-xl">
+                {filtered.map((college) => (
+                  <button type="button" key={college} onClick={() => { updateStudent("college", college); setCollegeSearch(college); setShowColleges(false); }} className="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 text-slate-700">
+                    {college}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-
-          <Field
-            label="Department"
-            value={student.department}
-            onChange={(value) =>
-              updateStudent("department", value)
-            }
-            placeholder="CSE / IT / ECE"
-          />
-
-          <Field
-            label="Graduation year"
-            value={student.graduationYear}
-            onChange={(value) =>
-              updateStudent("graduationYear", value)
-            }
-            placeholder="2027"
-            type="number"
-          />
+          <Field label="Department" value={student.department} onChange={(v) => updateStudent("department", v)} placeholder="CSE / IT / ECE" />
+          <Field label="Graduation year" value={student.graduationYear} onChange={(v) => updateStudent("graduationYear", v)} placeholder="2027" type="number" />
         </div>
 
         <SectionTitle title="Target careers" number="03" />
-
         <div className="flex justify-between text-sm text-slate-500">
-          <span>Select up to 3 roles.</span>
-
-          <span className="font-semibold text-teal-700">
-            {student.careers?.length || 0}/3
-          </span>
+          <span>Select up to 3 roles.</span><span className="font-semibold text-teal-700">{student.careers?.length || 0}/3</span>
         </div>
-
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 mt-4">
           {careers.map((career) => {
             const selected = student.careers?.includes(career);
-
-            const disabled =
-              !selected && student.careers?.length >= 3;
-
+            const disabled = !selected && student.careers?.length >= 3;
             return (
-              <button
-                type="button"
-                key={career}
-                disabled={disabled}
-                onClick={() => toggleCareer(career)}
-                className={`text-left p-4 rounded-xl border transition ${
-                  selected
-                    ? "border-teal-500 bg-teal-50 text-teal-800"
-                    : disabled
-                    ? "border-slate-100 text-slate-300"
-                    : "border-slate-200 hover:border-teal-300 text-slate-700"
-                }`}
-              >
+              <button type="button" key={career} disabled={disabled} onClick={() => toggleCareer(career)}
+                className={`text-left p-4 rounded-xl border transition ${selected ? "border-teal-500 bg-teal-50 text-teal-800" : disabled ? "border-slate-100 text-slate-300" : "border-slate-200 hover:border-teal-300 text-slate-700"}`}>
                 <div className="flex justify-between gap-2 text-sm font-medium">
-                  <span>{career}</span>
-
-                  {selected && (
-                    <CheckCircle2
-                      size={17}
-                      className="text-teal-600 shrink-0"
-                    />
-                  )}
+                  <span>{career}</span>{selected && <CheckCircle2 size={17} className="text-teal-600 shrink-0" />}
                 </div>
               </button>
             );
           })}
         </div>
 
-        <button
-          disabled={!valid}
-          className="w-full h-12 mt-8 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400 flex items-center justify-center gap-2"
-        >
-          Create SkillProof profile
-          <ArrowRight size={17} />
+        <button disabled={!valid} className="w-full h-12 mt-8 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400 flex items-center justify-center gap-2">
+          Create SkillProof profile <ArrowRight size={17} />
         </button>
       </form>
-
-      <p className="text-center text-sm text-slate-500 mt-6">
-        Already have an account?{" "}
-        <button
-          onClick={onLogin}
-          className="text-teal-700 font-semibold"
-        >
-          Sign in
-        </button>
-      </p>
+      <p className="text-center text-sm text-slate-500 mt-6">Already have an account? <button onClick={onLogin} className="text-teal-700 font-semibold">Sign in</button></p>
     </Auth>
   );
 }
 
-function Auth({
-  children,
-  title,
-  subtitle,
-  wide = false,
-}) {
+function Auth({ children, title, subtitle, wide = false }) {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-5 py-10">
       <div className={`w-full ${wide ? "max-w-4xl" : "max-w-md"}`}>
-        <div className="flex justify-center mb-7">
-          <Logo dark />
-        </div>
-
+        <div className="flex justify-center mb-7"><Logo dark /></div>
         <div className="bg-white border border-slate-200 rounded-3xl p-7 md:p-9 shadow-sm">
-          <h1 className="text-2xl md:text-3xl font-bold">
-            {title}
-          </h1>
-
-          <p className="text-slate-500 mt-2 mb-8">
-            {subtitle}
-          </p>
-
+          <h1 className="text-2xl md:text-3xl font-bold">{title}</h1>
+          <p className="text-slate-500 mt-2 mb-8">{subtitle}</p>
           {children}
         </div>
-
-        <p className="text-center text-xs text-slate-400 mt-5">
-          SkillProof · Evidence-based placement readiness
-        </p>
+        <p className="text-center text-xs text-slate-400 mt-5">SkillProof · Evidence-based placement readiness</p>
       </div>
     </div>
   );
 }
 
-/* =========================================================
-   APP SHELL
-========================================================= */
-
-function AppShell({
-  children,
-  student,
-  activePage,
-  setActivePage,
-  mobileOpen,
-  setMobileOpen,
-  logout,
-}) {
+function AppShell({ children, student, activePage, setActivePage, mobileOpen, setMobileOpen, logout }) {
   const groups = [
-    {
-      title: "OVERVIEW",
-      items: [
-        ["dashboard", "Dashboard", LayoutDashboard],
-      ],
-    },
-
-    {
-      title: "CAREER",
-      items: [
-        ["careers", "Careers", Target],
-        ["gaps", "Skill Gap", BarChart3],
-        ["roadmap", "Roadmap", Sparkles],
-      ],
-    },
-
-    {
-      title: "SKILLS",
-      items: [
-        ["skills", "My Skills", BookOpen],
-        ["verify", "Verify Skills", ShieldCheck],
-      ],
-    },
-
-    {
-      title: "OPPORTUNITIES",
-      items: [
-        [
-          "opportunities",
-          "Internships & Jobs",
-          BriefcaseBusiness,
-        ],
-      ],
-    },
+    { title: "OVERVIEW", items: [["dashboard", "Dashboard", LayoutDashboard]] },
+    { title: "CAREER", items: [["careers", "Careers", Target], ["gaps", "Skill Gap", BarChart3], ["roadmap", "Roadmap", Sparkles]] },
+    { title: "SKILLS", items: [["skills", "My Skills", BookOpen], ["verify", "Verify Skills", ShieldCheck]] },
+    { title: "OPPORTUNITIES", items: [["opportunities", "Internships & Jobs", BriefcaseBusiness]] },
   ];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <aside
-        className={`fixed z-50 inset-y-0 left-0 w-64 bg-white border-r border-slate-200 transition-transform duration-200 ${
-          mobileOpen
-            ? "translate-x-0"
-            : "-translate-x-full lg:translate-x-0"
-        }`}
-      >
+      <aside className={`fixed z-50 inset-y-0 left-0 w-64 bg-white border-r border-slate-200 transition-transform duration-200 ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         <div className="h-full flex flex-col">
-          <div className="px-5 h-20 flex items-center border-b border-slate-100">
-            <Logo dark />
-          </div>
-
+          <div className="px-5 h-20 flex items-center border-b border-slate-100"><Logo dark /></div>
           <nav className="flex-1 p-4 overflow-y-auto">
             {groups.map((group) => (
               <div key={group.title} className="mb-6">
-                <p className="px-3 text-[10px] font-bold tracking-[0.16em] text-slate-400 mb-2">
-                  {group.title}
-                </p>
-
-                {group.items.map(
-                  ([id, label, Icon]) => (
-                    <NavItem
-                      key={id}
-                      active={activePage === id}
-                      onClick={() => setActivePage(id)}
-                      icon={Icon}
-                      label={label}
-                    />
-                  )
-                )}
+                <p className="px-3 text-[10px] font-bold tracking-[0.16em] text-slate-400 mb-2">{group.title}</p>
+                {group.items.map(([id, label, Icon]) => (
+                  <NavItem key={id} active={activePage === id} onClick={() => setActivePage(id)} icon={Icon} label={label} />
+                ))}
               </div>
             ))}
-
             <div className="pt-2 border-t border-slate-100">
-              <NavItem
-                active={activePage === "profile"}
-                onClick={() => setActivePage("profile")}
-                icon={User}
-                label="My Profile"
-              />
-
-              <NavItem
-                active={activePage === "settings"}
-                onClick={() => setActivePage("settings")}
-                icon={Settings}
-                label="Settings"
-              />
+              <NavItem active={activePage === "profile"} onClick={() => setActivePage("profile")} icon={User} label="My Profile" />
+              <NavItem active={activePage === "settings"} onClick={() => setActivePage("settings")} icon={Settings} label="Settings" />
             </div>
           </nav>
-
           <div className="p-4 border-t border-slate-100">
             <div className="flex items-center gap-3 px-2 mb-3">
-              <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
-                {student.name?.charAt(0)?.toUpperCase() ||
-                  "S"}
-              </div>
-
-              <div className="min-w-0">
-                <p className="text-sm font-semibold truncate">
-                  {student.name || "Student"}
-                </p>
-
-                <p className="text-xs text-slate-400 truncate">
-                  {student.email || "student"}
-                </p>
-              </div>
+              <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">{student.name?.charAt(0)?.toUpperCase() || "S"}</div>
+              <div className="min-w-0"><p className="text-sm font-semibold truncate">{student.name || "Student"}</p><p className="text-xs text-slate-400 truncate">{student.email || "student"}</p></div>
             </div>
-
-            <button
-              onClick={logout}
-              className="w-full h-10 rounded-lg text-sm text-slate-500 hover:bg-slate-50 flex items-center gap-2 px-2"
-            >
-              <LogOut size={16} />
-              Sign out
-            </button>
+            <button onClick={logout} className="w-full h-10 rounded-lg text-sm text-slate-500 hover:bg-slate-50 flex items-center gap-2 px-2"><LogOut size={16} /> Sign out</button>
           </div>
         </div>
       </aside>
 
-      {mobileOpen && (
-        <button
-          aria-label="Close menu"
-          onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 bg-slate-900/20 z-40 lg:hidden"
-        />
-      )}
+      {mobileOpen && <button aria-label="Close menu" onClick={() => setMobileOpen(false)} className="fixed inset-0 bg-slate-900/20 z-40 lg:hidden" />}
 
       <div className="lg:ml-64 min-h-screen">
         <header className="h-20 bg-white border-b border-slate-200 sticky top-0 z-30">
           <div className="h-full px-5 md:px-8 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setMobileOpen(true)}
-                className="lg:hidden w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center"
-              >
-                <Menu size={19} />
-              </button>
-
+              <button onClick={() => setMobileOpen(true)} className="lg:hidden w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center"><Menu size={19} /></button>
               <div>
-                <p className="text-xs text-slate-400">
-                  SkillProof workspace
-                </p>
-
-                <p className="font-semibold text-sm mt-0.5">
-                  {pageTitle(activePage)}
-                </p>
+                <p className="text-xs text-slate-400">SkillProof workspace</p>
+                <p className="font-semibold text-sm mt-0.5">{pageTitle(activePage)}</p>
               </div>
             </div>
-
-            <button
-              onClick={() => setActivePage("profile")}
-              className="flex items-center gap-3"
-            >
-              <div className="hidden sm:block text-right">
-                <p className="text-sm font-semibold">
-                  {student.name || "Student"}
-                </p>
-
-                <p className="text-xs text-slate-400">
-                  {student.department || "Profile"}
-                </p>
-              </div>
-
-              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                <User size={18} className="text-slate-500" />
-              </div>
+            <button onClick={() => setActivePage("profile")} className="flex items-center gap-3">
+              <div className="hidden sm:block text-right"><p className="text-sm font-semibold">{student.name || "Student"}</p><p className="text-xs text-slate-400">{student.department || "Profile"}</p></div>
+              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center"><User size={18} className="text-slate-500" /></div>
             </button>
           </div>
         </header>
-
-        <main className="p-5 md:p-8 max-w-[1500px] mx-auto">
-          {children}
-        </main>
+        <main className="p-5 md:p-8 max-w-[1500px] mx-auto">{children}</main>
       </div>
     </div>
   );
 }
-function CollegeDashboard({ onLogout }) {
-  const students = [
-    {
-      name: "Student A",
-      department: "CSE",
-      skills: 8,
-      verified: 5,
-      readiness: 86,
-    },
-    {
-      name: "Student B",
-      department: "IT",
-      skills: 7,
-      verified: 4,
-      readiness: 79,
-    },
-    {
-      name: "Student C",
-      department: "CSE",
-      skills: 9,
-      verified: 7,
-      readiness: 91,
-    },
-  ];
 
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="h-20 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto h-full px-5 md:px-8 flex items-center justify-between">
-          <Logo dark />
-
-          <button
-            onClick={onLogout}
-            className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900"
-          >
-            <LogOut size={17} />
-            Sign out
-          </button>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-5 md:px-8 py-8">
-        <PageHeader
-          eyebrow="ACADEMIA"
-          title="College Dashboard"
-          subtitle="Monitor student skills, verification and placement readiness."
-        />
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-          <MetricCard
-            icon={User}
-            label="Students"
-            value="248"
-          />
-
-          <MetricCard
-            icon={ShieldCheck}
-            label="Verified skills"
-            value="731"
-          />
-
-          <MetricCard
-            icon={BarChart3}
-            label="Avg readiness"
-            value="78%"
-          />
-
-          <MetricCard
-            icon={BriefcaseBusiness}
-            label="Industry roles"
-            value="24"
-          />
-        </div>
-
-        <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6 mt-6">
-          <Panel
-            title="Student skill readiness"
-            subtitle="Overview of students prepared for industry opportunities."
-          >
-            <div className="space-y-3">
-              {students.map((student) => (
-                <div
-                  key={student.name}
-                  className="p-4 rounded-2xl border border-slate-100 bg-slate-50/60"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="font-semibold text-sm">
-                        {student.name}
-                      </p>
-
-                      <p className="text-xs text-slate-400 mt-1">
-                        {student.department} ·{" "}
-                        {student.verified} verified skills
-                      </p>
-                    </div>
-
-                    <span className="font-bold text-teal-700">
-                      {student.readiness}%
-                    </span>
-                  </div>
-
-                  <Progress value={student.readiness} />
-                </div>
-              ))}
-            </div>
-          </Panel>
-
-          <Panel
-            title="Skill gaps"
-            subtitle="Skills your students may need to strengthen."
-          >
-            <div className="space-y-3">
-              {[
-                ["Spring Boot", "42 students"],
-                ["Docker", "37 students"],
-                ["AWS", "31 students"],
-                ["Machine Learning", "26 students"],
-              ].map(([skill, count]) => (
-                <div
-                  key={skill}
-                  className="flex items-center justify-between p-4 rounded-xl border border-slate-100"
-                >
-                  <span className="font-semibold text-sm">
-                    {skill}
-                  </span>
-
-                  <span className="text-xs text-rose-600 font-semibold">
-                    {count}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Panel>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-function IndustryDashboard({ onLogout }) {
-  const opportunities = [
-    {
-      role: "Java Backend Developer Intern",
-      skills: ["Java", "SQL", "Spring Boot", "REST API"],
-      candidates: 18,
-    },
-    {
-      role: "Full Stack Developer Intern",
-      skills: ["JavaScript", "React", "Node.js", "SQL"],
-      candidates: 24,
-    },
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="h-20 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto h-full px-5 md:px-8 flex items-center justify-between">
-          <Logo dark />
-
-          <button
-            onClick={onLogout}
-            className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900"
-          >
-            <LogOut size={17} />
-            Sign out
-          </button>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-5 md:px-8 py-8">
-        <PageHeader
-          eyebrow="INDUSTRY"
-          title="Industry Dashboard"
-          subtitle="Find students whose verified skills match your hiring requirements."
-          action="Create opportunity"
-        />
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-          <MetricCard
-            icon={BriefcaseBusiness}
-            label="Active roles"
-            value="6"
-          />
-
-          <MetricCard
-            icon={User}
-            label="Matched students"
-            value="84"
-          />
-
-          <MetricCard
-            icon={ShieldCheck}
-            label="Verified candidates"
-            value="61"
-          />
-
-          <MetricCard
-            icon={Target}
-            label="Avg match"
-            value="82%"
-          />
-        </div>
-
-        <Panel
-          title="Your opportunities"
-          subtitle="Each opportunity can be matched against verified student skills."
-        >
-          <div className="grid lg:grid-cols-2 gap-4">
-            {opportunities.map((opportunity) => (
-              <div
-                key={opportunity.role}
-                className="p-5 rounded-2xl border border-slate-200"
-              >
-                <div className="flex justify-between gap-4">
-                  <div>
-                    <p className="font-bold">
-                      {opportunity.role}
-                    </p>
-
-                    <p className="text-sm text-slate-500 mt-1">
-                      {opportunity.candidates} matching candidates
-                    </p>
-                  </div>
-
-                  <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
-                    <BriefcaseBusiness size={18} />
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mt-5">
-                  {opportunity.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 text-xs font-medium text-slate-600"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-
-                <button
-                  className="w-full h-11 mt-5 rounded-xl bg-slate-900 text-white text-sm font-semibold"
-                >
-                  Find matching students
-                </button>
-              </div>
-            ))}
-          </div>
-        </Panel>
-      </main>
-    </div>
-  );
-}
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-function Dashboard({
-  student,
-  setActivePage,
-}) {
+function Dashboard({ student, setActivePage }) {
   const skills = student.skills || [];
-
-  const verified = skills.filter(
-    (skill) => skill.verified
-  ).length;
-
-  const analyses = (student.careers || []).map(
-    (career) => ({
-      career,
-      ...careerAnalysis(student, career),
-    })
-  );
-
+  const verified = skills.filter((s) => s.verified).length;
+  const analyses = (student.careers || []).map((career) => ({ career, ...careerAnalysis(student, career) }));
   const best = analyses[0]?.readiness || 0;
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        eyebrow="OVERVIEW"
-        title={`Good to see you, ${
-          student.name || "Student"
-        }.`}
-        subtitle="Track your skills, readiness and next steps from one place."
-        action="Verify a skill"
-        onAction={() => setActivePage("verify")}
-      />
-
+      <PageHeader eyebrow="OVERVIEW" title={`Good to see you, ${student.name || "Student"}.`} subtitle="Track your skills, readiness and next steps from one place." action="Verify a skill" onAction={() => setActivePage("verify")} />
       <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <MetricCard
-          icon={BookOpen}
-          label="Skills added"
-          value={skills.length}
-        />
-
-        <MetricCard
-          icon={ShieldCheck}
-          label="Verified skills"
-          value={verified}
-        />
-
-        <MetricCard
-          icon={Target}
-          label="Target careers"
-          value={student.careers?.length || 0}
-        />
-
-        <MetricCard
-          icon={Zap}
-          label="Top readiness"
-          value={`${best}%`}
-        />
+        <MetricCard icon={BookOpen} label="Skills added" value={skills.length} />
+        <MetricCard icon={ShieldCheck} label="Verified skills" value={verified} />
+        <MetricCard icon={Target} label="Target careers" value={student.careers?.length || 0} />
+        <MetricCard icon={Zap} label="Top readiness" value={`${best}%`} />
       </div>
 
       <div className="grid xl:grid-cols-[1.6fr_1fr] gap-6">
-        <Panel
-          title="Target careers"
-          subtitle="How closely your verified profile matches each role."
-          action="View careers"
-          onAction={() => setActivePage("careers")}
-        >
+        <Panel title="Target careers" subtitle="How closely your verified profile matches each role." action="View careers" onAction={() => setActivePage("careers")}>
           <div className="space-y-4">
-            {analyses.length ? (
-              analyses.map(
-                ({ career, readiness }) => (
-                  <div
-                    key={career}
-                    className="p-4 rounded-2xl border border-slate-100 bg-slate-50/70"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="font-semibold text-sm">
-                          {career}
-                        </p>
-
-                        <p className="text-xs text-slate-400 mt-1">
-                          {statusText(readiness)}
-                        </p>
-                      </div>
-
-                      <span className="font-bold text-teal-700">
-                        {readiness}%
-                      </span>
-                    </div>
-
-                    <Progress value={readiness} />
-                  </div>
-                )
-              )
-            ) : (
-              <EmptyState
-                title="Choose your target careers"
-                text="Add career goals to start measuring readiness."
-                button="Edit profile"
-                onClick={() => setActivePage("profile")}
-              />
-            )}
+            {analyses.length ? analyses.map(({ career, readiness }) => (
+              <div key={career} className="p-4 rounded-2xl border border-slate-100 bg-slate-50/70">
+                <div className="flex items-center justify-between gap-4">
+                  <div><p className="font-semibold text-sm">{career}</p><p className="text-xs text-slate-400 mt-1">{statusText(readiness)}</p></div>
+                  <span className="font-bold text-teal-700">{readiness}%</span>
+                </div>
+                <Progress value={readiness} />
+              </div>
+            )) : <EmptyState title="Choose your target careers" text="Add career goals to start measuring readiness." button="Edit profile" onClick={() => setActivePage("profile")} />}
           </div>
         </Panel>
 
-        <Panel
-          title="Your next best action"
-          subtitle="A simple step to improve your profile."
-        >
+        <Panel title="Your next best action" subtitle="A simple step to improve your profile.">
           <div className="p-5 rounded-2xl bg-teal-50 border border-teal-100">
-            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center">
-              <Sparkles
-                size={19}
-                className="text-teal-600"
-              />
-            </div>
-
-            <h3 className="font-bold mt-4">
-              {verified === 0
-                ? "Verify your first skill"
-                : "Close your biggest skill gap"}
-            </h3>
-
-            <p className="text-sm text-slate-600 leading-6 mt-2">
-              {verified === 0
-                ? "Assessment + practical evidence makes your Skill Passport more credible."
-                : "Use the roadmap to turn your weakest required skill into a measurable improvement."}
-            </p>
-
-            <button
-              onClick={() =>
-                setActivePage(
-                  verified === 0 ? "verify" : "roadmap"
-                )
-              }
-              className="mt-4 text-sm font-bold text-teal-700 flex items-center gap-1"
-            >
-              Continue
-              <ArrowRight size={15} />
-            </button>
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center"><Sparkles size={19} className="text-teal-600" /></div>
+            <h3 className="font-bold mt-4">{verified === 0 ? "Verify your first skill" : "Close your biggest skill gap"}</h3>
+            <p className="text-sm text-slate-600 leading-6 mt-2">{verified === 0 ? "Assessment + practical evidence makes your Skill Passport more credible." : "Use the roadmap to turn your weakest required skill into a measurable improvement."}</p>
+            <button onClick={() => setActivePage(verified === 0 ? "verify" : "roadmap")} className="mt-4 text-sm font-bold text-teal-700 flex items-center gap-1">Continue <ArrowRight size={15} /></button>
           </div>
         </Panel>
       </div>
 
-      <Panel
-        title="Recent verification activity"
-        subtitle="Your verified skills appear here automatically."
-      >
-        {skills.filter((skill) => skill.verified).length ? (
+      <Panel title="Recent verification activity" subtitle="Your verified skills appear here automatically.">
+        {skills.filter((s) => s.verified).length ? (
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
-            {skills
-              .filter((skill) => skill.verified)
-              .slice(0, 6)
-              .map((skill) => (
-                <div
-                  key={skill.name}
-                  className="flex items-center gap-3 p-4 border border-slate-100 rounded-xl"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-teal-50 flex items-center justify-center">
-                    <CheckCircle2
-                      size={17}
-                      className="text-teal-600"
-                    />
-                  </div>
-
-                  <div>
-                    <p className="font-semibold text-sm">
-                      {skill.name}
-                    </p>
-
-                    <p className="text-xs text-slate-400">
-                      Verified at{" "}
-                      {skill.verificationScore}%
-                    </p>
-                  </div>
-                </div>
-              ))}
+            {skills.filter((s) => s.verified).slice(0, 6).map((s) => (
+              <div key={s.name} className="flex items-center gap-3 p-4 border border-slate-100 rounded-xl">
+                <div className="w-9 h-9 rounded-lg bg-teal-50 flex items-center justify-center"><CheckCircle2 size={17} className="text-teal-600" /></div>
+                <div><p className="font-semibold text-sm">{s.name}</p><p className="text-xs text-slate-400">Verified at {s.verificationScore}%</p></div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <p className="text-sm text-slate-500">
-            No verified skills yet. Start with your strongest
-            skill.
-          </p>
-        )}
+        ) : <p className="text-sm text-slate-500">No verified skills yet. Start with your strongest skill.</p>}
       </Panel>
     </div>
   );
 }
 
-/* =========================================================
-   MY SKILLS
-========================================================= */
-
-function MySkills({
-  student,
-  saveStudent,
-  setActivePage,
-}) {
+function MySkills({ student, saveStudent, setActivePage }) {
   const [selected, setSelected] = useState("");
-
   const skills = student.skills || [];
-
-  const available = skillList.filter(
-    (skill) =>
-      !skills.some(
-        (existingSkill) => existingSkill.name === skill
-      )
-  );
+  const available = skillList.filter((s) => !skills.some((x) => x.name === s));
 
   const add = () => {
     if (!selected) return;
-
-    saveStudent({
-      ...student,
-      skills: [
-        ...skills,
-        {
-          name: selected,
-          level: 50,
-          verified: false,
-        },
-      ],
-    });
-
+    saveStudent({ ...student, skills: [...skills, { name: selected, level: 50, verified: false }] });
     setSelected("");
   };
 
-  const remove = (name) => {
-    saveStudent({
-      ...student,
-      skills: skills.filter(
-        (skill) => skill.name !== name
-      ),
-    });
-  };
-
-  const level = (name, value) => {
-    saveStudent({
-      ...student,
-      skills: skills.map((skill) =>
-        skill.name === name
-          ? {
-              ...skill,
-              level: Number(value),
-            }
-          : skill
-      ),
-    });
-  };
+  const remove = (name) => saveStudent({ ...student, skills: skills.filter((s) => s.name !== name) });
+  const level = (name, value) => saveStudent({ ...student, skills: skills.map((s) => s.name === name ? { ...s, level: Number(value) } : s) });
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        eyebrow="SKILLS"
-        title="My Skills"
-        subtitle="Manage the skills you want SkillProof to evaluate."
-        action="Verify a skill"
-        onAction={() => setActivePage("verify")}
-      />
-
-      <Panel
-        title="Add a skill"
-        subtitle="Start with skills you can genuinely demonstrate."
-      >
+      <PageHeader eyebrow="SKILLS" title="My Skills" subtitle="Manage the skills you want SkillProof to evaluate." action="Verify a skill" onAction={() => setActivePage("verify")} />
+      <Panel title="Add a skill" subtitle="Start with skills you can genuinely demonstrate.">
         <div className="flex flex-col sm:flex-row gap-3">
-          <select
-            value={selected}
-            onChange={(e) => setSelected(e.target.value)}
-            className="flex-1 h-12 rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-teal-500"
-          >
+          <select value={selected} onChange={(e) => setSelected(e.target.value)} className="flex-1 h-12 rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-teal-500">
             <option value="">Select a skill...</option>
-
-            {available.map((skill) => (
-              <option key={skill}>{skill}</option>
-            ))}
+            {available.map((s) => <option key={s}>{s}</option>)}
           </select>
-
-          <button
-            onClick={add}
-            disabled={!selected}
-            className="h-12 px-5 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400 flex items-center justify-center gap-2"
-          >
-            <Plus size={17} />
-            Add skill
-          </button>
+          <button onClick={add} disabled={!selected} className="h-12 px-5 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400 flex items-center justify-center gap-2"><Plus size={17} /> Add skill</button>
         </div>
       </Panel>
-
       <div className="grid md:grid-cols-2 gap-4">
         {skills.map((skill) => (
-          <SkillCard
-            key={skill.name}
-            skill={skill}
-            remove={() => remove(skill.name)}
-            level={(value) => level(skill.name, value)}
-            verify={() => setActivePage("verify")}
-          />
+          <SkillCard key={skill.name} skill={skill} remove={() => remove(skill.name)} level={(v) => level(skill.name, v)} verify={() => setActivePage("verify")} />
         ))}
       </div>
-
-      {!skills.length && (
-        <EmptyState
-          title="Your Skill Passport is empty"
-          text="Add your first technical skill above."
-        />
-      )}
+      {!skills.length && <EmptyState title="Your Skill Passport is empty" text="Add your first technical skill above." />}
     </div>
   );
 }
 
-function SkillCard({
-  skill,
-  remove,
-  level,
-  verify,
-}) {
+function SkillCard({ skill, remove, level, verify }) {
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5">
       <div className="flex justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="font-bold">{skill.name}</h3>
-
-            {skill.verified && (
-              <Badge>✓ Verified</Badge>
-            )}
-          </div>
-
-          <p className="text-xs text-slate-400 mt-1">
-            {skill.verified
-              ? `Verification score ${skill.verificationScore}%`
-              : "Self declared"}
-          </p>
+          <div className="flex items-center gap-2"><h3 className="font-bold">{skill.name}</h3>{skill.verified && <Badge>✓ Verified</Badge>}</div>
+          <p className="text-xs text-slate-400 mt-1">{skill.verified ? `Verification score ${skill.verificationScore}%` : "Self declared"}</p>
         </div>
-
-        <button
-          onClick={remove}
-          className="text-slate-300 hover:text-red-500"
-        >
-          <Trash2 size={17} />
-        </button>
+        <button onClick={remove} className="text-slate-300 hover:text-red-500"><Trash2 size={17} /></button>
       </div>
-
-      <div className="mt-5 flex justify-between text-xs">
-        <span className="text-slate-500">
-          {skill.verified
-            ? "Verification score"
-            : "Current level"}
-        </span>
-
-        <b>{skill.level}%</b>
-      </div>
-
+      <div className="mt-5 flex justify-between text-xs"><span className="text-slate-500">{skill.verified ? "Verification score" : "Current level"}</span><b>{skill.level}%</b></div>
       <Progress value={skill.level} />
-
-      {!skill.verified && (
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={skill.level}
-          onChange={(e) => level(e.target.value)}
-          className="w-full mt-3 accent-teal-600"
-        />
-      )}
-
-      {!skill.verified && (
-        <button
-          onClick={verify}
-          className="w-full mt-4 h-10 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:border-teal-400 hover:text-teal-700 flex items-center justify-center gap-2"
-        >
-          <ShieldCheck size={16} />
-          Verify {skill.name}
-        </button>
-      )}
+      {!skill.verified && <input type="range" min="0" max="100" value={skill.level} onChange={(e) => level(e.target.value)} className="w-full mt-3 accent-teal-600" />}
+      {!skill.verified && <button onClick={verify} className="w-full mt-4 h-10 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:border-teal-400 hover:text-teal-700 flex items-center justify-center gap-2"><ShieldCheck size={16} /> Verify {skill.name}</button>}
     </div>
   );
 }
 
-/* =========================================================
-   VERIFICATION
-========================================================= */
-
-function Verification({
-  student,
-  saveStudent,
-  setActivePage,
-}) {
+function Verification({ student, saveStudent, setActivePage }) {
   const skills = student.skills || [];
-
-  const [skill, setSkill] = useState(
-    skills[0]?.name || ""
-  );
-
+  const [skill, setSkill] = useState(skills[0]?.name || "");
   const [stage, setStage] = useState(1);
-
   const [qNo, setQNo] = useState(1);
-
   const [answers, setAnswers] = useState({});
-
   const [practical, setPractical] = useState("");
-
-  const [project, setProject] = useState({
-    name: "",
-    link: "",
-    description: "",
-  });
-
+  const [project, setProject] = useState({ name: "", link: "", description: "" });
   const [result, setResult] = useState(null);
 
-  const questions =
-    skill === "Java"
-      ? javaQuestions
-      : defaultQuestions(skill);
-
+  const questions = skill === "Java" ? javaQuestions : defaultQuestions(skill);
   const current = questions[qNo - 1];
 
   const submit = () => {
     let correct = 0;
-
-    questions.forEach((question, index) => {
-      if (answers[index + 1] === question.answer) {
-        correct++;
-      }
-    });
-
-    const assessmentScore = Math.round(
-      (correct / questions.length) * 100
-    );
-
-    const practicalScore =
-      practical.trim().length >= 100
-        ? 90
-        : practical.trim().length >= 30
-        ? 75
-        : 50;
-
-    const evidenceScore =
-      project.name.trim() &&
-      project.description.trim()
-        ? project.link.trim()
-          ? 95
-          : 85
-        : 50;
-
-    const verificationScore = Math.round(
-      assessmentScore * 0.6 +
-        practicalScore * 0.25 +
-        evidenceScore * 0.15
-    );
-
+    questions.forEach((q, i) => { if (answers[i + 1] === q.answer) correct++; });
+    const assessmentScore = Math.round((correct / questions.length) * 100);
+    const practicalScore = practical.trim().length >= 100 ? 90 : practical.trim().length >= 30 ? 75 : 50;
+    const evidenceScore = project.name.trim() && project.description.trim() ? (project.link.trim() ? 95 : 85) : 50;
+    const verificationScore = Math.round(assessmentScore * 0.6 + practicalScore * 0.25 + evidenceScore * 0.15);
     const passed = verificationScore >= 70;
 
     saveStudent({
       ...student,
-      skills: skills.map((item) =>
-        item.name === skill
-          ? {
-              ...item,
-              level: verificationScore,
-              verified: passed,
-              verificationScore,
-              assessmentScore,
-              practicalScore,
-              evidenceScore,
-              projectName: project.name,
-              projectLink: project.link,
-              projectDescription: project.description,
-              verificationDate:
-                new Date().toISOString(),
-            }
-          : item
-      ),
+      skills: skills.map((s) => s.name === skill ? {
+        ...s, level: verificationScore, verified: passed, verificationScore, assessmentScore, practicalScore, evidenceScore,
+        projectName: project.name, projectLink: project.link, projectDescription: project.description,
+        verificationDate: new Date().toISOString(),
+      } : s),
     });
-
-    setResult({
-      verificationScore,
-      assessmentScore,
-      practicalScore,
-      evidenceScore,
-      passed,
-    });
-
+    setResult({ verificationScore, assessmentScore, practicalScore, evidenceScore, passed });
     setStage(5);
   };
 
-  if (!skills.length) {
-    return (
-      <EmptyState
-        title="Add a skill first"
-        text="Go to My Skills and add the skill you want to verify."
-        button="Go to My Skills"
-        onClick={() => setActivePage("skills")}
-      />
-    );
-  }
+  if (!skills.length) return <EmptyState title="Add a skill first" text="Go to My Skills and add the skill you want to verify." button="Go to My Skills" onClick={() => setActivePage("skills")} />;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <PageHeader
-        eyebrow="SKILLS · VERIFICATION"
-        title="Prove your skill"
-        subtitle="Knowledge → practical ability → project evidence."
-      />
-
-      {stage !== 5 && (
-        <VerificationSteps stage={stage} />
-      )}
+      <PageHeader eyebrow="SKILLS · VERIFICATION" title="Prove your skill" subtitle="Knowledge → practical ability → project evidence." />
+      {stage !== 5 && <VerificationSteps stage={stage} />}
 
       {stage === 1 && (
-        <Panel
-          title="Choose a skill"
-          subtitle="Select one skill for this verification attempt."
-        >
+        <Panel title="Choose a skill" subtitle="Select one skill for this verification attempt.">
           <div className="grid sm:grid-cols-2 gap-3">
-            {skills.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => setSkill(item.name)}
-                className={`p-4 rounded-xl border text-left ${
-                  skill === item.name
-                    ? "border-teal-500 bg-teal-50"
-                    : "border-slate-200 hover:border-teal-300"
-                }`}
-              >
-                <div className="flex justify-between">
-                  <span className="font-semibold">
-                    {item.name}
-                  </span>
-
-                  {skill === item.name && (
-                    <CheckCircle2
-                      className="text-teal-600"
-                      size={17}
-                    />
-                  )}
-                </div>
-
-                <p className="text-xs text-slate-400 mt-2">
-                  Current level: {item.level}%
-                </p>
+            {skills.map((s) => (
+              <button key={s.name} onClick={() => setSkill(s.name)} className={`p-4 rounded-xl border text-left ${skill === s.name ? "border-teal-500 bg-teal-50" : "border-slate-200 hover:border-teal-300"}`}>
+                <div className="flex justify-between"><span className="font-semibold">{s.name}</span>{skill === s.name && <CheckCircle2 className="text-teal-600" size={17} />}</div>
+                <p className="text-xs text-slate-400 mt-2">Current level: {s.level}%</p>
               </button>
             ))}
           </div>
-
-          <button
-            onClick={() => {
-              setQNo(1);
-              setAnswers({});
-              setStage(2);
-            }}
-            className="w-full h-12 mt-6 rounded-xl bg-slate-900 text-white font-semibold"
-          >
-            Start assessment
-          </button>
+          <button onClick={() => { setQNo(1); setAnswers({}); setStage(2); }} className="w-full h-12 mt-6 rounded-xl bg-slate-900 text-white font-semibold">Start assessment</button>
         </Panel>
       )}
 
       {stage === 2 && current && (
-        <Panel
-          title={`${skill} assessment`}
-          subtitle={`Question ${qNo} of ${questions.length}`}
-        >
-          <div className="flex gap-2 mb-6">
-            {questions.map((_, index) => (
-              <div
-                key={index}
-                className={`h-1.5 flex-1 rounded-full ${
-                  index + 1 <= qNo
-                    ? "bg-teal-500"
-                    : "bg-slate-200"
-                }`}
-              />
-            ))}
-          </div>
-
-          <h2 className="text-xl font-bold leading-8">
-            {current.question}
-          </h2>
-
+        <Panel title={`${skill} assessment`} subtitle={`Question ${qNo} of ${questions.length}`}>
+          <div className="flex gap-2 mb-6">{questions.map((_, i) => <div key={i} className={`h-1.5 flex-1 rounded-full ${i + 1 <= qNo ? "bg-teal-500" : "bg-slate-200"}`} />)}</div>
+          <h2 className="text-xl font-bold leading-8">{current.question}</h2>
           <div className="grid gap-3 mt-6">
             {current.options.map((option) => {
-              const selected =
-                answers[qNo] === option;
-
+              const selected = answers[qNo] === option;
               return (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() =>
-                    setAnswers((currentAnswers) => ({
-                      ...currentAnswers,
-                      [qNo]: option,
-                    }))
-                  }
-                  className={`w-full p-4 rounded-xl border text-left flex items-center gap-3 ${
-                    selected
-                      ? "border-teal-500 bg-teal-50"
-                      : "border-slate-200 hover:border-teal-300"
-                  }`}
-                >
-                  <span
-                    className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
-                      selected
-                        ? "border-teal-600"
-                        : "border-slate-300"
-                    }`}
-                  >
-                    {selected && (
-                      <span className="w-2.5 h-2.5 rounded-full bg-teal-600" />
-                    )}
+                <button key={option} type="button" onClick={() => setAnswers((a) => ({ ...a, [qNo]: option }))}
+                  className={`w-full p-4 rounded-xl border text-left flex items-center gap-3 ${selected ? "border-teal-500 bg-teal-50" : "border-slate-200 hover:border-teal-300"}`}>
+                  <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${selected ? "border-teal-600" : "border-slate-300"}`}>
+                    {selected && <span className="w-2.5 h-2.5 rounded-full bg-teal-600" />}
                   </span>
-
-                  <span className="text-sm font-medium">
-                    {option}
-                  </span>
+                  <span className="text-sm font-medium">{option}</span>
                 </button>
               );
             })}
           </div>
-
           <div className="flex justify-between mt-7">
-            <button
-              disabled={qNo === 1}
-              onClick={() =>
-                setQNo((number) => number - 1)
-              }
-              className="px-5 h-11 rounded-xl border border-slate-200 disabled:opacity-40"
-            >
-              Previous
-            </button>
-
-            <button
-              disabled={!answers[qNo]}
-              onClick={() =>
-                qNo < questions.length
-                  ? setQNo((number) => number + 1)
-                  : setStage(3)
-              }
-              className="px-5 h-11 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400"
-            >
-              {qNo === questions.length
-                ? "Continue"
-                : "Next"}
-            </button>
+            <button disabled={qNo === 1} onClick={() => setQNo((n) => n - 1)} className="px-5 h-11 rounded-xl border border-slate-200 disabled:opacity-40">Previous</button>
+            <button disabled={!answers[qNo]} onClick={() => qNo < questions.length ? setQNo((n) => n + 1) : setStage(3)} className="px-5 h-11 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400">{qNo === questions.length ? "Continue" : "Next"}</button>
           </div>
         </Panel>
       )}
 
       {stage === 3 && (
-        <Panel
-          title="Practical challenge"
-          subtitle="Explain how you would actually use this skill in a real scenario."
-        >
+        <Panel title="Practical challenge" subtitle="Explain how you would actually use this skill in a real scenario.">
           <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
-            <p className="text-xs font-bold uppercase tracking-wider text-teal-700">
-              Scenario
-            </p>
-
-            <p className="font-semibold mt-2">
-              Design a small student management solution
-              using {skill}. Explain the architecture, main
-              components, data flow and important technical
-              decisions.
-            </p>
+            <p className="text-xs font-bold uppercase tracking-wider text-teal-700">Scenario</p>
+            <p className="font-semibold mt-2">Design a small student management solution using {skill}. Explain the architecture, main components, data flow and important technical decisions.</p>
           </div>
-
-          <textarea
-            value={practical}
-            onChange={(e) =>
-              setPractical(e.target.value)
-            }
-            placeholder="Write your approach..."
-            className="w-full h-56 mt-5 rounded-xl border border-slate-200 p-4 outline-none focus:border-teal-500 resize-none"
-          />
-
-          <div className="flex justify-between mt-6">
-            <button
-              onClick={() => setStage(2)}
-              className="px-5 h-11 rounded-xl border border-slate-200"
-            >
-              Previous
-            </button>
-
-            <button
-              disabled={practical.trim().length < 30}
-              onClick={() => setStage(4)}
-              className="px-5 h-11 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400"
-            >
-              Continue
-            </button>
-          </div>
+          <textarea value={practical} onChange={(e) => setPractical(e.target.value)} placeholder="Write your approach..." className="w-full h-56 mt-5 rounded-xl border border-slate-200 p-4 outline-none focus:border-teal-500 resize-none" />
+          <div className="flex justify-between mt-6"><button onClick={() => setStage(2)} className="px-5 h-11 rounded-xl border border-slate-200">Previous</button><button disabled={practical.trim().length < 30} onClick={() => setStage(4)} className="px-5 h-11 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400">Continue</button></div>
         </Panel>
       )}
 
       {stage === 4 && (
-        <Panel
-          title="Project evidence"
-          subtitle="Show where you have applied this skill."
-        >
-          <div className="space-y-5">
-            <Field
-              label="Project name"
-              value={project.name}
-              onChange={(value) =>
-                setProject({
-                  ...project,
-                  name: value,
-                })
-              }
-              placeholder="Student Management System"
-            />
-
-            <Field
-              label="GitHub / Project URL"
-              value={project.link}
-              onChange={(value) =>
-                setProject({
-                  ...project,
-                  link: value,
-                })
-              }
-              placeholder="https://github.com/..."
-            />
-
-            <div>
-              <label className="text-sm font-semibold text-slate-700">
-                Project description
-              </label>
-
-              <textarea
-                value={project.description}
-                onChange={(e) =>
-                  setProject({
-                    ...project,
-                    description: e.target.value,
-                  })
-                }
-                placeholder="What did you build and how did you use this skill?"
-                className="w-full h-40 mt-2 rounded-xl border border-slate-200 p-4 outline-none focus:border-teal-500 resize-none"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-between mt-6">
-            <button
-              onClick={() => setStage(3)}
-              className="px-5 h-11 rounded-xl border border-slate-200"
-            >
-              Previous
-            </button>
-
-            <button
-              disabled={
-                !project.name.trim() ||
-                !project.description.trim()
-              }
-              onClick={submit}
-              className="px-5 h-11 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400"
-            >
-              Submit verification
-            </button>
-          </div>
+        <Panel title="Project evidence" subtitle="Show where you have applied this skill.">
+          <Field label="Project name" value={project.name} onChange={(v) => setProject({ ...project, name: v })} placeholder="Student Management System" />
+          <Field label="GitHub / Project URL" value={project.link} onChange={(v) => setProject({ ...project, link: v })} placeholder="https://github.com/..." />
+          <label className="text-sm font-semibold text-slate-700">Project description</label>
+          <textarea value={project.description} onChange={(e) => setProject({ ...project, description: e.target.value })} placeholder="What did you build and how did you use this skill?" className="w-full h-40 mt-2 rounded-xl border border-slate-200 p-4 outline-none focus:border-teal-500 resize-none" />
+          <div className="flex justify-between mt-6"><button onClick={() => setStage(3)} className="px-5 h-11 rounded-xl border border-slate-200">Previous</button><button disabled={!project.name.trim() || !project.description.trim()} onClick={submit} className="px-5 h-11 rounded-xl bg-slate-900 text-white font-semibold disabled:bg-slate-200 disabled:text-slate-400">Submit verification</button></div>
         </Panel>
       )}
 
       {stage === 5 && result && (
-        <VerificationResult
-          result={result}
-          skill={skill}
-          onDone={() => setActivePage("skills")}
-          onRetry={() => {
-            setResult(null);
-            setStage(1);
-          }}
-        />
+        <VerificationResult result={result} skill={skill} onDone={() => setActivePage("skills")} onRetry={() => { setResult(null); setStage(1); }} />
       )}
     </div>
   );
 }
-
-/* =========================================================
-   CAREERS
-========================================================= */
 
 function CareersPage({ student }) {
-  const analyses = (student.careers || []).map(
-    (career) => ({
-      career,
-      ...careerAnalysis(student, career),
-    })
-  );
-
+  const analyses = (student.careers || []).map((career) => ({ career, ...careerAnalysis(student, career) }));
   return (
     <div className="space-y-6">
-      <PageHeader
-        eyebrow="CAREER"
-        title="Career readiness"
-        subtitle="See how your current profile matches each target role."
-      />
-
+      <PageHeader eyebrow="CAREER" title="Career readiness" subtitle="See how your current profile matches each target role." />
       <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-5">
-        {analyses.map(
-          ({ career, readiness, skills }) => (
-            <CareerCard
-              key={career}
-              career={career}
-              readiness={readiness}
-              skills={skills}
-            />
-          )
-        )}
+        {analyses.map(({ career, readiness, skills }) => <CareerCard key={career} career={career} readiness={readiness} skills={skills} />)}
       </div>
-
-      {!analyses.length && (
-        <EmptyState
-          title="No target careers yet"
-          text="Add up to three career goals in your profile."
-        />
-      )}
+      {!analyses.length && <EmptyState title="No target careers yet" text="Add up to three career goals in your profile." />}
     </div>
   );
 }
-
-/* =========================================================
-   SKILL GAP
-========================================================= */
 
 function SkillGapPage({ student }) {
-  const analyses = (student.careers || []).map(
-    (career) => ({
-      career,
-      ...careerAnalysis(student, career),
-    })
-  );
-
+  const analyses = (student.careers || []).map((career) => ({ career, ...careerAnalysis(student, career) }));
   return (
     <div className="space-y-6">
-      <PageHeader
-        eyebrow="CAREER"
-        title="Skill Gap"
-        subtitle="The gap is calculated against the requirements of each target role."
-      />
-
+      <PageHeader eyebrow="CAREER" title="Skill Gap" subtitle="The gap is calculated against the requirements of each target role." />
       {analyses.map(({ career, skills }) => {
-        const gaps = skills
-          .filter((skill) => skill.gap > 0)
-          .sort((a, b) => b.gap - a.gap);
-
+        const gaps = skills.filter((s) => s.gap > 0).sort((a, b) => b.gap - a.gap);
         return (
-          <Panel
-            key={career}
-            title={career}
-            subtitle={`${gaps.length} skill${
-              gaps.length === 1 ? "" : "s"
-            } need attention.`}
-          >
+          <Panel key={career} title={career} subtitle={`${gaps.length} skill${gaps.length === 1 ? "" : "s"} need attention.`}>
             <div className="grid md:grid-cols-2 gap-4">
-              {skills.map((skill) => (
-                <div
-                  key={skill.name}
-                  className="p-4 rounded-xl border border-slate-100"
-                >
-                  <div className="flex justify-between text-sm">
-                    <span className="font-semibold">
-                      {skill.name}
-                    </span>
-
-                    <span
-                      className={
-                        skill.gap
-                          ? "text-rose-600 font-semibold"
-                          : "text-teal-700 font-semibold"
-                      }
-                    >
-                      {skill.gap
-                        ? `-${skill.gap}% gap`
-                        : "Requirement met"}
-                    </span>
-                  </div>
-
-                  <div className="text-xs text-slate-400 mt-2">
-                    You {skill.current}% · Required{" "}
-                    {skill.required}%
-                  </div>
-
-                  <Progress
-                    value={Math.min(
-                      (skill.current /
-                        skill.required) *
-                        100,
-                      100
-                    )}
-                  />
+              {skills.map((s) => (
+                <div key={s.name} className="p-4 rounded-xl border border-slate-100">
+                  <div className="flex justify-between text-sm"><span className="font-semibold">{s.name}</span><span className={s.gap ? "text-rose-600 font-semibold" : "text-teal-700 font-semibold"}>{s.gap ? `-${s.gap}% gap` : "Requirement met"}</span></div>
+                  <div className="text-xs text-slate-400 mt-2">You {s.current}% · Required {s.required}%</div>
+                  <Progress value={Math.min((s.current / s.required) * 100, 100)} />
                 </div>
               ))}
             </div>
           </Panel>
         );
       })}
-
-      {!analyses.length && (
-        <EmptyState
-          title="Skill gap analysis needs a target career"
-          text="Choose your target careers in My Profile."
-        />
-      )}
+      {!analyses.length && <EmptyState title="Skill gap analysis needs a target career" text="Choose your target careers in My Profile." />}
     </div>
   );
 }
-
-/* =========================================================
-   ROADMAP
-========================================================= */
 
 function RoadmapPage({ student }) {
-  const analyses = (student.careers || []).map(
-    (career) => ({
-      career,
-      ...careerAnalysis(student, career),
-    })
-  );
-
+  const analyses = (student.careers || []).map((career) => ({ career, ...careerAnalysis(student, career) }));
   return (
     <div className="space-y-6">
-      <PageHeader
-        eyebrow="CAREER"
-        title="Learning Roadmap"
-        subtitle="Turn your biggest gaps into concrete learning and project actions."
-      />
-
+      <PageHeader eyebrow="CAREER" title="Learning Roadmap" subtitle="Turn your biggest gaps into concrete learning and project actions." />
       {analyses.map(({ career, skills }) => {
-        const gaps = skills
-          .filter((skill) => skill.gap > 0)
-          .sort((a, b) => b.gap - a.gap)
-          .slice(0, 4);
-
+        const gaps = skills.filter((s) => s.gap > 0).sort((a, b) => b.gap - a.gap).slice(0, 4);
         return (
-          <Panel
-            key={career}
-            title={`${career} roadmap`}
-            subtitle="Prioritized from your largest requirement gaps."
-          >
-            {gaps.length ? (
-              <div className="space-y-4">
-                {gaps.map((gap, index) => (
-                  <div
-                    key={gap.name}
-                    className="flex gap-4 p-4 rounded-2xl border border-slate-100"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 font-bold flex items-center justify-center shrink-0">
-                      {index + 1}
-                    </div>
-
-                    <div className="flex-1">
-                      <div className="flex justify-between gap-3">
-                        <h3 className="font-bold">
-                          {gap.name}
-                        </h3>
-
-                        <span className="text-xs font-bold text-rose-600">
-                          -{gap.gap}%
-                        </span>
-                      </div>
-
-                      <p className="text-sm text-slate-500 mt-1">
-                        {roadmapText(gap.name)}
-                      </p>
-
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-xs">
-                          Learn fundamentals
-                        </span>
-
-                        <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-xs">
-                          Build a mini project
-                        </span>
-
-                        <span className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 text-xs">
-                          Re-verify
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+          <Panel key={career} title={`${career} roadmap`} subtitle="Prioritized from your largest requirement gaps.">
+            {gaps.length ? <div className="space-y-4">{gaps.map((g, i) => (
+              <div key={g.name} className="flex gap-4 p-4 rounded-2xl border border-slate-100">
+                <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 font-bold flex items-center justify-center shrink-0">{i + 1}</div>
+                <div className="flex-1"><div className="flex justify-between gap-3"><h3 className="font-bold">{g.name}</h3><span className="text-xs font-bold text-rose-600">-{g.gap}%</span></div><p className="text-sm text-slate-500 mt-1">{roadmapText(g.name)}</p><div className="flex flex-wrap gap-2 mt-3"><span className="px-2.5 py-1 rounded-lg bg-slate-100 text-xs">Learn fundamentals</span><span className="px-2.5 py-1 rounded-lg bg-slate-100 text-xs">Build a mini project</span><span className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 text-xs">Re-verify</span></div></div>
               </div>
-            ) : (
-              <p className="text-sm text-teal-700 font-semibold">
-                Great — no major gaps detected for this role.
-              </p>
-            )}
+            ))}</div> : <p className="text-sm text-teal-700 font-semibold">Great — no major gaps detected for this role.</p>}
           </Panel>
         );
       })}
@@ -3231,1900 +770,130 @@ function RoadmapPage({ student }) {
   );
 }
 
-/* =========================================================
-   OPPORTUNITIES
-========================================================= */
-
 function OpportunitiesPage({ student }) {
-  const verified = (student.skills || [])
-    .filter((skill) => skill.verified)
-    .map((skill) => skill.name);
-
+  const verified = (student.skills || []).filter((s) => s.verified).map((s) => s.name);
   const opportunities = [
-    [
-      "Backend Development Intern",
-      "TechNova Labs",
-      "Remote",
-      ["Java", "SQL", "REST API"],
-    ],
-    [
-      "Full Stack Developer Intern",
-      "BuildSphere",
-      "Chennai",
-      ["JavaScript", "React", "Node.js"],
-    ],
-    [
-      "Cloud Engineering Intern",
-      "CloudGrid",
-      "Bengaluru",
-      ["AWS", "Docker", "Linux"],
-    ],
-    [
-      "Data Analytics Intern",
-      "InsightWorks",
-      "Remote",
-      ["Python", "SQL", "Data Analysis"],
-    ],
+    ["Backend Development Intern", "TechNova Labs", "Remote", ["Java", "SQL", "REST API"]],
+    ["Full Stack Developer Intern", "BuildSphere", "Chennai", ["JavaScript", "React", "Node.js"]],
+    ["Cloud Engineering Intern", "CloudGrid", "Bengaluru", ["AWS", "Docker", "Linux"]],
+    ["Data Analytics Intern", "InsightWorks", "Remote", ["Python", "SQL", "Data Analysis"]],
   ];
-
   return (
     <div className="space-y-6">
-      <PageHeader
-        eyebrow="OPPORTUNITIES"
-        title="Internships & Jobs"
-        subtitle="Prototype view: opportunities are ranked against your verified skills."
-      />
-
-      <div className="p-4 rounded-2xl bg-teal-50 border border-teal-100 text-sm text-teal-900">
-        <b>
-          {verified.length} verified skill
-          {verified.length === 1 ? "" : "s"}
-        </b>{" "}
-        are being used for matching. Add more verified skills
-        to improve relevance.
-      </div>
-
+      <PageHeader eyebrow="OPPORTUNITIES" title="Internships & Jobs" subtitle="Prototype view: opportunities are ranked against your verified skills." />
+      <div className="p-4 rounded-2xl bg-teal-50 border border-teal-100 text-sm text-teal-900"><b>{verified.length} verified skill{verified.length === 1 ? "" : "s"}</b> are being used for matching. Add more verified skills to improve relevance.</div>
       <div className="grid lg:grid-cols-2 gap-4">
-        {opportunities.map(
-          ([role, company, location, required]) => {
-            const match = Math.round(
-              required.reduce(
-                (sum, skill) =>
-                  sum +
-                  (verified.includes(skill) ? 100 : 35),
-                0
-              ) / required.length
-            );
-
-            return (
-              <div
-                key={role}
-                className="bg-white border border-slate-200 rounded-2xl p-5"
-              >
-                <div className="flex justify-between gap-4">
-                  <div>
-                    <p className="font-bold">{role}</p>
-
-                    <p className="text-sm text-slate-500 mt-1">
-                      {company} · {location}
-                    </p>
-                  </div>
-
-                  <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg h-fit">
-                    {match}% match
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {required.map((skill) => (
-                    <span
-                      key={skill}
-                      className={`px-2.5 py-1 rounded-lg text-xs ${
-                        verified.includes(skill)
-                          ? "bg-teal-50 text-teal-700"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      {verified.includes(skill) ? "✓ " : ""}
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-
-                <button className="w-full h-10 mt-5 rounded-xl border border-slate-200 text-sm font-semibold hover:border-teal-400 hover:text-teal-700">
-                  View opportunity
-                </button>
-              </div>
-            );
-          }
-        )}
+        {opportunities.map(([role, company, location, required]) => {
+          const match = Math.round(required.reduce((sum, s) => sum + (verified.includes(s) ? 100 : 35), 0) / required.length);
+          return <div key={role} className="bg-white border border-slate-200 rounded-2xl p-5">
+            <div className="flex justify-between gap-4"><div><p className="font-bold">{role}</p><p className="text-sm text-slate-500 mt-1">{company} · {location}</p></div><span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg h-fit">{match}% match</span></div>
+            <div className="flex flex-wrap gap-2 mt-4">{required.map((s) => <span key={s} className={`px-2.5 py-1 rounded-lg text-xs ${verified.includes(s) ? "bg-teal-50 text-teal-700" : "bg-slate-100 text-slate-500"}`}>{verified.includes(s) ? "✓ " : ""}{s}</span>)}</div>
+            <button className="w-full h-10 mt-5 rounded-xl border border-slate-200 text-sm font-semibold hover:border-teal-400 hover:text-teal-700">View opportunity</button>
+          </div>;
+        })}
       </div>
     </div>
   );
 }
 
-/* =========================================================
-   PROFILE
-========================================================= */
-
-function ProfilePage({
-  student,
-  saveStudent,
-}) {
+function ProfilePage({ student, saveStudent }) {
   const [editing, setEditing] = useState(false);
-
   const [draft, setDraft] = useState(student);
-
-  const save = () => {
-    saveStudent(draft);
-    setEditing(false);
-  };
-
+  const save = () => { saveStudent(draft); setEditing(false); };
   return (
     <div className="max-w-4xl space-y-6">
-      <PageHeader
-        eyebrow="PROFILE"
-        title="My Profile"
-        subtitle="Keep your academic and career information current."
-        action={editing ? "Save changes" : "Edit profile"}
-        onAction={
-          editing
-            ? save
-            : () => setEditing(true)
-        }
-      />
-
+      <PageHeader eyebrow="PROFILE" title="My Profile" subtitle="Keep your academic and career information current." action={editing ? "Save changes" : "Edit profile"} onAction={editing ? save : () => setEditing(true)} />
       <Panel title="Student information">
         <div className="grid md:grid-cols-2 gap-5">
-          <ProfileValue
-            label="Full name"
-            value={student.name}
-            editing={editing}
-            onChange={(value) =>
-              setDraft({
-                ...draft,
-                name: value,
-              })
-            }
-          />
-
-          <ProfileValue
-            label="Email"
-            value={student.email}
-            editing={editing}
-            onChange={(value) =>
-              setDraft({
-                ...draft,
-                email: value,
-              })
-            }
-          />
-
-          <ProfileValue
-            label="College"
-            value={student.college}
-            editing={editing}
-            onChange={(value) =>
-              setDraft({
-                ...draft,
-                college: value,
-              })
-            }
-          />
-
-          <ProfileValue
-            label="Department"
-            value={student.department}
-            editing={editing}
-            onChange={(value) =>
-              setDraft({
-                ...draft,
-                department: value,
-              })
-            }
-          />
-
-          <ProfileValue
-            label="Graduation year"
-            value={student.graduationYear}
-            editing={editing}
-            onChange={(value) =>
-              setDraft({
-                ...draft,
-                graduationYear: value,
-              })
-            }
-          />
+          <ProfileValue label="Full name" value={student.name} editing={editing} onChange={(v) => setDraft({ ...draft, name: v })} />
+          <ProfileValue label="Email" value={student.email} editing={editing} onChange={(v) => setDraft({ ...draft, email: v })} />
+          <ProfileValue label="College" value={student.college} editing={editing} onChange={(v) => setDraft({ ...draft, college: v })} />
+          <ProfileValue label="Department" value={student.department} editing={editing} onChange={(v) => setDraft({ ...draft, department: v })} />
+          <ProfileValue label="Graduation year" value={student.graduationYear} editing={editing} onChange={(v) => setDraft({ ...draft, graduationYear: v })} />
         </div>
       </Panel>
-
-      <Panel
-        title="Target careers"
-        subtitle="Your selected roles drive readiness and skill-gap analysis."
-      >
-        <div className="flex flex-wrap gap-2">
-          {(student.careers || []).map((career) => (
-            <span
-              key={career}
-              className="px-3 py-2 rounded-xl bg-teal-50 text-teal-800 text-sm font-semibold"
-            >
-              {career}
-            </span>
-          ))}
-        </div>
+      <Panel title="Target careers" subtitle="Your selected roles drive readiness and skill-gap analysis.">
+        <div className="flex flex-wrap gap-2">{(student.careers || []).map((c) => <span key={c} className="px-3 py-2 rounded-xl bg-teal-50 text-teal-800 text-sm font-semibold">{c}</span>)}</div>
       </Panel>
     </div>
   );
 }
-
-/* =========================================================
-   SETTINGS
-========================================================= */
 
 function SettingsPage() {
-  return (
-    <div className="max-w-3xl">
-      <PageHeader
-        eyebrow="SETTINGS"
-        title="Settings"
-        subtitle="Prototype settings for your SkillProof workspace."
-      />
-
-      <Panel title="Account preferences">
-        <div className="space-y-4">
-          <SettingRow
-            title="Skill verification reminders"
-            text="Keep verification progress visible in your dashboard."
-          />
-
-          <SettingRow
-            title="Opportunity matching"
-            text="Use verified skills when calculating opportunity matches."
-          />
-        </div>
-      </Panel>
-    </div>
-  );
+  return <div className="max-w-3xl"><PageHeader eyebrow="SETTINGS" title="Settings" subtitle="Prototype settings for your SkillProof workspace." /><Panel title="Account preferences"><div className="space-y-4"><SettingRow title="Skill verification reminders" text="Keep verification progress visible in your dashboard." /><SettingRow title="Opportunity matching" text="Use verified skills when calculating opportunity matches." /></div></Panel></div>;
 }
 
-function SettingRow({
-  title,
-  text,
-}) {
-  return (
-    <div className="flex items-center justify-between p-4 rounded-xl border border-slate-100">
-      <div>
-        <p className="font-semibold text-sm">
-          {title}
-        </p>
-
-        <p className="text-xs text-slate-400 mt-1">
-          {text}
-        </p>
-      </div>
-
-      <div className="w-10 h-6 rounded-full bg-teal-500 p-1">
-        <div className="w-4 h-4 bg-white rounded-full ml-auto" />
-      </div>
-    </div>
-  );
+function SettingRow({ title, text }) {
+  return <div className="flex items-center justify-between p-4 rounded-xl border border-slate-100"><div><p className="font-semibold text-sm">{title}</p><p className="text-xs text-slate-400 mt-1">{text}</p></div><div className="w-10 h-6 rounded-full bg-teal-500 p-1"><div className="w-4 h-4 bg-white rounded-full ml-auto" /></div></div>;
 }
 
-/* =========================================================
-   CAREER CARD
-========================================================= */
-
-function CareerCard({
-  career,
-  readiness,
-  skills,
-}) {
-  const gaps = skills
-    .filter((skill) => skill.gap > 0)
-    .sort((a, b) => b.gap - a.gap)
-    .slice(0, 3);
-
-  return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5">
-      <div className="flex justify-between gap-3">
-        <div>
-          <p className="text-xs text-slate-400">
-            TARGET CAREER
-          </p>
-
-          <h3 className="font-bold mt-1">
-            {career}
-          </h3>
-        </div>
-
-        <Target
-          className="text-teal-600"
-          size={19}
-        />
-      </div>
-
-      <p className="text-4xl font-bold mt-6">
-        {readiness}%
-      </p>
-
-      <p className="text-xs text-slate-400 mt-1">
-        {statusText(readiness)}
-      </p>
-
-      <Progress value={readiness} />
-
-      <div className="mt-5 pt-5 border-t border-slate-100">
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-          Top gaps
-        </p>
-
-        {gaps.length ? (
-          <div className="space-y-2 mt-3">
-            {gaps.map((gap) => (
-              <div
-                key={gap.name}
-                className="flex justify-between text-sm"
-              >
-                <span>{gap.name}</span>
-
-                <span className="text-rose-600 font-semibold">
-                  -{gap.gap}%
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-teal-700 font-semibold mt-3">
-            Requirements met.
-          </p>
-        )}
-      </div>
-    </div>
-  );
+function CareerCard({ career, readiness, skills }) {
+  const gaps = skills.filter((s) => s.gap > 0).sort((a, b) => b.gap - a.gap).slice(0, 3);
+  return <div className="bg-white border border-slate-200 rounded-2xl p-5"><div className="flex justify-between gap-3"><div><p className="text-xs text-slate-400">TARGET CAREER</p><h3 className="font-bold mt-1">{career}</h3></div><Target className="text-teal-600" size={19} /></div><p className="text-4xl font-bold mt-6">{readiness}%</p><p className="text-xs text-slate-400 mt-1">{statusText(readiness)}</p><Progress value={readiness} /><div className="mt-5 pt-5 border-t border-slate-100"><p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Top gaps</p>{gaps.length ? <div className="space-y-2 mt-3">{gaps.map((g) => <div key={g.name} className="flex justify-between text-sm"><span>{g.name}</span><span className="text-rose-600 font-semibold">-{g.gap}%</span></div>)}</div> : <p className="text-sm text-teal-700 font-semibold mt-3">Requirements met.</p>}</div></div>;
 }
 
-/* =========================================================
-   VERIFICATION RESULT
-========================================================= */
-
-function VerificationResult({
-  result,
-  skill,
-  onDone,
-  onRetry,
-}) {
-  return (
-    <Panel
-      title="Verification complete"
-      subtitle={skill}
-    >
-      <div className="text-center py-4">
-        <div
-          className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center ${
-            result.passed
-              ? "bg-teal-50"
-              : "bg-rose-50"
-          }`}
-        >
-          {result.passed ? (
-            <Award
-              size={40}
-              className="text-teal-600"
-            />
-          ) : (
-            <XCircle
-              size={40}
-              className="text-rose-500"
-            />
-          )}
-        </div>
-
-        <p className="text-6xl font-bold mt-5">
-          {result.verificationScore}%
-        </p>
-
-        <p
-          className={`font-bold mt-2 ${
-            result.passed
-              ? "text-teal-700"
-              : "text-rose-600"
-          }`}
-        >
-          {result.passed
-            ? "VERIFIED SKILL"
-            : "Verification not passed"}
-        </p>
-      </div>
-
-      <div className="grid sm:grid-cols-3 gap-3 mt-6">
-        <Score
-          label="Assessment"
-          value={result.assessmentScore}
-        />
-
-        <Score
-          label="Practical"
-          value={result.practicalScore}
-        />
-
-        <Score
-          label="Evidence"
-          value={result.evidenceScore}
-        />
-      </div>
-
-      <div className="flex gap-3 mt-6">
-        <button
-          onClick={onRetry}
-          className="flex-1 h-11 rounded-xl border border-slate-200 font-semibold"
-        >
-          Try again
-        </button>
-
-        <button
-          onClick={onDone}
-          className="flex-1 h-11 rounded-xl bg-slate-900 text-white font-semibold"
-        >
-          View Skill Passport
-        </button>
-      </div>
-    </Panel>
-  );
+function VerificationResult({ result, skill, onDone, onRetry }) {
+  return <Panel title="Verification complete" subtitle={skill}><div className="text-center py-4"><div className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center ${result.passed ? "bg-teal-50" : "bg-rose-50"}`}>{result.passed ? <Award size={40} className="text-teal-600" /> : <XCircle size={40} className="text-rose-500" />}</div><p className="text-6xl font-bold mt-5">{result.verificationScore}%</p><p className={`font-bold mt-2 ${result.passed ? "text-teal-700" : "text-rose-600"}`}>{result.passed ? "VERIFIED SKILL" : "Verification not passed"}</p></div><div className="grid sm:grid-cols-3 gap-3 mt-6"><Score label="Assessment" value={result.assessmentScore} /><Score label="Practical" value={result.practicalScore} /><Score label="Evidence" value={result.evidenceScore} /></div><div className="flex gap-3 mt-6"><button onClick={onRetry} className="flex-1 h-11 rounded-xl border border-slate-200 font-semibold">Try again</button><button onClick={onDone} className="flex-1 h-11 rounded-xl bg-slate-900 text-white font-semibold">View Skill Passport</button></div></Panel>;
 }
 
-function Score({
-  label,
-  value,
-}) {
-  return (
-    <div className="p-4 rounded-xl bg-slate-50 text-center">
-      <p className="text-xs text-slate-400">
-        {label}
-      </p>
-
-      <p className="text-xl font-bold mt-1">
-        {value}%
-      </p>
-    </div>
-  );
-}
+function Score({ label, value }) { return <div className="p-4 rounded-xl bg-slate-50 text-center"><p className="text-xs text-slate-400">{label}</p><p className="text-xl font-bold mt-1">{value}%</p></div>; }
 
 function VerificationSteps({ stage }) {
-  return (
-    <div className="grid grid-cols-4 gap-2">
-      {[
-        "Skill",
-        "Assessment",
-        "Practical",
-        "Evidence",
-      ].map((label, index) => (
-        <div
-          key={label}
-          className="flex items-center gap-2"
-        >
-          <div
-            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-              stage > index
-                ? "bg-teal-500 text-white"
-                : "bg-white border border-slate-200 text-slate-400"
-            }`}
-          >
-            {stage > index + 1 ? (
-              <Check size={14} />
-            ) : (
-              index + 1
-            )}
-          </div>
-
-          <span className="hidden sm:block text-xs font-semibold text-slate-500">
-            {label}
-          </span>
-
-          {index < 3 && (
-            <div className="h-px bg-slate-200 flex-1" />
-          )}
-        </div>
-      ))}
-    </div>
-  );
+  return <div className="grid grid-cols-4 gap-2">{["Skill", "Assessment", "Practical", "Evidence"].map((x, i) => <div key={x} className="flex items-center gap-2"><div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${stage > i ? "bg-teal-500 text-white" : "bg-white border border-slate-200 text-slate-400"}`}>{stage > i + 1 ? <Check size={14} /> : i + 1}</div><span className="hidden sm:block text-xs font-semibold text-slate-500">{x}</span>{i < 3 && <div className="h-px bg-slate-200 flex-1" />}</div>)}</div>;
 }
 
-/* =========================================================
-   SHARED UI
-========================================================= */
-
-function PageHeader({
-  eyebrow,
-  title,
-  subtitle,
-  action,
-  onAction,
-}) {
-  return (
-    <div className="flex flex-col md:flex-row md:items-end justify-between gap-5">
-      <div>
-        <p className="text-[11px] font-bold tracking-[0.16em] text-teal-700">
-          {eyebrow}
-        </p>
-
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">
-          {title}
-        </h1>
-
-        <p className="text-slate-500 mt-2 max-w-2xl">
-          {subtitle}
-        </p>
-      </div>
-
-      {action && (
-        <button
-          onClick={onAction}
-          className="h-11 px-5 rounded-xl bg-slate-900 text-white text-sm font-semibold flex items-center gap-2 shrink-0"
-        >
-          {action}
-          <ArrowRight size={16} />
-        </button>
-      )}
-    </div>
-  );
+function PageHeader({ eyebrow, title, subtitle, action, onAction }) {
+  return <div className="flex flex-col md:flex-row md:items-end justify-between gap-5"><div><p className="text-[11px] font-bold tracking-[0.16em] text-teal-700">{eyebrow}</p><h1 className="text-3xl md:text-4xl font-bold tracking-tight mt-2">{title}</h1><p className="text-slate-500 mt-2 max-w-2xl">{subtitle}</p></div>{action && <button onClick={onAction} className="h-11 px-5 rounded-xl bg-slate-900 text-white text-sm font-semibold flex items-center gap-2 shrink-0">{action}<ArrowRight size={16} /></button>}</div>;
 }
 
-function Panel({
-  title,
-  subtitle,
-  action,
-  onAction,
-  children,
-}) {
-  return (
-    <section className="bg-white border border-slate-200 rounded-2xl p-5 md:p-6">
-      <div className="flex items-start justify-between gap-4 mb-5">
-        <div>
-          <h2 className="font-bold">{title}</h2>
-
-          {subtitle && (
-            <p className="text-sm text-slate-500 mt-1">
-              {subtitle}
-            </p>
-          )}
-        </div>
-
-        {action && (
-          <button
-            onClick={onAction}
-            className="text-sm font-semibold text-teal-700"
-          >
-            {action}
-          </button>
-        )}
-      </div>
-
-      {children}
-    </section>
-  );
+function Panel({ title, subtitle, action, onAction, children }) {
+  return <section className="bg-white border border-slate-200 rounded-2xl p-5 md:p-6"><div className="flex items-start justify-between gap-4 mb-5"><div><h2 className="font-bold">{title}</h2>{subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}</div>{action && <button onClick={onAction} className="text-sm font-semibold text-teal-700">{action}</button>}</div>{children}</section>;
 }
 
-function MetricCard({
-  icon: Icon,
-  label,
-  value,
-}) {
-  return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5">
-      <div className="flex justify-between">
-        <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-          {label}
-        </p>
-
-        <Icon
-          size={18}
-          className="text-teal-600"
-        />
-      </div>
-
-      <p className="text-3xl font-bold mt-4">
-        {value}
-      </p>
-    </div>
-  );
-}
-
-function MiniMetric({
-  value,
-  label,
-}) {
-  return (
-    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-      <p className="font-bold text-lg">
-        {value}
-      </p>
-
-      <p className="text-[11px] text-slate-400 mt-1">
-        {label}
-      </p>
-    </div>
-  );
-}
-
-function FeaturePreview({
-  icon: Icon,
-  title,
-}) {
-  return (
-    <div className="p-3 rounded-xl border border-slate-100 flex items-center gap-2">
-      <Icon
-        size={16}
-        className="text-teal-600"
-      />
-
-      <span className="text-xs font-semibold">
-        {title}
-      </span>
-    </div>
-  );
-}
-
-function Progress({ value }) {
-  return (
-    <div className="h-2 bg-slate-100 rounded-full overflow-hidden mt-3">
-      <div
-        className="h-full bg-teal-500 rounded-full transition-all"
-        style={{
-          width: `${Math.max(
-            0,
-            Math.min(100, value)
-          )}%`,
-        }}
-      />
-    </div>
-  );
-}
-
-function Badge({ children }) {
-  return (
-    <span className="px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-[10px] font-bold">
-      {children}
-    </span>
-  );
-}
-
-function EmptyState({
-  title,
-  text,
-  button,
-  onClick,
-}) {
-  return (
-    <div className="bg-white border border-dashed border-slate-300 rounded-2xl p-12 text-center">
-      <BookOpen
-        className="mx-auto text-slate-300"
-        size={30}
-      />
-
-      <h3 className="font-bold mt-4">
-        {title}
-      </h3>
-
-      <p className="text-sm text-slate-500 mt-2">
-        {text}
-      </p>
-
-      {button && (
-        <button
-          onClick={onClick}
-          className="mt-5 h-10 px-4 rounded-xl bg-slate-900 text-white text-sm font-semibold"
-        >
-          {button}
-        </button>
-      )}
-    </div>
-  );
-}
-
-function SectionTitle({
-  number,
-  title,
-}) {
-  return (
-    <div className="flex items-center gap-3 mt-8 mb-5 pt-7 border-t border-slate-100">
-      <span className="text-xs font-bold text-teal-700">
-        {number}
-      </span>
-
-      <h2 className="font-bold">{title}</h2>
-    </div>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-}) {
-  return (
-    <div>
-      <label className="text-sm font-semibold text-slate-700">
-        {label}
-      </label>
-
-      <input
-        type={type}
-        value={value || ""}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        placeholder={placeholder}
-        className="w-full h-12 mt-2 rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-50 text-slate-900 placeholder:text-slate-400"
-      />
-    </div>
-  );
-}
-
-function ProfileValue({
-  label,
-  value,
-  editing,
-  onChange,
-}) {
-  return (
-    <div>
-      <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-        {label}
-      </p>
-
-      {editing ? (
-        <input
-          value={value || ""}
-          onChange={(e) =>
-            onChange(e.target.value)
-          }
-          className="w-full h-11 mt-2 border border-slate-200 rounded-xl px-3 outline-none focus:border-teal-500"
-        />
-      ) : (
-        <p className="font-semibold mt-2">
-          {value || "Not provided"}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function NavItem({
-  active,
-  onClick,
-  icon: Icon,
-  label,
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full h-10 rounded-xl px-3 flex items-center gap-3 text-sm font-medium mb-1 ${
-        active
-          ? "bg-teal-50 text-teal-800"
-          : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-      }`}
-    >
-      <Icon size={17} />
-      {label}
-    </button>
-  );
-}
-
-function Logo({ dark = false }) {
-  return (
-    <div className="flex items-center gap-2.5">
-      <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center">
-        <ShieldCheck
-          size={20}
-          className="text-teal-600"
-        />
-      </div>
-
-      <span
-        className={`font-bold text-lg ${
-          dark
-            ? "text-slate-900"
-            : "text-white"
-        }`}
-      >
-        Skill<span className="text-teal-600">Proof</span>
-      </span>
-    </div>
-  );
-}
-
-/* =========================================================
-   COLLEGE DASHBOARD
-========================================================= */
-
-async function loadCollegeStudentsFromBackend(token) {
-  const data = await apiRequest("/students/college/list", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return (data.students || []).map((student) => ({
-    ...student,
-    graduationYear: student.graduationYear || student.graduation_year || "",
-    graduation_year: student.graduation_year || student.graduationYear || "",
-    careers: student.careers || [],
-    skills: student.skills || [],
-  }));
-}
-
-function CollegeDashboardPage({ onStudents, backendToken }) {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        setError("");
-        setStudents(await loadCollegeStudentsFromBackend(backendToken));
-      } catch (err) {
-        setError(err.message || "Unable to load college data.");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [backendToken]);
-
-  const getReadiness = (student) => {
-    if (!student.careers?.length) return 0;
-    return Math.max(
-      ...student.careers.map((career) => careerAnalysis(student, career).readiness),
-      0
-    );
-  };
-
-  const totalVerifiedSkills = students.reduce(
-    (total, student) =>
-      total + (student.skills || []).filter((skill) => skill.verified).length,
-    0
-  );
-
-  const averageReadiness = students.length
-    ? Math.round(
-        students.reduce((total, student) => total + getReadiness(student), 0) /
-          students.length
-      )
-    : 0;
-
-  const skillTotals = {};
-  students.forEach((student) => {
-    (student.skills || []).forEach((skill) => {
-      if (!skillTotals[skill.name]) skillTotals[skill.name] = { total: 0, count: 0 };
-      skillTotals[skill.name].total += Number(skill.level || 0);
-      skillTotals[skill.name].count += 1;
-    });
-  });
-
-  const weakestSkills = Object.entries(skillTotals)
-    .map(([name, item]) => ({ name, average: Math.round(item.total / item.count) }))
-    .sort((a, b) => a.average - b.average)
-    .slice(0, 5);
-
-  if (loading) {
-    return (
-      <div className="min-h-[400px] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-slate-200 border-t-teal-500 rounded-full animate-spin mx-auto" />
-          <p className="text-sm text-slate-500 mt-4">Loading college data...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-6">
-        <PageHeader eyebrow="COLLEGE · OVERVIEW" title="College Dashboard" subtitle="Monitor your registered students." action="View students" onAction={onStudents} />
-        <div className="bg-white border border-rose-200 rounded-2xl p-6">
-          <p className="font-semibold text-rose-700">Unable to load college data</p>
-          <p className="text-sm text-slate-500 mt-2">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  const rankedStudents = [...students].sort((a, b) => getReadiness(b) - getReadiness(a));
-
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="COLLEGE · OVERVIEW"
-        title="College Dashboard"
-        subtitle="Monitor student skill development, verification and placement readiness."
-        action="View students"
-        onAction={onStudents}
-      />
-
-      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <MetricCard icon={GraduationCap} label="Total students" value={students.length} />
-        <MetricCard icon={ShieldCheck} label="Verified students" value={students.filter((student) => (student.skills || []).some((skill) => skill.verified)).length} />
-        <MetricCard icon={BookOpen} label="Verified skills" value={totalVerifiedSkills} />
-        <MetricCard icon={Target} label="Avg readiness" value={`${averageReadiness}%`} />
-      </div>
-
-      <div className="grid xl:grid-cols-[1.4fr_1fr] gap-6">
-        <Panel title="Placement readiness" subtitle="Student readiness based on current skills and target careers." action="View students" onAction={onStudents}>
-          <div className="space-y-4">
-            {rankedStudents.length ? rankedStudents.map((student) => (
-              <div key={student.id} className="p-4 rounded-2xl border border-slate-100 bg-slate-50/70">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
-                      {student.name?.charAt(0)?.toUpperCase() || "S"}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">{student.name}</p>
-                      <p className="text-xs text-slate-400 mt-1">{student.department || "Department not set"} · {student.graduationYear || "Year not set"}</p>
-                    </div>
-                  </div>
-                  <span className="font-bold text-teal-700">{getReadiness(student)}%</span>
-                </div>
-                <Progress value={getReadiness(student)} />
-              </div>
-            )) : (
-              <EmptyState title="No students yet" text="Students will appear here after they register with this college." />
-            )}
-          </div>
-        </Panel>
-
-        <Panel title="Skill gaps" subtitle="Lowest current skill levels across your students.">
-          <div className="space-y-3">
-            {weakestSkills.length ? weakestSkills.map((skill) => (
-              <div key={skill.name} className="flex items-center justify-between p-4 rounded-xl border border-slate-100">
-                <span className="font-semibold text-sm">{skill.name}</span>
-                <span className="text-xs text-rose-600 font-semibold">{skill.average}% avg</span>
-              </div>
-            )) : (
-              <p className="text-sm text-slate-500">No skill data has been submitted yet.</p>
-            )}
-          </div>
-        </Panel>
-      </div>
-    </div>
-  );
-}
-
-function CollegeSkillAnalytics({ backendToken }) {
-  const [students, setStudents] = useState([]);
-  useEffect(() => { loadCollegeStudentsFromBackend(backendToken).then(setStudents).catch(console.error); }, [backendToken]);
-  const skills = {};
-  students.forEach((student) => (student.skills || []).forEach((skill) => {
-    if (!skills[skill.name]) skills[skill.name] = { total: 0, count: 0, verified: 0 };
-    skills[skill.name].total += Number(skill.level || 0);
-    skills[skill.name].count += 1;
-    if (skill.verified) skills[skill.name].verified += 1;
-  }));
-  const data = Object.entries(skills).map(([name, item]) => ({ name, average: Math.round(item.total / item.count), verified: item.verified, students: item.count })).sort((a,b) => b.average-a.average);
-  return (
-    <div className="space-y-6">
-      <PageHeader eyebrow="COLLEGE · ANALYTICS" title="Skill Analytics" subtitle="Understand skill distribution and verification across your students." />
-      <Panel title="Skill overview" subtitle="Average skill level and verification coverage.">
-        <div className="space-y-5">
-          {data.length ? data.map((skill) => (
-            <div key={skill.name} className="p-4 rounded-2xl border border-slate-100">
-              <div className="flex justify-between"><div><p className="font-bold">{skill.name}</p><p className="text-xs text-slate-400 mt-1">{skill.students} student{skill.students === 1 ? "" : "s"} · {skill.verified} verified</p></div><span className="font-bold text-teal-700">{skill.average}%</span></div>
-              <Progress value={skill.average} />
-            </div>
-          )) : <p className="text-sm text-slate-500">No student skill data yet.</p>}
-        </div>
-      </Panel>
-    </div>
-  );
-}
-
-function CollegeReadinessPage({ backendToken }) {
-  const [students, setStudents] = useState([]);
-  useEffect(() => { loadCollegeStudentsFromBackend(backendToken).then(setStudents).catch(console.error); }, [backendToken]);
-  const ranked = students.map((student) => ({ ...student, readiness: Math.max(...(student.careers || []).map((career) => careerAnalysis(student, career).readiness), 0) })).sort((a,b) => b.readiness-a.readiness);
-  return (
-    <div className="space-y-6">
-      <PageHeader eyebrow="COLLEGE · PLACEMENTS" title="Placement Readiness" subtitle="Identify students closest to meeting their target career requirements." />
-      <div className="grid sm:grid-cols-3 gap-4">
-        <MetricCard icon={CheckCircle2} label="Strong match" value={ranked.filter((s) => s.readiness >= 80).length} />
-        <MetricCard icon={Target} label="Needs improvement" value={ranked.filter((s) => s.readiness >= 60 && s.readiness < 80).length} />
-        <MetricCard icon={BarChart3} label="Skill gaps detected" value={ranked.filter((s) => s.readiness < 60).length} />
-      </div>
-      <Panel title="Student readiness" subtitle="Ranked by highest career readiness.">
-        <div className="space-y-3">
-          {ranked.length ? ranked.map((student) => (
-            <div key={student.id} className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-slate-100"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">{student.name?.charAt(0)?.toUpperCase() || "S"}</div><div><p className="font-semibold">{student.name}</p><p className="text-xs text-slate-400 mt-1">{student.department}</p></div></div><span className="font-bold text-teal-700">{student.readiness}%</span></div>
-          )) : <p className="text-sm text-slate-500">No students yet.</p>}
-        </div>
-      </Panel>
-    </div>
-  );
-}
-
-function CollegeProfilePage() {
-  return (
-    <div className="max-w-4xl space-y-6">
-
-      <PageHeader
-        eyebrow="COLLEGE · PROFILE"
-        title="College Profile"
-        subtitle="Information about the institution using SkillProof."
-      />
-
-      <Panel title="Institution information">
-
-        <div className="grid md:grid-cols-2 gap-6">
-
-          <ProfileValue
-            label="Institution"
-            value="Anna University"
-            editing={false}
-          />
-
-          <ProfileValue
-            label="Institution type"
-            value="University"
-            editing={false}
-          />
-
-          <ProfileValue
-            label="Location"
-            value="Chennai, Tamil Nadu"
-            editing={false}
-          />
-
-          <ProfileValue
-            label="Administrator"
-            value="Placement Cell"
-            editing={false}
-          />
-
-        </div>
-
-      </Panel>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   COLLEGE SETTINGS
-========================================================= */
-
-function CollegeSettingsPage() {
-  return (
-    <div className="max-w-3xl space-y-6">
-
-      <PageHeader
-        eyebrow="COLLEGE · SETTINGS"
-        title="Settings"
-        subtitle="Manage college SkillProof preferences."
-      />
-
-      <Panel title="College preferences">
-
-        <div className="space-y-4">
-
-          <SettingRow
-            title="Student verification tracking"
-            text="Track verified skills across registered students."
-          />
-
-          <SettingRow
-            title="Placement readiness"
-            text="Use student skill data to calculate career readiness."
-          />
-
-          <SettingRow
-            title="Industry matching"
-            text="Allow verified student skills to be used for opportunity matching."
-          />
-
-        </div>
-
-      </Panel>
-
-    </div>
-  );
-}
-
-/* =========================================================
-   COLLEGE STUDENTS
-========================================================= */
-
-function CollegeStudentsPage({ onViewStudent, backendToken }) {
-  const [search, setSearch] = useState("");
-  const [department, setDepartment] = useState("All");
-  const [year, setYear] = useState("All");
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const loadStudents = async () => {
-    if (!backendToken) {
-      setError("College session is missing. Please sign in again.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const data = await apiRequest("/students/college/list", {
-        headers: {
-          Authorization: `Bearer ${backendToken}`,
-        },
-      });
-
-      const normalized = (data.students || []).map((student) => ({
-        ...student,
-        graduationYear:
-          student.graduationYear ||
-          student.graduation_year ||
-          "",
-        graduation_year:
-          student.graduation_year ||
-          student.graduationYear ||
-          "",
-        careers: student.careers || [],
-        skills: student.skills || [],
-      }));
-
-      setStudents(normalized);
-    } catch (err) {
-      console.error("Failed to load college students:", err);
-      setError(err.message || "Unable to load students.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadStudents();
-  }, [backendToken]);
-
-  const departments = [
-    "All",
-    ...new Set(
-      students
-        .map((student) => student.department)
-        .filter(Boolean)
-    ),
-  ];
-
-  const years = [
-    "All",
-    ...new Set(
-      students
-        .map((student) => student.graduationYear)
-        .filter(Boolean)
-    ),
-  ];
-
-  const filteredStudents = students.filter((student) => {
-    const name = String(student.name || "");
-    const email = String(student.email || "");
-
-    const matchesSearch =
-      name.toLowerCase().includes(search.toLowerCase()) ||
-      email.toLowerCase().includes(search.toLowerCase());
-
-    const matchesDepartment =
-      department === "All" ||
-      student.department === department;
-
-    const matchesYear =
-      year === "All" ||
-      String(student.graduationYear) === String(year);
-
-    return matchesSearch && matchesDepartment && matchesYear;
-  });
-
-  const getVerifiedCount = (student) =>
-    (student.skills || []).filter(
-      (skill) => skill.verified
-    ).length;
-
-  const getReadiness = (student) => {
-    if (!student.careers?.length) return 0;
-
-    const results = student.careers.map(
-      (career) =>
-        careerAnalysis(student, career).readiness
-    );
-
-    return Math.max(...results, 0);
-  };
-
-  const averageReadiness = students.length
-    ? Math.round(
-        students.reduce(
-          (total, student) =>
-            total + getReadiness(student),
-          0
-        ) / students.length
-      )
-    : 0;
-
-  if (loading) {
-    return (
-      <div className="min-h-[400px] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-slate-200 border-t-teal-500 rounded-full animate-spin mx-auto" />
-          <p className="text-sm text-slate-500 mt-4">
-            Loading students...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-6">
-        <PageHeader
-          eyebrow="COLLEGE · STUDENTS"
-          title="Student Directory"
-          subtitle="View students registered with your college."
-        />
-
-        <div className="bg-white border border-rose-200 rounded-2xl p-6">
-          <p className="font-semibold text-rose-700">
-            Unable to load students
-          </p>
-          <p className="text-sm text-slate-500 mt-2">
-            {error}
-          </p>
-
-          <button
-            onClick={loadStudents}
-            className="mt-4 h-10 px-4 rounded-xl bg-slate-900 text-white text-sm font-semibold"
-          >
-            Try again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="COLLEGE · STUDENTS"
-        title="Student Directory"
-        subtitle="View student academic profiles, skills, verification status and career readiness."
-      />
-
-      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <MetricCard
-          icon={User}
-          label="Total students"
-          value={students.length}
-        />
-
-        <MetricCard
-          icon={ShieldCheck}
-          label="Verified students"
-          value={
-            students.filter((student) =>
-              (student.skills || []).some(
-                (skill) => skill.verified
-              )
-            ).length
-          }
-        />
-
-        <MetricCard
-          icon={BookOpen}
-          label="Verified skills"
-          value={students.reduce(
-            (total, student) =>
-              total + getVerifiedCount(student),
-            0
-          )}
-        />
-
-        <MetricCard
-          icon={Target}
-          label="Avg readiness"
-          value={`${averageReadiness}%`}
-        />
-      </div>
-
-      <Panel
-        title="Find students"
-        subtitle="Search and filter students by name, department or graduation year."
-      >
-        <div className="grid md:grid-cols-[1fr_180px_180px] gap-3">
-          <div className="relative">
-            <Search
-              size={17}
-              className="absolute left-4 top-3.5 text-slate-400"
-            />
-
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search student..."
-              className="w-full h-12 rounded-xl border border-slate-200 bg-white pl-11 pr-4 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-50"
-            />
-          </div>
-
-          <select
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-            className="h-12 rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-teal-500"
-          >
-            {departments.map((item) => (
-              <option key={item} value={item}>
-                {item === "All"
-                  ? "All departments"
-                  : item}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            className="h-12 rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-teal-500"
-          >
-            {years.map((item) => (
-              <option key={item} value={item}>
-                {item === "All"
-                  ? "All years"
-                  : item}
-              </option>
-            ))}
-          </select>
-        </div>
-      </Panel>
-
-      <div className="space-y-3">
-        {filteredStudents.map((student) => {
-          const verified = getVerifiedCount(student);
-          const readiness = getReadiness(student);
-
-          return (
-            <div
-              key={student.id}
-              className="bg-white border border-slate-200 rounded-2xl p-5 hover:border-teal-300 hover:shadow-sm transition"
-            >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
-                    {student.name
-                      ?.charAt(0)
-                      ?.toUpperCase() || "S"}
-                  </div>
-
-                  <div>
-                    <h3 className="font-bold text-slate-900">
-                      {student.name}
-                    </h3>
-
-                    <p className="text-sm text-slate-500 mt-1">
-                      {student.department || "Department not set"} ·{" "}
-                      {student.graduationYear || "Year not set"}
-                    </p>
-
-                    <p className="text-xs text-slate-400 mt-1">
-                      {student.email}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="px-4 py-3 rounded-xl bg-slate-50 text-center">
-                    <p className="text-lg font-bold">
-                      {(student.skills || []).length}
-                    </p>
-                    <p className="text-[11px] text-slate-400">
-                      Skills
-                    </p>
-                  </div>
-
-                  <div className="px-4 py-3 rounded-xl bg-teal-50 text-center">
-                    <p className="text-lg font-bold text-teal-700">
-                      {verified}
-                    </p>
-                    <p className="text-[11px] text-teal-600">
-                      Verified
-                    </p>
-                  </div>
-
-                  <div className="px-4 py-3 rounded-xl bg-slate-50 text-center">
-                    <p className="text-lg font-bold">
-                      {readiness}%
-                    </p>
-                    <p className="text-[11px] text-slate-400">
-                      Readiness
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => onViewStudent(student)}
-                  className="h-11 px-5 rounded-xl bg-slate-900 text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-slate-800"
-                >
-                  View profile
-                  <ArrowRight size={16} />
-                </button>
-              </div>
-            </div>
-          );
-        })}
-
-        {!filteredStudents.length && (
-          <EmptyState
-            title="No students found"
-            text="No students have registered with this college yet, or your filters do not match."
-          />
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* =========================================================
-   COLLEGE STUDENT PROFILE
-========================================================= */
-
-function CollegeStudentProfile({
-  student,
-  onBack,
-}) {
-  const verifiedSkills =
-    student.skills.filter(
-      (skill) => skill.verified
-    );
-
-  const readiness = Math.max(
-    ...(student.careers || []).map(
-      (career) =>
-        careerAnalysis(student, career).readiness
-    ),
-    0
-  );
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="max-w-6xl mx-auto px-5 md:px-8 py-8 space-y-6">
-
-        {/* Back button */}
-
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-slate-900 transition"
-        >
-          <ArrowRight
-            size={16}
-            className="rotate-180"
-          />
-          Back to students
-        </button>
-
-        {/* Profile Header */}
-
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
-
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-
-            <div className="flex items-center gap-5">
-
-              <div className="w-20 h-20 rounded-3xl bg-teal-50 text-teal-700 flex items-center justify-center text-2xl font-bold">
-                {student.name
-                  .charAt(0)
-                  .toUpperCase()}
-              </div>
-
-              <div>
-
-                <p className="text-xs font-bold tracking-wider text-teal-700 uppercase">
-                  Student Profile
-                </p>
-
-                <h1 className="text-3xl font-bold text-slate-900 mt-1">
-                  {student.name}
-                </h1>
-
-                <p className="text-slate-600 mt-2">
-                  {student.college} ·{" "}
-                  {student.department} ·{" "}
-                  {student.graduationYear}
-                </p>
-
-                <p className="text-sm text-slate-400 mt-1">
-                  {student.email}
-                </p>
-
-              </div>
-
-            </div>
-
-            <div className="text-left md:text-right">
-
-              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">
-                Career readiness
-              </p>
-
-              <p className="text-5xl font-bold text-teal-700 mt-2">
-                {readiness}%
-              </p>
-
-              <p className="text-sm text-slate-500 mt-1">
-                {statusText(readiness)}
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Statistics */}
-
-        <div className="grid sm:grid-cols-3 gap-4">
-
-          <MetricCard
-            icon={BookOpen}
-            label="Skills"
-            value={student.skills.length}
-          />
-
-          <MetricCard
-            icon={ShieldCheck}
-            label="Verified skills"
-            value={verifiedSkills.length}
-          />
-
-          <MetricCard
-            icon={Target}
-            label="Target careers"
-            value={
-              student.careers?.length || 0
-            }
-          />
-
-        </div>
-
-        {/* Academic Information */}
-
-        <Panel
-          title="Academic information"
-          subtitle="Student information registered with SkillProof."
-        >
-
-          <div className="grid md:grid-cols-3 gap-5">
-
-            <ProfileValue
-              label="College"
-              value={student.college}
-              editing={false}
-            />
-
-            <ProfileValue
-              label="Department"
-              value={student.department}
-              editing={false}
-            />
-
-            <ProfileValue
-              label="Graduation year"
-              value={student.graduationYear}
-              editing={false}
-            />
-
-          </div>
-
-        </Panel>
-
-        {/* Skills & Verification */}
-
-        <Panel
-          title="Skills & verification"
-          subtitle="The college can see the student's current skill status."
-        >
-
-          <div className="grid md:grid-cols-2 gap-4">
-
-            {student.skills.map((skill) => (
-
-              <div
-                key={skill.name}
-                className="p-5 rounded-2xl border border-slate-200 bg-white"
-              >
-
-                <div className="flex justify-between gap-3">
-
-                  <div>
-
-                    <div className="flex items-center gap-2">
-
-                      <h3 className="font-bold text-slate-900">
-                        {skill.name}
-                      </h3>
-
-                      {skill.verified && (
-                        <Badge>
-                          ✓ Verified
-                        </Badge>
-                      )}
-
-                    </div>
-
-                    <p className="text-xs text-slate-500 mt-1">
-                      {skill.verified
-                        ? `Verification score ${skill.verificationScore}%`
-                        : "Self declared"}
-                    </p>
-
-                  </div>
-
-                  <p className="font-bold text-teal-700">
-                    {skill.level}%
-                  </p>
-
-                </div>
-
-                <Progress value={skill.level} />
-
-                {skill.verified &&
-                  skill.assessmentScore !== undefined && (
-                    <div className="grid grid-cols-3 gap-2 mt-4">
-
-                      <Score
-                        label="Assessment"
-                        value={
-                          skill.assessmentScore
-                        }
-                      />
-
-                      <Score
-                        label="Practical"
-                        value={
-                          skill.practicalScore
-                        }
-                      />
-
-                      <Score
-                        label="Evidence"
-                        value={
-                          skill.evidenceScore
-                        }
-                      />
-
-                    </div>
-                  )}
-
-              </div>
-
-            ))}
-
-          </div>
-
-        </Panel>
-
-        {/* Target Careers */}
-
-        <Panel
-          title="Target careers"
-          subtitle="Career goals selected by the student."
-        >
-
-          <div className="flex flex-wrap gap-3">
-
-            {(student.careers || []).map(
-              (career) => (
-
-                <div
-                  key={career}
-                  className="px-4 py-3 rounded-xl bg-teal-50 text-teal-800 font-semibold text-sm"
-                >
-
-                  <Target
-                    size={15}
-                    className="inline mr-2"
-                  />
-
-                  {career}
-
-                </div>
-
-              )
-            )}
-
-          </div>
-
-        </Panel>
-
-        {/* Project Evidence */}
-
-        <Panel
-          title="Project evidence"
-          subtitle="Projects associated with verified skills."
-        >
-
-          <div className="space-y-3">
-
-            {verifiedSkills
-              .filter(
-                (skill) =>
-                  skill.projectName
-              )
-              .map((skill) => (
-
-                <div
-                  key={skill.name}
-                  className="p-5 rounded-2xl border border-slate-200 bg-white"
-                >
-
-                  <div className="flex items-start justify-between gap-4">
-
-                    <div>
-
-                      <p className="text-xs font-bold uppercase tracking-wider text-teal-700">
-                        {skill.name}
-                      </p>
-
-                      <h3 className="font-bold text-lg text-slate-900 mt-1">
-                        {skill.projectName}
-                      </h3>
-
-                      <p className="text-sm text-slate-600 leading-6 mt-2">
-                        {skill.projectDescription}
-                      </p>
-
-                    </div>
-
-                    <CheckCircle2
-                      size={20}
-                      className="text-teal-600 shrink-0"
-                    />
-
-                  </div>
-
-                </div>
-
-              ))}
-
-            {!verifiedSkills.some(
-              (skill) => skill.projectName
-            ) && (
-
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
-
-                <p className="text-sm text-slate-500">
-                  No project evidence has been added yet.
-                </p>
-
-              </div>
-
-            )}
-
-          </div>
-
-        </Panel>
-
-      </div>
-    </div>
-  );
-}
-
-/* =========================================================
-   LOGIC
-========================================================= */
+function MetricCard({ icon: Icon, label, value }) { return <div className="bg-white border border-slate-200 rounded-2xl p-5"><div className="flex justify-between"><p className="text-xs font-bold uppercase tracking-wider text-slate-400">{label}</p><Icon size={18} className="text-teal-600" /></div><p className="text-3xl font-bold mt-4">{value}</p></div>; }
+function MiniMetric({ value, label }) { return <div className="p-3 rounded-xl bg-slate-50 border border-slate-100"><p className="font-bold text-lg">{value}</p><p className="text-[11px] text-slate-400 mt-1">{label}</p></div>; }
+function FeaturePreview({ icon: Icon, title }) { return <div className="p-3 rounded-xl border border-slate-100 flex items-center gap-2"><Icon size={16} className="text-teal-600" /><span className="text-xs font-semibold">{title}</span></div>; }
+function Progress({ value }) { return <div className="h-2 bg-slate-100 rounded-full overflow-hidden mt-3"><div className="h-full bg-teal-500 rounded-full transition-all" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} /></div>; }
+function Badge({ children }) { return <span className="px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-[10px] font-bold">{children}</span>; }
+function EmptyState({ title, text, button, onClick }) { return <div className="bg-white border border-dashed border-slate-300 rounded-2xl p-12 text-center"><BookOpen className="mx-auto text-slate-300" size={30} /><h3 className="font-bold mt-4">{title}</h3><p className="text-sm text-slate-500 mt-2">{text}</p>{button && <button onClick={onClick} className="mt-5 h-10 px-4 rounded-xl bg-slate-900 text-white text-sm font-semibold">{button}</button>}</div>; }
+function SectionTitle({ number, title }) { return <div className="flex items-center gap-3 mt-8 mb-5 pt-7 border-t border-slate-100"><span className="text-xs font-bold text-teal-700">{number}</span><h2 className="font-bold">{title}</h2></div>; }
+function Field({ label, value, onChange, placeholder, type = "text" }) { return <div><label className="text-sm font-semibold text-slate-700">{label}</label><input type={type} value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full h-12 mt-2 rounded-xl border border-slate-200 bg-white px-4 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-50 text-slate-900 placeholder:text-slate-400" /></div>; }
+function ProfileValue({ label, value, editing, onChange }) { return <div><p className="text-xs font-bold uppercase tracking-wider text-slate-400">{label}</p>{editing ? <input value={value || ""} onChange={(e) => onChange(e.target.value)} className="w-full h-11 mt-2 border border-slate-200 rounded-xl px-3 outline-none focus:border-teal-500" /> : <p className="font-semibold mt-2">{value || "Not provided"}</p>}</div>; }
+function NavItem({ active, onClick, icon: Icon, label }) { return <button onClick={onClick} className={`w-full h-10 rounded-xl px-3 flex items-center gap-3 text-sm font-medium mb-1 ${active ? "bg-teal-50 text-teal-800" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}><Icon size={17} />{label}</button>; }
+function Logo({ dark = false }) { return <div className="flex items-center gap-2.5"><div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center"><ShieldCheck size={20} className="text-teal-600" /></div><span className={`font-bold text-lg ${dark ? "text-slate-900" : "text-white"}`}>Skill<span className="text-teal-600">Proof</span></span></div>; }
 
 function pageTitle(page) {
-  return {
-    dashboard: "Dashboard",
-    skills: "My Skills",
-    verify: "Verify Skills",
-    careers: "Careers",
-    gaps: "Skill Gap",
-    roadmap: "Learning Roadmap",
-    opportunities: "Opportunities",
-    profile: "My Profile",
-    settings: "Settings",
-  }[page] || "Dashboard";
+  return { dashboard: "Dashboard", skills: "My Skills", verify: "Verify Skills", careers: "Careers", gaps: "Skill Gap", roadmap: "Learning Roadmap", opportunities: "Opportunities", profile: "My Profile", settings: "Settings" }[page] || "Dashboard";
 }
 
-function careerAnalysis(
-  student,
-  career
-) {
-  const requirements =
-    careerRequirements[career] || {};
-
-  const skills = Object.entries(
-    requirements
-  ).map(([name, required]) => {
-    const currentSkill = (
-      student.skills || []
-    ).find(
-      (skill) => skill.name === name
-    );
-
-    const current = Number(
-      currentSkill?.level || 0
-    );
-
-    return {
-      name,
-      required,
-      current,
-      gap: Math.max(
-        required - current,
-        0
-      ),
-      verified:
-        !!currentSkill?.verified,
-    };
+function careerAnalysis(student, career) {
+  const req = careerRequirements[career] || {};
+  const skills = Object.entries(req).map(([name, required]) => {
+    const currentSkill = (student.skills || []).find((s) => s.name === name);
+    const current = Number(currentSkill?.level || 0);
+    return { name, required, current, gap: Math.max(required - current, 0), verified: !!currentSkill?.verified };
   });
-
-  const readiness = skills.length
-    ? Math.round(
-        skills.reduce(
-          (sum, skill) =>
-            sum +
-            Math.min(
-              skill.current /
-                skill.required,
-              1
-            ) *
-              100,
-          0
-        ) / skills.length
-      )
-    : 0;
-
-  return {
-    readiness,
-    skills,
-  };
+  const readiness = skills.length ? Math.round(skills.reduce((sum, s) => sum + Math.min(s.current / s.required, 1) * 100, 0) / skills.length) : 0;
+  return { readiness, skills };
 }
 
 function statusText(readiness) {
-  if (readiness >= 80) {
-    return "Strong match";
-  }
-
-  if (readiness >= 60) {
-    return "Needs improvement";
-  }
-
+  if (readiness >= 80) return "Strong match";
+  if (readiness >= 60) return "Needs improvement";
   return "Skill gaps detected";
 }
 
 function roadmapText(skill) {
   const map = {
     Java: "Strengthen OOP, collections, exception handling and build a backend feature using Java.",
-
-    "Spring Boot":
-      "Learn dependency injection, REST controllers, services and persistence through a small API.",
-
+    "Spring Boot": "Learn dependency injection, REST controllers, services and persistence through a small API.",
     SQL: "Practice joins, indexing, aggregation and database design using a realistic dataset.",
-
     React: "Build reusable components, state management and API integration in a small frontend.",
-
-    JavaScript:
-      "Practice modern ES6+, async programming, DOM concepts and API consumption.",
-
-    Docker:
-      "Containerize a working project and understand images, containers, volumes and networking.",
-
+    JavaScript: "Practice modern ES6+, async programming, DOM concepts and API consumption.",
+    Docker: "Containerize a working project and understand images, containers, volumes and networking.",
     AWS: "Deploy a small application and learn the basics of compute, storage and IAM.",
   };
-
-  return (
-    map[skill] ||
-    `Learn ${skill} fundamentals, apply them in a mini project and then re-verify the skill.`
-  );
+  return map[skill] || `Learn ${skill} fundamentals, apply them in a mini project and then re-verify the skill.`;
 }
 
-export default App; 
+export default App;
