@@ -14,8 +14,13 @@ const collegeFlowPlugin = () => ({
 
     const registerReplacement = `function Register({ student, updateStudent, onRegister, onLogin }) {
   const [registeredColleges, setRegisteredColleges] = useState([]);
+  const [collegeSearch, setCollegeSearch] = useState(student.college || "");
+  const [showColleges, setShowColleges] = useState(false);
   const [loadingColleges, setLoadingColleges] = useState(false);
   const [collegeError, setCollegeError] = useState("");
+  const [careerSearch, setCareerSearch] = useState("");
+  const [showCareers, setShowCareers] = useState(false);
+
   const loadColleges = async () => {
     if (registeredColleges.length || loadingColleges) return;
     setLoadingColleges(true);
@@ -23,12 +28,31 @@ const collegeFlowPlugin = () => ({
     catch (error) { setCollegeError(error.message || "Could not load registered colleges."); }
     finally { setLoadingColleges(false); }
   };
+
+  const collegeQuery = collegeSearch.trim().toLowerCase();
+  const matchingColleges = collegeQuery.length >= 2
+    ? registeredColleges.filter((c) => `${c.name} ${c.college_id}`.toLowerCase().includes(collegeQuery)).slice(0, 8)
+    : [];
+
+  const chooseCollege = (college) => {
+    setCollegeSearch(college.name);
+    updateStudent("college", college.name);
+    updateStudent("collegeId", college.college_id);
+    setShowColleges(false);
+  };
+
   const toggleCareer = (career) => {
     const current = student.careers || [];
     if (current.includes(career)) updateStudent("careers", current.filter((x) => x !== career));
     else if (current.length < 3) updateStudent("careers", [...current, career]);
+    setCareerSearch("");
+    setShowCareers(false);
   };
-  const valid = student.name && student.email && student.password && student.collegeId && student.collegeEmail && student.department && student.graduationYear && (student.careers || []).length;
+
+  const selectedCareers = student.careers || [];
+  const filteredCareers = careers.filter((career) => !selectedCareers.includes(career) && career.toLowerCase().includes(careerSearch.trim().toLowerCase()));
+  const valid = student.name && student.email && student.password && student.collegeId && student.collegeEmail && student.department && student.graduationYear && selectedCareers.length;
+
   return <Auth wide title="Create your profile" subtitle="Use your registered College ID so your institution can track your verified progress.">
     <form onSubmit={(e) => { e.preventDefault(); onRegister(e); }}>
       <SectionTitle title="Personal information" number="01" />
@@ -38,21 +62,56 @@ const collegeFlowPlugin = () => ({
         <Field label="Password" value={student.password} onChange={(v) => updateStudent("password", v)} placeholder="Create a password" type="password" />
         <Field label="College email ID" value={student.collegeEmail || ""} onChange={(v) => updateStudent("collegeEmail", v)} placeholder="you@college.edu" type="email" />
       </div>
-      <div className="mt-5">
+
+      <div className="mt-5 relative">
         <label className="block text-sm font-semibold text-slate-700 mb-2">Registered College ID</label>
-        <select required value={student.collegeId || ""} onFocus={loadColleges} onChange={(e) => { const c = registeredColleges.find((x) => String(x.college_id) === e.target.value); updateStudent("collegeId", e.target.value); if (c) updateStudent("college", c.name); }} className="w-full h-12 rounded-xl border border-slate-200 bg-white px-4">
-          <option value="">{loadingColleges ? "Loading registered colleges…" : "Select your College ID"}</option>
-          {registeredColleges.map((c) => <option key={c.college_id} value={c.college_id}>{c.name} — {c.college_id}</option>)}
-        </select>
+        <div className="relative">
+          <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            required
+            value={collegeSearch}
+            onFocus={() => { loadColleges(); setShowColleges(true); }}
+            onChange={(e) => { setCollegeSearch(e.target.value); setShowColleges(true); if (!e.target.value.trim()) { updateStudent("college", ""); updateStudent("collegeId", null); } }}
+            placeholder="Type at least 2 letters of your college name or ID..."
+            className="w-full h-12 rounded-xl border border-slate-200 bg-white pl-11 pr-4 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+          />
+        </div>
+        {showColleges && collegeQuery.length >= 2 && <div className="absolute z-30 left-0 right-0 mt-2 rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden">
+          {loadingColleges && <p className="px-4 py-3 text-sm text-slate-500">Loading registered colleges…</p>}
+          {!loadingColleges && matchingColleges.length === 0 && <p className="px-4 py-3 text-sm text-slate-500">No registered college matches.</p>}
+          {!loadingColleges && matchingColleges.map((college) => <button key={college.college_id} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => chooseCollege(college)} className="w-full text-left px-4 py-3 hover:bg-teal-50 border-b border-slate-100 last:border-b-0">
+            <p className="font-semibold text-slate-800">{college.name}</p>
+            <p className="text-xs text-teal-700 mt-1">College ID: {college.college_id}</p>
+          </button>)}
+        </div>}
+        {student.collegeId && student.college && <div className="mt-3 flex flex-wrap items-center gap-2 p-3 rounded-xl bg-teal-50 border border-teal-100">
+          <span className="text-sm font-semibold text-slate-800">{student.college}</span>
+          <span className="text-xs font-bold text-teal-800 bg-white border border-teal-200 px-2.5 py-1 rounded-full">{student.collegeId}</span>
+        </div>}
         {collegeError && <p className="text-xs text-red-600 mt-2">{collegeError}</p>}
-        <p className="text-xs text-slate-500 mt-2">Your college administrator must create the college account first. Only registered College IDs can be used.</p>
+        <p className="text-xs text-slate-500 mt-2">Type 2 or more letters. Select the matching registered college to automatically fill its College ID.</p>
       </div>
+
       <div className="grid md:grid-cols-2 gap-4 mt-4">
         <Field label="Department" value={student.department} onChange={(v) => updateStudent("department", v)} placeholder="Computer Science" />
         <Field label="Graduation year" value={student.graduationYear} onChange={(v) => updateStudent("graduationYear", v)} placeholder="2027" type="number" />
       </div>
+
       <SectionTitle title="Target careers" number="02" />
-      <div className="grid md:grid-cols-2 gap-3">{careers.map((career) => <button key={career} type="button" onClick={() => toggleCareer(career)} className={"text-left p-4 rounded-xl border " + ((student.careers || []).includes(career) ? "border-teal-500 bg-teal-50" : "border-slate-200 bg-white")}>{career}</button>)}</div>
+      <div className="relative">
+        <div className="min-h-14 w-full rounded-xl border border-slate-200 bg-white p-2 flex flex-wrap items-center gap-2 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-100">
+          {selectedCareers.map((career) => <span key={career} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-sm font-medium">
+            {career}<button type="button" onClick={() => toggleCareer(career)} className="text-teal-700 hover:text-slate-900"><X size={14} /></button>
+          </span>)}
+          {selectedCareers.length < 3 && <input value={careerSearch} onFocus={() => setShowCareers(true)} onChange={(e) => { setCareerSearch(e.target.value); setShowCareers(true); }} placeholder={selectedCareers.length ? "Add another career..." : "Search and select target careers..."} className="flex-1 min-w-52 h-9 px-2 outline-none text-sm" />}
+        </div>
+        {showCareers && selectedCareers.length < 3 && <div className="absolute z-30 left-0 right-0 mt-2 rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden">
+          {filteredCareers.length === 0 && <p className="px-4 py-3 text-sm text-slate-500">No matching careers.</p>}
+          {filteredCareers.map((career) => <button key={career} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => toggleCareer(career)} className="w-full text-left px-4 py-3 hover:bg-teal-50 border-b border-slate-100 last:border-b-0 text-sm font-medium text-slate-800">{career}</button>)}
+        </div>}
+        <p className="text-xs text-slate-500 mt-2">Select up to 3 careers. Your choices appear as removable tags, like a professional profile skill selector.</p>
+      </div>
+
       <button disabled={!valid} className="w-full h-12 mt-6 rounded-xl bg-slate-900 text-white font-semibold disabled:opacity-40">Create SkillProof profile</button>
     </form>
     <p className="text-center text-sm text-slate-500 mt-6">Already have an account? <button type="button" onClick={onLogin} className="text-teal-700 font-semibold">Sign in</button></p>
