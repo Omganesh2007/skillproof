@@ -1,0 +1,14 @@
+{
+  "roles": [
+    {"name":"Software Engineer","skills":["Data Structures and Algorithms","Python","Java","C++","Object-Oriented Programming","Problem Solving","SQL","Git and GitHub","REST APIs","Debugging"]},
+    {"name":"Frontend Developer","skills":["HTML","CSS","JavaScript","TypeScript","React.js","Responsive Web Design","REST APIs","Git and GitHub"]},
+    {"name":"Backend Developer","skills":["Python","Java","Node.js","REST APIs","FastAPI","Django","Spring Boot","SQL","Database Management","Authentication and Authorization","Git and GitHub","API Security"]},
+    {"name":"Full Stack Developer","skills":["HTML","CSS","JavaScript","TypeScript","React.js","Node.js","Python","Backend Development","SQL","NoSQL","REST APIs","Git and GitHub"]},
+    {"name":"Data Analyst","skills":["Excel","SQL","Python","Pandas","Data Cleaning","Statistics","Power BI","Tableau","Data Visualization"]},
+    {"name":"Data Scientist","skills":["Python","SQL","Statistics","Probability","Pandas","NumPy","Machine Learning","scikit-learn","Model Evaluation"]},
+    {"name":"Machine Learning Engineer","skills":["Python","Machine Learning","Statistics","scikit-learn","TensorFlow","PyTorch","Feature Engineering","Model Deployment","MLOps"]},
+    {"name":"Artificial Intelligence Engineer","skills":["Python","Machine Learning","Deep Learning","TensorFlow","PyTorch","Natural Language Processing","Computer Vision","Generative AI","Large Language Models (LLMs)"]},
+    {"name":"Cybersecurity Analyst","skills":["Network Security","Linux","Cybersecurity Fundamentals","SIEM Tools","Threat Detection","Incident Response","Vulnerability Assessment","Security Monitoring"]},
+    {"name":"Cloud / DevOps Engineer","skills":["Linux","Cloud Computing","AWS","Azure","Google Cloud","Docker","Kubernetes","CI/CD","Terraform","Git and GitHub"]}
+  ]
+}
