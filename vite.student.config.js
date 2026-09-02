@@ -1,8 +1,8 @@
 import { defineConfig } from "vite";
 import baseConfig from "./vite.config.js";
-import { studentUiPlugin } from "./src/studentUiOverrides.js";
+import { radarUiPlugin } from "./src/radarUiOverrides.js";
 
 export default defineConfig({
   ...baseConfig,
-  plugins: [studentUiPlugin(), ...(baseConfig.plugins || [])],
+  plugins: [radarUiPlugin(), ...(baseConfig.plugins || [])],
 });
