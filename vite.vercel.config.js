@@ -5,7 +5,13 @@ import { studentUiPlugin } from "./src/studentUiOverrides.js";
 import { studentDataPlugin } from "./src/studentDataOverrides.js";
 
 const basePlugins = baseConfig.plugins || [];
-const safeBasePlugins = basePlugins.filter((plugin) => !["skillproof-compact-career-radar", "skillproof-student-ui", "skillproof-student-data"].includes(plugin?.name));
+const excluded = new Set([
+  "skillproof-compact-career-radar",
+  "skillproof-career-focus",
+  "skillproof-student-ui",
+  "skillproof-student-data",
+]);
+const safeBasePlugins = basePlugins.filter((plugin) => !excluded.has(plugin?.name));
 
 export default defineConfig({
   ...baseConfig,
