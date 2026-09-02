@@ -1,4 +1,4 @@
-import { defineConfig, transformWithEsbuild } from "vite";
+import { defineConfig, transformWithOxc } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
@@ -90,9 +90,9 @@ const collegeFlowPlugin = () => ({
 
     next = next.replace(/function Register[\s\S]*?(?=function CollegeLogin)/, registerReplacement);
     next = next.replace(/function CollegeLogin[\s\S]*?(?=function IndustryLogin)/, collegeReplacement);
-
     if (next === code) return null;
-    return await transformWithEsbuild(next, id, { loader: "jsx", jsx: "automatic", sourcemap: true });
+    const result = await transformWithOxc(next, id, { lang: "jsx", jsx: { runtime: "automatic" } });
+    return { code: result.code, map: result.map || null };
   },
 });
 
