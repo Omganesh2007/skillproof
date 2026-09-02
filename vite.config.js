@@ -1,13 +1,17 @@
-import { defineConfig } from "vite";
+import { defineConfig, transformWithEsbuild } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 const collegeFlowPlugin = () => ({
   name: "skillproof-college-flow",
-  transform(code, id) {
+  async transform(code, id) {
     if (!id.endsWith("/src/App.jsx")) return null;
     let next = code;
-    next = next.replace("college_id: normalized.collegeId, collegeId: normalized.collegeId, department:", "college_id: normalized.collegeId, collegeId: normalized.collegeId, college_email: normalized.collegeEmail, department:");
+    next = next.replace(
+      "college_id: normalized.collegeId, collegeId: normalized.collegeId, department:",
+      "college_id: normalized.collegeId, collegeId: normalized.collegeId, college_email: normalized.collegeEmail, department:"
+    );
+
     const registerReplacement = `function Register({ student, updateStudent, onRegister, onLogin }) {
   const [registeredColleges, setRegisteredColleges] = useState([]);
   const [loadingColleges, setLoadingColleges] = useState(false);
@@ -55,6 +59,7 @@ const collegeFlowPlugin = () => ({
   </Auth>;
 }
 `;
+
     const collegeReplacement = `function CollegeLogin({ onBack, onLogin }) {
   const [mode, setMode] = useState("login");
   const [identifier, setIdentifier] = useState("");
@@ -82,9 +87,12 @@ const collegeFlowPlugin = () => ({
   </Auth>;
 }
 `;
+
     next = next.replace(/function Register[\s\S]*?(?=function CollegeLogin)/, registerReplacement);
     next = next.replace(/function CollegeLogin[\s\S]*?(?=function IndustryLogin)/, collegeReplacement);
-    return next === code ? null : { code: next, map: null };
+
+    if (next === code) return null;
+    return await transformWithEsbuild(next, id, { loader: "jsx", jsx: "automatic", sourcemap: true });
   },
 });
 
