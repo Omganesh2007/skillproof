@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --config vite.student.config.js",
-    "build": "vite build --config vite.student.config.js",
+    "dev": "vite --config vite.vercel.config.js",
+    "build": "vite build --config vite.vercel.config.js",
     "lint": "eslint .",
-    "preview": "vite preview --config vite.student.config.js"
+    "preview": "vite preview --config vite.vercel.config.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
