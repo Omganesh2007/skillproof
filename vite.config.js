@@ -31,7 +31,7 @@ const collegeFlowPlugin = () => ({
 
   const collegeQuery = collegeSearch.trim().toLowerCase();
   const matchingColleges = collegeQuery.length >= 2
-    ? registeredColleges.filter((c) => `${c.name} ${c.college_id}`.toLowerCase().includes(collegeQuery)).slice(0, 8)
+    ? registeredColleges.filter((c) => (String(c.name) + " " + String(c.college_id)).toLowerCase().includes(collegeQuery)).slice(0, 8)
     : [];
 
   const chooseCollege = (college) => {
