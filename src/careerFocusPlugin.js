@@ -1,0 +1,40 @@
+export function careerFocusPlugin() {
+  return {
+    name: "skillproof-career-focus",
+    enforce: "post",
+    transform(code, id) {
+      if (!id.endsWith("/src/App.jsx")) return null;
+      const dashboard = `function Dashboard({ student, setActivePage }) {
+  const careersList = student.careers || [];
+  const skills = student.skills || [];
+  const [focusCareer, setFocusCareer] = useState(careersList[0] || "Choose a target career");
+  const career = focusCareer;
+  const req = careerRequirements[career] || {};
+  const names = Object.keys(req);
+  const score = (name) => { const s = skills.find((x) => String(x.name).toLowerCase() === String(name).toLowerCase()); return Number(s?.verificationScore ?? s?.level ?? 0); };
+  const readiness = names.length ? Math.round(names.reduce((sum, n) => sum + Math.min(100, score(n) / req[n] * 100), 0) / names.length) : 0;
+  const gaps = names.map((name) => ({ name, current: Math.round(score(name)), target: req[name], gap: Math.max(0, req[name] - score(name)) })).sort((a, b) => b.gap - a.gap);
+  const radarSkills = names.slice(0, 4).map((name, i) => ({ name, current: Math.round(score(name)), target: req[name], angle: [-90, 0, 90, 180][i] }));
+  const polygon = (points) => points.map((p) => p.join(",")).join(" ");
+  const point = (s, scale = 1) => { const a = s.angle * Math.PI / 180; const v = Math.min(100, s.current / (s.target || 100)); const r = 68 * (scale === 1 ? v : scale); return [100 + Math.cos(a) * r, 100 + Math.sin(a) * r]; };
+  const topGap = gaps[0];
+  return <div className="space-y-5">
+    <PageHeader eyebrow="OVERVIEW" title={"Good to see you, " + (student.name || "Student") + "."} subtitle="Track your skills, readiness and next steps from one place." action="Verify a skill" onAction={() => setActivePage("verify")} />
+    <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4"><MetricCard icon={BookOpen} label="Skills added" value={skills.length}/><MetricCard icon={ShieldCheck} label="Verified skills" value={skills.filter(s => s.verified).length}/><MetricCard icon={Target} label="Target careers" value={careersList.length}/><MetricCard icon={Zap} label="Top readiness" value={readiness + "%"}/></div>
+    <section className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+      <div className="px-5 py-4 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3"><div><p className="text-[10px] font-extrabold tracking-[0.18em] text-teal-600">CAREER FOCUS</p><h2 className="text-lg font-bold text-slate-900 mt-1">Career readiness</h2><p className="text-xs text-slate-500 mt-1">Select a target to view its complete skill tree.</p></div><div className="flex flex-wrap gap-2">{careersList.map((c,i)=><button type="button" key={c} onClick={() => setFocusCareer(c)} className={"px-3 py-1.5 rounded-full border text-[10px] font-bold transition " + (career === c ? "bg-teal-50 border-teal-300 text-teal-800" : "bg-white border-slate-200 text-slate-500 hover:border-teal-200")}>{c}{i===0?" · Primary":" · Secondary"}</button>)}</div></div>
+      <div className="p-5 grid lg:grid-cols-[175px_minmax(300px,1fr)_270px] gap-4 items-center">
+        <div><p className="text-[10px] font-bold tracking-wider uppercase text-slate-400">TARGET CAREER</p><h3 className="text-xl font-extrabold text-slate-900 mt-1 leading-tight">{career}</h3><div className="mt-4 flex items-center gap-3"><div className="w-16 h-16 rounded-full border-[6px] border-teal-500 bg-teal-50 flex items-center justify-center"><span className="text-sm font-extrabold text-slate-900">{readiness}%</span></div><div><p className="text-xs font-bold text-slate-800">Career readiness</p><p className="text-[10px] text-slate-400">{names.length} required skills</p></div></div></div>
+        <div className="relative min-h-[270px] flex items-center justify-center"><svg viewBox="0 0 200 200" className="w-[245px] h-[245px] max-w-full overflow-visible">{[1,.75,.5,.25].map(scale=><polygon key={scale} points={polygon(radarSkills.map(s=>point(s,scale)))} fill="none" stroke="#dfe7ee" strokeWidth="1"/>)}{radarSkills.map(s=>{const p=point(s,1);return <line key={s.name} x1="100" y1="100" x2={p[0]} y2={p[1]} stroke="#dfe7ee" strokeWidth="1"/>})}<polygon points={polygon(radarSkills.map(s=>point(s,1)))} fill="rgba(20,184,166,.14)" stroke="#14b8a6" strokeWidth="2.5"/>{radarSkills.map(s=>{const p=point(s,1);return <circle key={s.name} cx={p[0]} cy={p[1]} r="3" fill="#14b8a6"/>})}</svg><div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-slate-900 text-white flex flex-col items-center justify-center shadow-md border-4 border-teal-100"><Target size={15} className="text-teal-300"/><span className="text-[9px] font-extrabold text-center leading-tight mt-1 px-2">{career}</span><span className="text-[8px] text-teal-300 mt-1">{readiness}% READY</span></div>{radarSkills.map(s=>{const a=s.angle*Math.PI/180;const x=50+Math.cos(a)*44;const y=50+Math.sin(a)*44;return <div key={s.name} className="absolute -translate-x-1/2 -translate-y-1/2 text-center max-w-[100px]" style={{left:x+"%",top:y+"%"}}><div className="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center mx-auto"><Target size={12} className="text-teal-600"/></div><p className="text-[9px] font-bold text-slate-700 mt-1 leading-tight">{s.name}</p><p className="text-[8px] text-slate-400">{s.current}/{s.target}</p></div>})}</div>
+        <div className="space-y-3"><div className="rounded-2xl bg-slate-50 border border-slate-200 p-4"><p className="text-[10px] font-extrabold tracking-wider text-slate-500">SKILLS NEEDED · {career}</p><div className="mt-2 space-y-2">{gaps.map(g=><div key={g.name} className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-teal-500"/><span className="text-[11px] text-slate-700 truncate flex-1">{g.name}</span><span className="text-[9px] font-bold text-slate-400">{g.current}/{g.target}</span></div>)}</div><button onClick={()=>setActivePage("gaps")} className="mt-3 text-[10px] font-bold text-teal-700">See full skill tree →</button></div><div className="rounded-2xl border border-slate-200 p-4"><p className="text-[10px] font-extrabold tracking-wider text-slate-500">NEXT STEP</p><p className="text-sm font-bold text-slate-900 mt-1">{topGap&&topGap.gap>0?"Improve "+topGap.name:"Career path covered"}</p><p className="text-[10px] text-slate-500 mt-1">{topGap&&topGap.gap>0?"Close the biggest skill gap for "+career+".":"Keep adding evidence and projects."}</p><button onClick={()=>setActivePage(topGap&&topGap.gap>0?"skills":"gaps")} className="mt-3 w-full h-9 rounded-xl bg-slate-900 text-white text-xs font-bold">Open skill progress <ArrowRight size={12} className="inline ml-1"/></button></div></div>
+      </div>
+      {careersList.length>1&&<div className="px-5 py-4 border-t border-slate-100 bg-slate-50/60"><p className="text-[10px] font-extrabold tracking-wider text-slate-500 mb-2">YOUR TARGET CAREERS ({careersList.length})</p><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">{careersList.map((c,i)=><button type="button" key={c} onClick={()=>setFocusCareer(c)} className={"text-left rounded-xl border px-3 py-3 transition "+(career===c?"border-teal-300 bg-teal-50/50":"border-slate-200 bg-white hover:border-teal-200")}><div className="flex items-center gap-2"><Target size={14} className="text-teal-600"/><span className="text-xs font-bold text-slate-800 truncate">{c}</span><span className={"ml-auto text-[9px] font-bold px-2 py-0.5 rounded-full "+(i===0?"bg-teal-50 text-teal-700":"bg-slate-100 text-slate-500")}>{i===0?"PRIMARY":"SECONDARY"}</span></div><p className="text-[9px] text-slate-500 mt-2">View skill tree · {i===0?readiness:Math.round((careerAnalysis(student,c).readiness||0))}% readiness</p></button>)}</div></div>}
+    </section>
+  </div>;
+}
+`;
+      const next = code.replace(/function Dashboard[\s\S]*?(?=function MySkills)/, dashboard);
+      return next === code ? null : { code: next, map: null };
+    },
+  };
+}
