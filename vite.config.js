@@ -13,7 +13,7 @@ function collegeDirectoryPlugin() {
       const directory = JSON.parse(fs.readFileSync(file, "utf8"));
       const collegeLiteral = JSON.stringify(directory);
       const replacedDirectory = code.replace(/const colleges = \[[\s\S]*?\];/, `const colleges = ${collegeLiteral};`);
-      const replacedLimit = replacedDirectory.replace("const filtered=[...startsWith,...contains].slice(0,10);", "const filtered=[...startsWith,...contains];");
+      const replacedLimit = replacedDirectory.replace("const filtered=[...startsWith,...contains].slice(0,10);", "const filtered=[...startsWith,...contains,\"Other / College not listed\"]; ");
       return replacedLimit === code ? null : { code: replacedLimit, map: null };
     },
   };
