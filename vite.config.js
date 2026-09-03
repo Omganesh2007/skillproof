@@ -1,7 +1,7 @@
 import { defineConfig, transformWithOxc } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { compactCareerRadarPlugin } from "./src/compactCareerRadar.js";
+import { careerSkillTreePlugin } from "./src/careerSkillTreePlugin.js";
 import { studentUiPlugin } from "./src/studentUiOverrides.js";
 import { studentDataPlugin } from "./src/studentDataOverrides.js";
 
@@ -17,4 +17,4 @@ const collegeFlowPlugin = () => ({
   },
 });
 
-export default defineConfig({plugins:[studentUiPlugin(),studentDataPlugin(),compactCareerRadarPlugin(),collegeFlowPlugin(),react(),tailwindcss()]});
+export default defineConfig({plugins:[studentUiPlugin(),studentDataPlugin(),careerSkillTreePlugin(),collegeFlowPlugin(),react(),tailwindcss()]});
