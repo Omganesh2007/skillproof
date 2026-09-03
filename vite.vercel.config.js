@@ -1,11 +1,12 @@
 import { defineConfig } from "vite";
 import baseConfig from "./vite.config.js";
-import { compactCareerRadarPlugin } from "./src/compactCareerRadar.js";
+import { careerSkillTreePlugin } from "./src/careerSkillTreePlugin.js";
 import { studentUiPlugin } from "./src/studentUiOverrides.js";
 import { studentDataPlugin } from "./src/studentDataOverrides.js";
 
 const basePlugins = baseConfig.plugins || [];
 const excluded = new Set([
+  "skillproof-career-skill-tree",
   "skillproof-compact-career-radar",
   "skillproof-career-focus",
   "skillproof-student-ui",
@@ -18,7 +19,7 @@ export default defineConfig({
   plugins: [
     studentUiPlugin(),
     studentDataPlugin(),
-    compactCareerRadarPlugin(),
+    careerSkillTreePlugin(),
     ...safeBasePlugins,
   ],
 });
