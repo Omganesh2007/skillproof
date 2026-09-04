@@ -5,7 +5,7 @@ export function collegeDashboardEnhancementPlugin() {
     transform(code, id) {
       if (!id.endsWith("/src/App.jsx") && !id.endsWith("\\src\\App.jsx")) return null;
       if (code.includes("EnhancedCollegeDashboard")) return null;
-      let next = `import React from "react";\nimport { EnhancedCollegeDashboard, EnhancedCollegeStudents, EnhancedCollegeAnalytics } from "./collegeDashboardEnhancements.js";\n` + code;
+      let next = `import React from "react";\nimport { EnhancedCollegeDashboard, EnhancedCollegeStudents, EnhancedCollegeAnalytics } from "./collegeDashboardEnhancements.jsx";\n` + code;
       const dashboardStart = next.indexOf("function CollegeDashboard(");
       const studentsStart = next.indexOf("function CollegeStudents(");
       const modalStart = next.indexOf("function StudentProfileModal(");
