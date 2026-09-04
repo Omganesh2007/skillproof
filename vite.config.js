@@ -4,7 +4,6 @@ import tailwindcss from "@tailwindcss/vite";
 import { careerSkillTreePlugin } from "./src/careerSkillTreePlugin.js";
 import { studentUiPlugin } from "./src/studentUiOverrides.js";
 import { studentDataPlugin } from "./src/studentDataOverrides.js";
-import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 
 const collegeFlowPlugin = () => ({
   name: "skillproof-college-flow",
@@ -20,4 +19,4 @@ const collegeFlowPlugin = () => ({
   },
 });
 
-export default defineConfig({plugins:[registrationFormPlugin(),studentUiPlugin(),studentDataPlugin(),careerSkillTreePlugin(),collegeFlowPlugin(),react(),tailwindcss()]});
+export default defineConfig({plugins:[studentUiPlugin(),studentDataPlugin(),careerSkillTreePlugin(),collegeFlowPlugin(),react(),tailwindcss()]});
