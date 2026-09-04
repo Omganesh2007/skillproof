@@ -20,6 +20,7 @@ const excluded = new Set([
   "skillproof-student-opportunities",
   "skillproof-student-welcome",
   "skillproof-registration-form",
+  "skillproof-college-flow",
   "skillproof-compact-career-radar",
   "skillproof-career-focus",
   "skillproof-student-ui",
