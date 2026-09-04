@@ -8,6 +8,7 @@ import { studentOpportunitiesPlugin } from "./src/studentOpportunitiesPlugin.js"
 import { studentWelcomePlugin } from "./src/studentWelcomePlugin.js";
 import { studentUiPlugin } from "./src/studentUiOverrides.js";
 import { studentDataPlugin } from "./src/studentDataOverrides.js";
+import { departmentAutocompletePlugin } from "./src/departmentAutocompletePlugin.js";
 
 const basePlugins = baseConfig.plugins || [];
 const excluded = new Set([
@@ -30,6 +31,7 @@ const safeBasePlugins = basePlugins.filter((plugin) => !excluded.has(plugin?.nam
 export default defineConfig({
   ...baseConfig,
   plugins: [
+    departmentAutocompletePlugin(),
     studentWelcomePlugin(),
     studentOpportunitiesPlugin(),
     careerRequirementsPlugin(),
