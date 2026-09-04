@@ -3,8 +3,6 @@ import baseConfig from "./vite.config.js";
 import { collegeDashboardEnhancementPlugin } from "./src/collegeDashboardEnhancementPlugin.js";
 import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 import { industryDashboardPlugin } from "./src/industryDashboardPlugin.js";
-import { careerRequirementsPlugin } from "./src/careerRequirementsPlugin.js";
-import { careerPathsPagePlugin } from "./src/careerPathsPagePlugin.js";
 import { studentOpportunitiesPlugin } from "./src/studentOpportunitiesPlugin.js";
 import { studentWelcomePlugin } from "./src/studentWelcomePlugin.js";
 import { studentUiPlugin } from "./src/studentUiOverrides.js";
@@ -34,10 +32,8 @@ export default defineConfig({
     industryDashboardPlugin(),
     studentWelcomePlugin(),
     studentOpportunitiesPlugin(),
-    careerRequirementsPlugin(),
     studentUiPlugin(),
     studentDataPlugin(),
-    careerPathsPagePlugin(),
     ...safeBasePlugins,
   ],
 });
