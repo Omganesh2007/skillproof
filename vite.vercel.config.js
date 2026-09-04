@@ -6,7 +6,6 @@ import { completeCareerDashboardPlugin } from "./src/completeCareerDashboardPlug
 import { careerPathsPagePlugin } from "./src/careerPathsPagePlugin.js";
 import { studentOpportunitiesPlugin } from "./src/studentOpportunitiesPlugin.js";
 import { studentWelcomePlugin } from "./src/studentWelcomePlugin.js";
-import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 import { studentUiPlugin } from "./src/studentUiOverrides.js";
 import { studentDataPlugin } from "./src/studentDataOverrides.js";
 
@@ -31,7 +30,6 @@ const safeBasePlugins = basePlugins.filter((plugin) => !excluded.has(plugin?.nam
 export default defineConfig({
   ...baseConfig,
   plugins: [
-    registrationFormPlugin(),
     studentWelcomePlugin(),
     studentOpportunitiesPlugin(),
     careerRequirementsPlugin(),
