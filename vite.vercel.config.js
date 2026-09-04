@@ -3,6 +3,7 @@ import baseConfig from "./vite.config.js";
 import { collegeDashboardEnhancementPlugin } from "./src/collegeDashboardEnhancementPlugin.js";
 import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 import { industryAuthPlugin } from "./src/industryAuthPlugin.js";
+import { industryDashboardPlugin } from "./src/industryDashboardPlugin.js";
 import { careerRequirementsPlugin } from "./src/careerRequirementsPlugin.js";
 import { careerSkillTreePlugin } from "./src/careerSkillTreePlugin.js";
 import { completeCareerDashboardPlugin } from "./src/completeCareerDashboardPlugin.js";
@@ -34,6 +35,7 @@ export default defineConfig({
     collegeDashboardEnhancementPlugin(),
     registrationFormPlugin(),
     industryAuthPlugin(),
+    industryDashboardPlugin(),
     studentWelcomePlugin(),
     studentOpportunitiesPlugin(),
     careerRequirementsPlugin(),
