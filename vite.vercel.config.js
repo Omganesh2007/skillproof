@@ -28,14 +28,14 @@ const safeBasePlugins = basePlugins.filter((plugin) => !excluded.has(plugin?.nam
 export default defineConfig({
   ...baseConfig,
   plugins: [
-    careerRequirementsPlugin(),
     studentWelcomePlugin(),
+    studentOpportunitiesPlugin(),
+    careerRequirementsPlugin(),
     studentUiPlugin(),
     studentDataPlugin(),
     careerSkillTreePlugin(),
     completeCareerDashboardPlugin(),
     careerPathsPagePlugin(),
-    studentOpportunitiesPlugin(),
     ...safeBasePlugins,
   ],
 });
