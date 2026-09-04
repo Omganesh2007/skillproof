@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import baseConfig from "./vite.config.js";
 import { collegeDashboardEnhancementPlugin } from "./src/collegeDashboardEnhancementPlugin.js";
+import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 import { careerRequirementsPlugin } from "./src/careerRequirementsPlugin.js";
 import { careerSkillTreePlugin } from "./src/careerSkillTreePlugin.js";
 import { completeCareerDashboardPlugin } from "./src/completeCareerDashboardPlugin.js";
@@ -30,6 +31,7 @@ export default defineConfig({
   ...baseConfig,
   plugins: [
     collegeDashboardEnhancementPlugin(),
+    registrationFormPlugin(),
     studentWelcomePlugin(),
     studentOpportunitiesPlugin(),
     careerRequirementsPlugin(),
