@@ -1,14 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
-import { collegeIndustryPlugin } from "./src/collegeIndustryPlugin.js";
 
+// Keep the production build on the real App.jsx source.
+// Feature plugins are intentionally disabled here because Vercel's
+// current Rolldown JSX parser rejects generated/transformed JSX.
 export default defineConfig({
-  plugins: [
-    registrationFormPlugin(),
-    collegeIndustryPlugin(),
-    react(),
-    tailwindcss(),
-  ],
+  plugins: [react(), tailwindcss()],
 });
