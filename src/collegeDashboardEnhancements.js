@@ -1,0 +1,55 @@
+import { useMemo, useState } from "react";
+
+function readiness(student) {
+  const skills = Array.isArray(student?.skills) ? student.skills : [];
+  const verified = skills.filter((s) => s?.verified);
+  if (!verified.length) return Number(student?.verification_score || student?.verificationScore || 0) || 0;
+  return Math.round(verified.reduce((sum, s) => sum + Number(s?.verificationScore ?? s?.level ?? 0), 0) / verified.length);
+}
+
+export function EnhancedCollegeDashboard({ students = [], openStudents }) {
+  const departments = Array.from(new Set(students.map((s) => s?.department).filter(Boolean)));
+  const avg = students.length ? Math.round(students.reduce((sum, s) => sum + readiness(s), 0) / students.length) : 0;
+  const verifiedStudents = students.filter((s) => (s?.skills || []).some((x) => x?.verified)).length;
+  const departmentData = departments.map((department) => {
+    const rows = students.filter((s) => s?.department === department);
+    return { department, value: rows.length ? Math.round(rows.reduce((sum, s) => sum + readiness(s), 0) / rows.length) : 0 };
+  }).sort((a, b) => a.value - b.value);
+  return <div className="space-y-6">
+    <div className="flex items-end justify-between gap-4"><div><p className="text-xs font-bold tracking-[0.2em] text-teal-600">COLLEGE</p><h2 className="text-3xl font-bold mt-2">Institution dashboard</h2><p className="text-slate-500 mt-2">Monitor student readiness and identify departments that need support.</p></div><button onClick={openStudents} className="h-12 px-5 rounded-xl bg-slate-900 text-white font-semibold">View students</button></div>
+    <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      {[['Registered students', students.length], ['Students with verified skills', verifiedStudents], ['Average readiness', `${avg}%`], ['Departments', departments.length]].map(([label, value]) => <div key={label} className="bg-white border border-slate-200 rounded-2xl p-6"><p className="text-sm text-slate-500">{label}</p><p className="text-3xl font-bold mt-3">{value}</p></div>)}
+    </div>
+    <div className="bg-white border border-slate-200 rounded-2xl p-6">
+      <div className="flex items-start justify-between gap-4"><div><h3 className="text-xl font-bold">Department-wise readiness</h3><p className="text-sm text-slate-500 mt-1">Lower bars highlight departments that are lagging and may need more verification or training support.</p></div><span className="text-xs font-semibold text-slate-400">{departments.length} departments</span></div>
+      {departmentData.length ? <div className="mt-7 space-y-5">{departmentData.map((item) => <div key={item.department}><div className="flex justify-between text-sm mb-2"><span className="font-semibold truncate pr-4">{item.department}</span><span className="font-bold text-teal-700">{item.value}%</span></div><div className="h-8 rounded-lg bg-slate-100 overflow-hidden"><div className="h-full rounded-lg bg-teal-500" style={{ width: `${Math.max(2, Math.min(100, item.value))}%` }} /></div></div>)}</div> : <p className="mt-6 text-sm text-slate-500">Department readiness will appear after students register.</p>}
+      {departmentData.length > 0 && <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-100"><span className="text-xs uppercase tracking-wider text-slate-400">Priority department</span><p className="font-bold mt-1">{departmentData[0].department} — {departmentData[0].value}% readiness</p></div>}
+    </div>
+  </div>;
+}
+
+export function EnhancedCollegeStudents({ students = [], loading, error, reload, selected, setSelected }) {
+  const [search, setSearch] = useState("");
+  const [department, setDepartment] = useState("All departments");
+  const [status, setStatus] = useState("All");
+  const departments = useMemo(() => Array.from(new Set(students.map((s) => s?.department).filter(Boolean))).sort(), [students]);
+  const filtered = useMemo(() => students.filter((s) => {
+    const haystack = `${s?.name || ""} ${s?.email || ""} ${s?.department || ""} ${s?.college || ""}`.toLowerCase();
+    const verified = (s?.skills || []).some((x) => x?.verified);
+    return haystack.includes(search.toLowerCase()) && (department === "All departments" || s?.department === department) && (status === "All" || (status === "Verified" ? verified : !verified));
+  }), [students, search, department, status]);
+  return <div className="space-y-6">
+    <div className="flex items-end justify-between gap-4"><div><p className="text-xs font-bold tracking-[0.2em] text-teal-600">STUDENTS</p><h2 className="text-3xl font-bold mt-2">Registered students</h2><p className="text-slate-500 mt-2">Filter students by department, readiness verification, or search.</p></div><button onClick={reload} className="h-12 px-5 rounded-xl bg-slate-900 text-white font-semibold">Refresh</button></div>
+    <div className="bg-white border border-slate-200 rounded-2xl p-4 grid md:grid-cols-[1.5fr_1fr_1fr] gap-3"><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search student, email or department..." className="h-11 rounded-xl border border-slate-200 px-4 outline-none"/><select value={department} onChange={(e) => setDepartment(e.target.value)} className="h-11 rounded-xl border border-slate-200 px-4 bg-white"><option>All departments</option>{departments.map((d) => <option key={d}>{d}</option>)}</select><select value={status} onChange={(e) => setStatus(e.target.value)} className="h-11 rounded-xl border border-slate-200 px-4 bg-white"><option>All</option><option>Verified</option><option>Pending verification</option></select></div>
+    <div className="flex gap-3 text-sm"><span className="px-3 py-2 rounded-lg bg-slate-100">Showing <b>{filtered.length}</b></span><span className="px-3 py-2 rounded-lg bg-amber-50 text-amber-700">Pending <b>{students.filter((s) => !(s?.skills || []).some((x) => x?.verified)).length}</b></span><span className="px-3 py-2 rounded-lg bg-teal-50 text-teal-700">Verified <b>{students.filter((s) => (s?.skills || []).some((x) => x?.verified)).length}</b></span></div>
+    {loading ? <div className="bg-white border border-slate-200 rounded-2xl p-8 text-slate-500">Loading students...</div> : error ? <div className="bg-rose-50 border border-rose-100 rounded-2xl p-5 text-rose-600">{error}</div> : !filtered.length ? <div className="bg-white border border-slate-200 rounded-2xl p-8 text-slate-500">No students match the selected filters.</div> : <div className="grid lg:grid-cols-2 gap-4">{filtered.map((s) => { const verified = (s?.skills || []).filter((x) => x?.verified).length; const isVerified = verified > 0; return <button type="button" key={s.id || s.email} onClick={() => setSelected(s)} className="text-left bg-white border border-slate-200 rounded-2xl p-5 hover:border-teal-300 transition"><div className="flex justify-between gap-4"><div><h3 className="font-bold">{s.name || "Student"}</h3><p className="text-xs text-slate-400 mt-1">{s.email}</p></div><div className="text-right"><span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isVerified ? "bg-teal-50 text-teal-700" : "bg-amber-50 text-amber-700"}`}>{isVerified ? "Verified" : "Pending"}</span><p className="text-lg font-bold text-teal-700 mt-2">{readiness(s)}%</p></div></div><div className="grid grid-cols-3 gap-3 mt-5"><div className="p-3 rounded-xl bg-slate-50"><p className="font-semibold truncate">{s.department || "-"}</p><p className="text-xs text-slate-400 mt-1">Department</p></div><div className="p-3 rounded-xl bg-slate-50"><p className="font-semibold">{verified}</p><p className="text-xs text-slate-400 mt-1">Verified</p></div><div className="p-3 rounded-xl bg-slate-50"><p className="font-semibold">{(s.careers || []).length}</p><p className="text-xs text-slate-400 mt-1">Targets</p></div></div><div className="mt-4 text-sm font-semibold text-teal-700">View Profile →</div></button>; })}</div>}
+    {selected && <StudentProfileModal student={selected} onClose={() => setSelected(null)} />}
+  </div>;
+}
+
+function StudentProfileModal({ student, onClose }) { return <div />; }
+
+export function EnhancedCollegeAnalytics({ students = [] }) {
+  const departments = Array.from(new Set(students.map((s) => s?.department).filter(Boolean))).map((department) => { const rows = students.filter((s) => s?.department === department); return { department, value: rows.length ? Math.round(rows.reduce((sum, s) => sum + readiness(s), 0) / rows.length) : 0 }; }).sort((a, b) => a.value - b.value);
+  return <div className="space-y-6"><div><p className="text-xs font-bold tracking-[0.2em] text-teal-600">ANALYTICS</p><h2 className="text-3xl font-bold mt-2">Department readiness analytics</h2><p className="text-slate-500 mt-2">Use the lowest readiness bar to identify the department that needs attention first.</p></div><div className="bg-white border border-slate-200 rounded-2xl p-6"><h3 className="text-xl font-bold">Readiness by department</h3>{departments.length ? <div className="mt-7 space-y-5">{departments.map((d) => <div key={d.department}><div className="flex justify-between text-sm mb-2"><span className="font-semibold">{d.department}</span><span className="font-bold text-teal-700">{d.value}%</span></div><div className="h-9 bg-slate-100 rounded-lg overflow-hidden"><div className="h-full bg-teal-500 rounded-lg" style={{ width: `${Math.max(2, Math.min(100, d.value))}%` }} /></div></div>)}</div> : <p className="mt-5 text-sm text-slate-500">No department data yet.</p>}</div></div>;
+}
