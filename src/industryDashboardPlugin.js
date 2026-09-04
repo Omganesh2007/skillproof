@@ -1,7 +1,7 @@
 export function industryDashboardPlugin() {
   return {
-    name: "skillproof-industry-dashboard",
-    enforce: "pre",
+    name: "skillproof-industry-dashboard-v2",
+    enforce: "post",
     transform(code, id) {
       if (!id.endsWith("/src/App.jsx")) return null;
       const start = code.indexOf("function IndustryAppShell(");
