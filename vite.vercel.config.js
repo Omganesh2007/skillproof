@@ -4,8 +4,6 @@ import { collegeDashboardEnhancementPlugin } from "./src/collegeDashboardEnhance
 import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 import { industryDashboardPlugin } from "./src/industryDashboardPlugin.js";
 import { careerRequirementsPlugin } from "./src/careerRequirementsPlugin.js";
-import { careerSkillTreePlugin } from "./src/careerSkillTreePlugin.js";
-import { completeCareerDashboardPlugin } from "./src/completeCareerDashboardPlugin.js";
 import { careerPathsPagePlugin } from "./src/careerPathsPagePlugin.js";
 import { studentOpportunitiesPlugin } from "./src/studentOpportunitiesPlugin.js";
 import { studentWelcomePlugin } from "./src/studentWelcomePlugin.js";
@@ -39,8 +37,6 @@ export default defineConfig({
     careerRequirementsPlugin(),
     studentUiPlugin(),
     studentDataPlugin(),
-    careerSkillTreePlugin(),
-    completeCareerDashboardPlugin(),
     careerPathsPagePlugin(),
     ...safeBasePlugins,
   ],
