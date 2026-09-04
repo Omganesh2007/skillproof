@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import baseConfig from "./vite.config.js";
 import { careerRequirementsPlugin } from "./src/careerRequirementsPlugin.js";
-import { personalizationPlugin } from "./src/personalizationPlugin.js";
 import { careerSkillTreePlugin } from "./src/careerSkillTreePlugin.js";
 import { completeCareerDashboardPlugin } from "./src/completeCareerDashboardPlugin.js";
 import { careerPathsPagePlugin } from "./src/careerPathsPagePlugin.js";
@@ -28,7 +27,6 @@ export default defineConfig({
   ...baseConfig,
   plugins: [
     careerRequirementsPlugin(),
-    personalizationPlugin(),
     studentUiPlugin(),
     studentDataPlugin(),
     careerSkillTreePlugin(),
