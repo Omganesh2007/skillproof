@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import baseConfig from "./vite.config.js";
+import { collegeDashboardEnhancementPlugin } from "./src/collegeDashboardEnhancementPlugin.js";
 import { careerRequirementsPlugin } from "./src/careerRequirementsPlugin.js";
 import { careerSkillTreePlugin } from "./src/careerSkillTreePlugin.js";
 import { completeCareerDashboardPlugin } from "./src/completeCareerDashboardPlugin.js";
@@ -28,6 +29,7 @@ const safeBasePlugins = basePlugins.filter((plugin) => !excluded.has(plugin?.nam
 export default defineConfig({
   ...baseConfig,
   plugins: [
+    collegeDashboardEnhancementPlugin(),
     studentWelcomePlugin(),
     studentOpportunitiesPlugin(),
     careerRequirementsPlugin(),
