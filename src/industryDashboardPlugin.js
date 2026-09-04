@@ -27,14 +27,13 @@ function findFunctionRange(code, name) {
 export function industryDashboardPlugin() {
   return {
     name: "skillproof-industry-dashboard",
-    enforce: "pre",
     transform(code, id) {
       if (!id.endsWith("/src/App.jsx")) return null;
       const range = findFunctionRange(code, "IndustryAppShell");
       if (!range) return null;
-      const imports = 'import React from "react";\nimport { IndustryDashboard } from "./IndustryDashboard.jsx";\n';
+      const importLine = 'import { IndustryDashboard } from "./IndustryDashboard.jsx";\n';
       const replacement = "function IndustryAppShell({ logout }) { return React.createElement(IndustryDashboard, { logout }); }";
-      return { code: imports + code.slice(0, range[0]) + replacement + code.slice(range[1]), map: null };
+      return { code: importLine + code.slice(0, range[0]) + replacement + code.slice(range[1]), map: null };
     },
   };
 }
