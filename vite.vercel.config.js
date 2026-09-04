@@ -5,6 +5,7 @@ import { careerSkillTreePlugin } from "./src/careerSkillTreePlugin.js";
 import { completeCareerDashboardPlugin } from "./src/completeCareerDashboardPlugin.js";
 import { careerPathsPagePlugin } from "./src/careerPathsPagePlugin.js";
 import { studentOpportunitiesPlugin } from "./src/studentOpportunitiesPlugin.js";
+import { studentWelcomePlugin } from "./src/studentWelcomePlugin.js";
 import { studentUiPlugin } from "./src/studentUiOverrides.js";
 import { studentDataPlugin } from "./src/studentDataOverrides.js";
 
@@ -16,6 +17,7 @@ const excluded = new Set([
   "skillproof-complete-career-dashboard",
   "skillproof-career-paths-page",
   "skillproof-student-opportunities",
+  "skillproof-student-welcome",
   "skillproof-compact-career-radar",
   "skillproof-career-focus",
   "skillproof-student-ui",
@@ -27,6 +29,7 @@ export default defineConfig({
   ...baseConfig,
   plugins: [
     careerRequirementsPlugin(),
+    studentWelcomePlugin(),
     studentUiPlugin(),
     studentDataPlugin(),
     careerSkillTreePlugin(),
