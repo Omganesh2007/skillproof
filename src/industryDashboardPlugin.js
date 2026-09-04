@@ -1,12 +1,22 @@
 export function industryDashboardPlugin() {
   return {
-    name: "skillproof-industry-dashboard-v2",
-    enforce: "post",
+    name: "skillproof-industry-dashboard-v3",
+    enforce: "pre",
     transform(code, id) {
       if (!id.endsWith("/src/App.jsx")) return null;
       const start = code.indexOf("function IndustryAppShell(");
       if (start < 0) return null;
-      const end = code.indexOf("\n\nfunction ", start + 10);
+      const bodyOpen = code.indexOf("{", code.indexOf(")", start) + 1);
+      if (bodyOpen < 0) return null;
+      let depth = 0;
+      let end = -1;
+      for (let i = bodyOpen; i < code.length; i += 1) {
+        if (code[i] === "{") depth += 1;
+        else if (code[i] === "}") {
+          depth -= 1;
+          if (depth === 0) { end = i + 1; break; }
+        }
+      }
       if (end < 0) return null;
       const importLine = 'import { IndustryDashboard } from "./IndustryDashboard.jsx";\n';
       const replacement = "function IndustryAppShell({ logout }) { return React.createElement(IndustryDashboard, { logout }); }";
