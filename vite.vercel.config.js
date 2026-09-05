@@ -4,7 +4,7 @@ import { collegeDashboardEnhancementPlugin } from "./src/collegeDashboardEnhance
 import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 import { industryAuthPlugin } from "./src/industryAuthPlugin.js";
 import { industryDashboardPlugin } from "./src/industryDashboardPlugin.js";
-import { dashboardReferencePlugin } from "./src/dashboardReferencePlugin.js";
+import { studentDashboardRedesignPlugin } from "./src/studentDashboardRedesignPlugin.js";
 
 const basePlugins = baseConfig.plugins || [];
 const excluded = new Set([
@@ -25,7 +25,7 @@ const safeBasePlugins = basePlugins.filter((plugin) => !excluded.has(plugin?.nam
 export default defineConfig({
   ...baseConfig,
   plugins: [
-    dashboardReferencePlugin(),
+    studentDashboardRedesignPlugin(),
     collegeDashboardEnhancementPlugin(),
     registrationFormPlugin(),
     industryAuthPlugin(),
