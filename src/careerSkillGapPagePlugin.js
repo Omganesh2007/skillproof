@@ -1,5 +1,3 @@
-import { transformWithOxc } from "vite";
-
 const pageData = (student) => {
   const selected = Array.isArray(student?.careers) ? student.careers : [];
   return (selected.length ? selected : ["Frontend Developer", "Full Stack Developer", "Java Backend Developer"]).slice(0, 3);
@@ -19,11 +17,18 @@ export function careerSkillGapPagePlugin() {
   return {
     name: "skillproof-career-and-skill-gap-pages",
     enforce: "post",
-    async transform(code, id) {
+    transform(code, id) {
       if (!id.endsWith("/src/App.jsx") && !id.endsWith("\\src\\App.jsx")) return null;
 
-      const replacement = `
-function CareersPage({ student }) {
+      const careersStart = code.indexOf("function CareersPage(");
+      const gapStart = code.indexOf("function SkillGapPage(");
+      if (careersStart < 0 || gapStart < 0) return null;
+
+      const careersEnd = code.indexOf("\nfunction ", careersStart + 10);
+      const gapEnd = code.indexOf("\nfunction ", gapStart + 10);
+      if (careersEnd < 0 || gapEnd < 0) return null;
+
+      const careersReplacement = `function CareersPage({ student }) {
   const roles = pageData(student);
   return <main className="max-w-7xl mx-auto px-6 py-8">
     <p className="text-xs font-bold tracking-[0.18em] text-teal-700 uppercase">Career</p>
@@ -41,9 +46,9 @@ function CareersPage({ student }) {
       })}
     </div>
   </main>;
-}
+}`;
 
-function SkillGapPage({ student }) {
+      const gapReplacement = `function SkillGapPage({ student }) {
   const roles = pageData(student);
   return <main className="max-w-7xl mx-auto px-6 py-8">
     <p className="text-xs font-bold tracking-[0.18em] text-teal-700 uppercase">Career</p>
@@ -54,20 +59,28 @@ function SkillGapPage({ student }) {
         const requirements = careerRequirements[role] || {};
         return <section key={role} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold text-slate-950">{role}</h2>
-          <div className="mt-5 space-y-3">{Object.entries(requirements).map(([skill, required]) => { const current = skillValue(student, skill); const gap = Math.max(0, required - current); return <div key={skill} className="flex items-center justify-between py-1 border-b border-slate-100 last:border-0"><span className="text-slate-600">{skill}</span><span className={gap === 0 ? "font-semibold text-teal-700" : "font-semibold text-rose-500"}>{gap === 0 ? "Requirement met" : "-" + gap + "% gap"}</span></div>; })}</div>
+          <div className="mt-5 space-y-3">{Object.entries(requirements).map(([skill, required]) => {
+            const current = skillValue(student, skill);
+            const gap = Math.max(0, required - current);
+            return <div key={skill} className="flex items-center justify-between py-1 border-b border-slate-100 last:border-0"><span className="text-slate-600">{skill}</span><span className={gap === 0 ? "font-semibold text-teal-700" : "font-semibold text-rose-500"}>{gap === 0 ? "Requirement met" : "-" + gap + "% gap"}</span></div>;
+          })}</div>
         </section>;
       })}
     </div>
   </main>;
-}
-`;
+}`;
 
-      const next = code + replacement;
-      const result = await transformWithOxc(next, id, {
-        lang: "jsx",
-        jsx: { runtime: "automatic" },
-      });
-      return { code: result.code, map: result.map || null };
+      let next = code;
+      const first = Math.max(careersStart, gapStart);
+      const second = Math.min(careersStart, gapStart);
+      const firstEnd = first === careersStart ? careersEnd : gapEnd;
+      const secondEnd = second === careersStart ? careersEnd : gapEnd;
+      const firstReplacement = first === careersStart ? careersReplacement : gapReplacement;
+      const secondReplacement = second === careersStart ? careersReplacement : gapReplacement;
+      next = next.slice(0, second) + secondReplacement + next.slice(secondEnd);
+      const shiftedFirst = first + secondReplacement.length - (secondEnd - second);
+      next = next.slice(0, shiftedFirst) + firstReplacement + next.slice(firstEnd + secondReplacement.length - (secondEnd - second));
+      return { code: next, map: null };
     },
   };
 }
