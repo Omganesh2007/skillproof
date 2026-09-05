@@ -8,6 +8,7 @@ import { studentDashboardRedesignPlugin } from "./src/studentDashboardRedesignPl
 import { skillAssessmentPlugin } from "./src/skillAssessmentPlugin.js";
 import { careerSkillGapPagePlugin } from "./src/careerSkillGapPagePlugin.js";
 import { opportunitiesEnhancementPlugin } from "./src/opportunitiesEnhancementPlugin.js";
+import { demoStudentLoginPlugin } from "./src/demoStudentLoginPlugin.js";
 
 const basePlugins = baseConfig.plugins || [];
 const excluded = new Set([
@@ -29,6 +30,7 @@ export default defineConfig({
   ...baseConfig,
   plugins: [
     careerSkillGapPagePlugin(),
+    demoStudentLoginPlugin(),
     studentDashboardRedesignPlugin(),
     skillAssessmentPlugin(),
     opportunitiesEnhancementPlugin(),
