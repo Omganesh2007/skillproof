@@ -51,7 +51,7 @@ function SkillGapPage({ student }) {
         const requirements = careerRequirements[role] || {};
         return <section key={role} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold text-slate-950">{role}</h2>
-          <div className="mt-5 space-y-3">{Object.entries(requirements).map(([skill, required]) => { const current = skillValue(student, skill); const gap = Math.max(0, required - current); return <div key={skill} className="flex items-center justify-between py-1 border-b border-slate-100 last:border-0"><span className="text-slate-600">{skill}</span><span className={gap === 0 ? "font-semibold text-teal-700" : "font-semibold text-rose-500"}>{gap === 0 ? "Requirement met" : `-${gap}% gap`}</span></div>; })}</div>
+          <div className="mt-5 space-y-3">{Object.entries(requirements).map(([skill, required]) => { const current = skillValue(student, skill); const gap = Math.max(0, required - current); return <div key={skill} className="flex items-center justify-between py-1 border-b border-slate-100 last:border-0"><span className="text-slate-600">{skill}</span><span className={gap === 0 ? "font-semibold text-teal-700" : "font-semibold text-rose-500"}>{gap === 0 ? "Requirement met" : "-" + gap + "% gap"}</span></div>; })}</div>
         </section>;
       })}
     </div>
