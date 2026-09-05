@@ -16,7 +16,7 @@ const readiness = (student, requirements) => {
 export function careerSkillGapPagePlugin() {
   return {
     name: "skillproof-career-and-skill-gap-pages",
-    enforce: "post",
+    enforce: "pre",
     transform(code, id) {
       if (!id.endsWith("/src/App.jsx") && !id.endsWith("\\src\\App.jsx")) return null;
 
