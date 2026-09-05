@@ -6,7 +6,6 @@ import { industryAuthPlugin } from "./src/industryAuthPlugin.js";
 import { industryDashboardPlugin } from "./src/industryDashboardPlugin.js";
 import { studentOpportunitiesPlugin } from "./src/studentOpportunitiesPlugin.js";
 import { studentWelcomePlugin } from "./src/studentWelcomePlugin.js";
-import { studentUiPlugin } from "./src/studentUiOverrides.js";
 import { studentDataPlugin } from "./src/studentDataOverrides.js";
 
 const basePlugins = baseConfig.plugins || [];
@@ -34,7 +33,6 @@ export default defineConfig({
     industryDashboardPlugin(),
     studentWelcomePlugin(),
     studentOpportunitiesPlugin(),
-    studentUiPlugin(),
     studentDataPlugin(),
     ...safeBasePlugins,
   ],
