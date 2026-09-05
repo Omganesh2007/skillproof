@@ -3,6 +3,9 @@ export function studentDashboardRedesignPlugin() {
     name: "skillproof-student-dashboard-redesign",
     enforce: "pre",
     transform(code, id) {
+      if (id.endsWith("/src/StudentDashboardRedesign.jsx") || id.endsWith("\\src\\StudentDashboardRedesign.jsx")) {
+        return { code: code.replace(/\bGithub\b/g, "GitBranch"), map: null };
+      }
       if (!id.endsWith("/src/App.jsx") && !id.endsWith("\\src\\App.jsx")) return null;
       const start = code.indexOf("function Dashboard(");
       if (start < 0) return null;
