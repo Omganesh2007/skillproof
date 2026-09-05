@@ -5,6 +5,7 @@ import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 import { industryAuthPlugin } from "./src/industryAuthPlugin.js";
 import { industryDashboardPlugin } from "./src/industryDashboardPlugin.js";
 import { studentDashboardRedesignPlugin } from "./src/studentDashboardRedesignPlugin.js";
+import { skillAssessmentPlugin } from "./src/skillAssessmentPlugin.js";
 
 const basePlugins = baseConfig.plugins || [];
 const excluded = new Set([
@@ -26,6 +27,7 @@ export default defineConfig({
   ...baseConfig,
   plugins: [
     studentDashboardRedesignPlugin(),
+    skillAssessmentPlugin(),
     collegeDashboardEnhancementPlugin(),
     registrationFormPlugin(),
     industryAuthPlugin(),
