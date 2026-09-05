@@ -9,6 +9,7 @@ import { skillAssessmentPlugin } from "./src/skillAssessmentPlugin.js";
 import { careerSkillGapPagePlugin } from "./src/careerSkillGapPagePlugin.js";
 import { opportunitiesEnhancementPlugin } from "./src/opportunitiesEnhancementPlugin.js";
 import { demoStudentLoginPlugin } from "./src/demoStudentLoginPlugin.js";
+import { panimalarTalentDemoPlugin } from "./src/panimalarTalentDemoPlugin.js";
 
 const basePlugins = baseConfig.plugins || [];
 const excluded = new Set([
@@ -29,6 +30,7 @@ const safeBasePlugins = basePlugins.filter((plugin) => !excluded.has(plugin?.nam
 export default defineConfig({
   ...baseConfig,
   plugins: [
+    panimalarTalentDemoPlugin(),
     careerSkillGapPagePlugin(),
     demoStudentLoginPlugin(),
     studentDashboardRedesignPlugin(),
