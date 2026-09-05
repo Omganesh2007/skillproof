@@ -1,3 +1,5 @@
+import { transformWithOxc } from "vite";
+
 const pageData = (student) => {
   const selected = Array.isArray(student?.careers) ? student.careers : [];
   return (selected.length ? selected : ["Frontend Developer", "Full Stack Developer", "Java Backend Developer"]).slice(0, 3);
@@ -17,8 +19,9 @@ export function careerSkillGapPagePlugin() {
   return {
     name: "skillproof-career-and-skill-gap-pages",
     enforce: "post",
-    transform(code, id) {
+    async transform(code, id) {
       if (!id.endsWith("/src/App.jsx") && !id.endsWith("\\src\\App.jsx")) return null;
+
       const replacement = `
 function CareersPage({ student }) {
   const roles = pageData(student);
@@ -58,7 +61,13 @@ function SkillGapPage({ student }) {
   </main>;
 }
 `;
-      return { code: code + replacement, map: null };
+
+      const next = code + replacement;
+      const result = await transformWithOxc(next, id, {
+        lang: "jsx",
+        jsx: { runtime: "automatic" },
+      });
+      return { code: result.code, map: result.map || null };
     },
   };
 }
