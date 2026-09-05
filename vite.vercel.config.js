@@ -4,9 +4,6 @@ import { collegeDashboardEnhancementPlugin } from "./src/collegeDashboardEnhance
 import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 import { industryAuthPlugin } from "./src/industryAuthPlugin.js";
 import { industryDashboardPlugin } from "./src/industryDashboardPlugin.js";
-import { studentOpportunitiesPlugin } from "./src/studentOpportunitiesPlugin.js";
-import { studentWelcomePlugin } from "./src/studentWelcomePlugin.js";
-import { studentDataPlugin } from "./src/studentDataOverrides.js";
 
 const basePlugins = baseConfig.plugins || [];
 const excluded = new Set([
@@ -31,9 +28,6 @@ export default defineConfig({
     registrationFormPlugin(),
     industryAuthPlugin(),
     industryDashboardPlugin(),
-    studentWelcomePlugin(),
-    studentOpportunitiesPlugin(),
-    studentDataPlugin(),
     ...safeBasePlugins,
   ],
 });
