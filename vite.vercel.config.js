@@ -25,11 +25,11 @@ const safeBasePlugins = basePlugins.filter((plugin) => !excluded.has(plugin?.nam
 export default defineConfig({
   ...baseConfig,
   plugins: [
+    studentDashboardRedesignPlugin(),
     collegeDashboardEnhancementPlugin(),
     registrationFormPlugin(),
     industryAuthPlugin(),
     industryDashboardPlugin(),
-    studentDashboardRedesignPlugin(),
     ...safeBasePlugins,
   ],
 });
