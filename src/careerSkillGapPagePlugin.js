@@ -20,14 +20,6 @@ export function careerSkillGapPagePlugin() {
     transform(code, id) {
       if (!id.endsWith("/src/App.jsx") && !id.endsWith("\\src\\App.jsx")) return null;
 
-      const careersStart = code.indexOf("function CareersPage(");
-      const gapStart = code.indexOf("function SkillGapPage(");
-      if (careersStart < 0 || gapStart < 0) return null;
-
-      const careersEnd = code.indexOf("\nfunction ", careersStart + 10);
-      const gapEnd = code.indexOf("\nfunction ", gapStart + 10);
-      if (careersEnd < 0 || gapEnd < 0) return null;
-
       const careersReplacement = `function CareersPage({ student }) {
   const roles = pageData(student);
   return <main className="max-w-7xl mx-auto px-6 py-8">
@@ -70,16 +62,16 @@ export function careerSkillGapPagePlugin() {
   </main>;
 }`;
 
-      let next = code;
-      const first = Math.max(careersStart, gapStart);
-      const second = Math.min(careersStart, gapStart);
-      const firstEnd = first === careersStart ? careersEnd : gapEnd;
-      const secondEnd = second === careersStart ? careersEnd : gapEnd;
-      const firstReplacement = first === careersStart ? careersReplacement : gapReplacement;
-      const secondReplacement = second === careersStart ? careersReplacement : gapReplacement;
-      next = next.slice(0, second) + secondReplacement + next.slice(secondEnd);
-      const shiftedFirst = first + secondReplacement.length - (secondEnd - second);
-      next = next.slice(0, shiftedFirst) + firstReplacement + next.slice(firstEnd + secondReplacement.length - (secondEnd - second));
+      const replaceFunction = (source, name, replacement) => {
+        const start = source.indexOf(`function ${name}(`);
+        if (start < 0) return source;
+        const next = source.indexOf("\nfunction ", start + 10);
+        const end = next < 0 ? source.length : next;
+        return source.slice(0, start) + replacement + source.slice(end);
+      };
+
+      let next = replaceFunction(code, "CareersPage", careersReplacement);
+      next = replaceFunction(next, "SkillGapPage", gapReplacement);
       return { code: next, map: null };
     },
   };
