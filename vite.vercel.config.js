@@ -4,7 +4,6 @@ import { collegeDashboardEnhancementPlugin } from "./src/collegeDashboardEnhance
 import { registrationFormPlugin } from "./src/registrationFormPlugin.js";
 import { industryAuthPlugin } from "./src/industryAuthPlugin.js";
 import { industryDashboardPlugin } from "./src/industryDashboardPlugin.js";
-import { studentUiPlugin } from "./src/studentUiOverrides.js";
 
 const basePlugins = baseConfig.plugins || [];
 const excluded = new Set([
@@ -30,6 +29,5 @@ export default defineConfig({
     industryAuthPlugin(),
     industryDashboardPlugin(),
     ...safeBasePlugins,
-    studentUiPlugin(),
   ],
 });
