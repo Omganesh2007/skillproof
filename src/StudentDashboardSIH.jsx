@@ -1,34 +1,15 @@
 import { useMemo, useState } from "react";
-import { ArrowRight, Award, BookOpen, BriefcaseBusiness, CheckCircle2, Code2, FolderKanban, LayoutDashboard, Search, ShieldCheck, Sparkles, Target, User } from "lucide-react";
+import { ArrowRight, Award, BookOpen, BriefcaseBusiness, CheckCircle2, Code2, FolderKanban, ShieldCheck, Sparkles, Target } from "lucide-react";
 
 const stagesByCareer = {
-  "Java Backend Developer": [
-    ["Programming Fundamentals", "Learn core programming concepts with Java."],
-    ["Data Structures & Algorithms", "Build problem-solving skills for technical interviews."],
-    ["Core Java", "Master OOP, collections, exceptions and more."],
-    ["Spring Boot", "Build real-world backend applications."],
-    ["Databases", "Work with SQL, queries and database design."],
-    ["APIs & Backend Systems", "Build REST APIs, authentication and deployment."],
-    ["Real-world Projects", "Build and deploy complete backend projects."]
-  ],
-  "Full Stack Developer": [
-    ["Web Foundations", "Understand browsers, HTTP and web structure."],
-    ["HTML & CSS", "Build semantic and responsive interfaces."],
-    ["JavaScript", "Master modern JavaScript and asynchronous programming."],
-    ["React", "Build interactive frontend applications."],
-    ["Backend Development", "Build APIs and server-side applications."],
-    ["Databases", "Design schemas and write efficient queries."],
-    ["Full Stack Project", "Build and deploy a complete full stack project."]
-  ],
-  "Frontend Developer": [
-    ["Web Foundations", "Understand browsers, HTTP, web structure and developer tools."],
-    ["HTML & CSS", "Build semantic, responsive and maintainable web interfaces."],
-    ["JavaScript", "Master modern JavaScript, DOM events, async code and modules."],
-    ["React", "Build interactive user interfaces with React."],
-    ["Responsive Design", "Create mobile-first, responsive layouts."],
-    ["Git & GitHub", "Version control, collaboration and open source."],
-    ["Frontend Portfolio Project", "Build and deploy a real-world project."]
-  ]
+  "Java Backend Developer": [["Programming Fundamentals", "Core programming concepts with Java."], ["Data Structures & Algorithms", "Interview-focused problem solving."], ["Core Java", "OOP, collections, exceptions and clean code."], ["Spring Boot", "Build production-style backend services."], ["Databases", "SQL, queries and database design."], ["APIs & Backend Systems", "REST APIs, authentication and deployment."], ["Real-world Projects", "Build and deploy complete backend projects."]],
+  "Full Stack Developer": [["Web Foundations", "Browsers, HTTP and web structure."], ["HTML & CSS", "Semantic and responsive interfaces."], ["JavaScript", "Modern JavaScript and async programming."], ["React", "Interactive frontend applications."], ["Backend Development", "APIs and server-side development."], ["Databases", "Schemas and efficient queries."], ["Full Stack Project", "Build and deploy a complete product."]],
+  "Frontend Developer": [["Web Foundations", "Browsers, HTTP and developer tools."], ["HTML & CSS", "Responsive and maintainable interfaces."], ["JavaScript", "DOM, async code and modern modules."], ["React", "Interactive component-based applications."], ["Responsive Design", "Mobile-first layouts."], ["Git & GitHub", "Version control and collaboration."], ["Frontend Portfolio Project", "Build and deploy a real-world project."]]
+};
+
+const stageSkillMap = {
+  "Programming Fundamentals": ["Java"], "Data Structures & Algorithms": ["Java"], "Core Java": ["Java"], "Spring Boot": ["Spring Boot"], "Databases": ["SQL"], "APIs & Backend Systems": ["REST API", "Docker"], "Real-world Projects": ["Git & GitHub"],
+  "Web Foundations": ["HTML & CSS"], "HTML & CSS": ["HTML & CSS"], "JavaScript": ["JavaScript"], "React": ["React"], "Backend Development": ["REST API"], "Full Stack Project": ["Git & GitHub"], "Responsive Design": ["HTML & CSS"], "Git & GitHub": ["Git & GitHub"], "Frontend Portfolio Project": ["React", "Git & GitHub"]
 };
 
 export default function StudentDashboardSIH({ student = {}, setActivePage }) {
@@ -36,38 +17,27 @@ export default function StudentDashboardSIH({ student = {}, setActivePage }) {
   const [selected, setSelected] = useState(careers[0]);
   const stages = stagesByCareer[selected] || stagesByCareer["Java Backend Developer"];
   const skills = Array.isArray(student.skills) ? student.skills : [];
-  const verified = skills.filter((s) => s && s.verified).length;
-  const initials = (student.name || "OM").slice(0, 2).toUpperCase();
+  const scoreFor = (name) => { const item = skills.find((s) => s?.name === name); return Math.max(0, Math.min(100, Number(item?.verified ? item?.verificationScore ?? item?.level : item?.level) || 0)); };
+  const stageScore = (name) => { const mapped = stageSkillMap[name] || []; return mapped.length ? Math.round(mapped.reduce((sum, skill) => sum + scoreFor(skill), 0) / mapped.length) : 0; };
+  const readiness = stages.length ? Math.round(stages.reduce((sum, [name]) => sum + stageScore(name), 0) / stages.length) : 0;
+  const completed = stages.filter(([name]) => stageScore(name) >= 80).length;
+  const verified = skills.filter((s) => s?.verified).length;
   const go = (page) => setActivePage && setActivePage(page);
 
   return <div className="w-full">
     <section className="rounded-2xl border border-teal-100 bg-gradient-to-r from-teal-50 to-white px-6 py-6 mb-7 flex items-center justify-between gap-6">
-      <div><p className="text-xs font-bold tracking-[0.18em] text-teal-700">WELCOME BACK</p><h2 className="text-3xl font-bold mt-2">Hi, {student.name || "Student"}! 👋</h2><p className="text-base text-slate-500 mt-1">Here is your SkillProof career progress for today.</p></div>
-      <p className="hidden md:block text-sm text-slate-500">{careers.length} target careers</p>
+      <div><p className="text-xs font-bold tracking-[0.18em] text-teal-700">WELCOME BACK</p><h2 className="text-3xl font-bold mt-2">Hi, {student.name || "Student"}! 👋</h2><p className="text-base text-slate-500 mt-1">Your verified skills and career progress at a glance.</p><div className="flex flex-wrap gap-2 mt-4"><span className="px-3 py-1.5 rounded-full bg-white border border-teal-100 text-xs font-semibold text-slate-600">{student.college || "Panimalar Engineering College"}</span><span className="px-3 py-1.5 rounded-full bg-white border border-teal-100 text-xs font-semibold text-slate-600">{student.department || "Computer Science and Engineering"}</span></div></div>
+      <div className="hidden md:flex items-center gap-5"><div className="text-center"><p className="text-2xl font-bold text-teal-700">{skills.length}</p><p className="text-xs text-slate-400">Skills</p></div><div className="text-center"><p className="text-2xl font-bold text-teal-700">{verified}</p><p className="text-xs text-slate-400">Verified</p></div><div className="text-center"><p className="text-2xl font-bold text-teal-700">{readiness}%</p><p className="text-xs text-slate-400">Ready</p></div></div>
     </section>
 
-    <section className="mb-7">
-      <p className="text-xs font-bold tracking-[0.18em] text-teal-700">CAREER FOCUS</p>
-      <div className="flex items-center justify-between gap-4"><div><h2 className="text-3xl font-bold mt-1">Career readiness</h2><p className="text-base text-slate-500 mt-2">Explore the complete skill path for your target career. Learn step by step and become job ready.</p></div><button onClick={() => go("careers")} className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl border border-teal-200 text-teal-700 font-semibold">Change Career Focus <Target size={17}/></button></div>
-      <div className="flex gap-2 mt-5 overflow-x-auto">{careers.map((career, i) => <button key={career} onClick={() => setSelected(career)} className={`shrink-0 px-4 py-3 rounded-xl border bg-white text-left ${selected === career ? "border-teal-400 bg-teal-50 text-teal-800" : "border-slate-200 text-slate-600"}`}><span className="font-medium">{career}</span><span className="ml-2 text-[10px] uppercase text-slate-400">{i === 0 ? "Primary" : "Target"}</span></button>)}</div>
-    </section>
+    <section className="mb-7"><div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold tracking-[0.18em] text-teal-700">CAREER FOCUS</p><h2 className="text-3xl font-bold mt-1">Career readiness</h2><p className="text-base text-slate-500 mt-2">Choose a target role and see exactly where your skills stand.</p></div><button onClick={() => go("careers")} className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl border border-teal-200 text-teal-700 font-semibold">Manage careers <Target size={17}/></button></div><div className="flex gap-2 mt-5 overflow-x-auto">{careers.map((career, i) => <button key={career} onClick={() => setSelected(career)} className={`shrink-0 px-4 py-3 rounded-xl border bg-white text-left ${selected === career ? "border-teal-400 bg-teal-50 text-teal-800" : "border-slate-200 text-slate-600"}`}><span className="font-medium">{career}</span><span className="ml-2 text-[10px] uppercase text-slate-400">{i === 0 ? "Primary" : "Target"}</span></button>)}</div></section>
 
     <div className="grid xl:grid-cols-[290px_minmax(0,1fr)_330px] gap-5 items-start">
-      <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-        <p className="text-xs font-bold tracking-[0.16em] text-teal-700">TARGET CAREER</p><h3 className="text-2xl font-bold leading-tight mt-3">{selected}</h3><p className="text-sm text-slate-500 leading-6 mt-3">Follow the complete learning path and build evidence as you progress.</p>
-        <div className="flex items-center gap-4 mt-7"><div className="w-24 h-24 rounded-full border-[8px] border-teal-400 flex items-center justify-center"><b className="text-2xl">0%</b></div><div><b>Career readiness</b><p className="text-xs text-slate-400 mt-1">0 of {stages.length} stages completed</p></div></div>
-        <div className="mt-7 rounded-xl bg-teal-50 border border-teal-100 p-4"><p className="text-xs font-bold text-teal-700">HOW IT WORKS</p><p className="text-xs text-slate-500 leading-5 mt-2">Complete each stage in order. Build skills, verify evidence and unlock the next stage.</p></div>
-      </section>
+      <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6"><p className="text-xs font-bold tracking-[0.16em] text-teal-700">TARGET CAREER</p><h3 className="text-2xl font-bold leading-tight mt-3">{selected}</h3><p className="text-sm text-slate-500 leading-6 mt-3">Your current verified profile is being compared with the role requirements.</p><div className="flex items-center gap-4 mt-7"><div className="w-24 h-24 rounded-full border-[8px] border-teal-400 flex items-center justify-center"><b className="text-2xl">{readiness}%</b></div><div><b>Career readiness</b><p className="text-xs text-slate-400 mt-1">{completed} of {stages.length} stages strong</p></div></div><button onClick={() => go("gaps")} className="w-full h-10 mt-6 rounded-xl border border-slate-200 text-sm font-semibold">View skill gaps</button></section>
 
-      <section className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-5 py-5 border-b border-slate-100 flex items-center gap-3"><div className="w-11 h-11 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center"><Target size={20}/></div><div><h3 className="font-bold text-lg">Complete skill path for {selected}</h3><p className="text-xs text-slate-400">Follow these 7 stages to master the required skills.</p></div></div>
-        <div className="p-3 space-y-2">{stages.map(([name, description], i) => <div key={name} className={`rounded-xl border p-4 ${i === 0 ? "border-teal-300 bg-teal-50/30" : "border-slate-200"}`}><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center font-bold shrink-0">{i + 1}</div><div className="min-w-0 flex-1"><div className="flex justify-between gap-3"><div><p className="font-bold text-sm">{name}</p><p className="text-xs text-slate-400 mt-1">{description}</p></div><span className="px-3 py-1 rounded-full bg-slate-100 text-[11px] text-slate-500 h-fit">{i === 0 ? "Not started" : "Locked"}</span></div><div className="h-1.5 bg-slate-100 rounded-full mt-3"><div className="h-full bg-teal-400 rounded-full" style={{width: "0%"}}/></div></div></div></div>)}</div>
-      </section>
+      <section className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"><div className="px-5 py-5 border-b border-slate-100 flex items-center gap-3"><div className="w-11 h-11 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center"><Target size={20}/></div><div><h3 className="font-bold text-lg">Complete skill path</h3><p className="text-xs text-slate-400">{selected} · {stages.length} learning stages</p></div></div><div className="p-3 space-y-2">{stages.map(([name, description], i) => { const value = stageScore(name); const unlocked = i === 0 || stageScore(stages[i - 1][0]) >= 70; return <div key={name} className={`rounded-xl border p-4 ${value >= 80 ? "border-teal-200 bg-teal-50/30" : "border-slate-200"}`}><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center font-bold shrink-0">{value >= 80 ? <CheckCircle2 size={19} className="text-teal-600"/> : i + 1}</div><div className="min-w-0 flex-1"><div className="flex justify-between gap-3"><div><p className="font-bold text-sm">{name}</p><p className="text-xs text-slate-400 mt-1">{description}</p></div><span className={`px-3 py-1 rounded-full text-[11px] h-fit ${value >= 80 ? "bg-teal-50 text-teal-700" : unlocked ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-500"}`}>{value >= 80 ? "Strong" : unlocked ? "In progress" : "Next"}</span></div><div className="h-1.5 bg-slate-100 rounded-full mt-3"><div className="h-full bg-teal-400 rounded-full" style={{ width: `${value}%` }}/></div></div></div></div>})}</div></section>
 
-      <aside className="space-y-5">
-        <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5"><div className="flex items-center justify-between mb-4"><h3 className="text-lg font-bold">Skill Summary</h3><span className="text-xs text-slate-400">{stages.length} stages</span></div><div className="space-y-3">{stages.map(([name]) => <div key={name}><div className="flex justify-between text-xs"><span>{name}</span><span className="text-slate-400">0/100</span></div><div className="h-1.5 bg-slate-100 rounded-full mt-1.5"/></div>)}</div><button onClick={() => go("roadmap")} className="mt-5 text-sm font-semibold text-teal-700 flex items-center gap-1">Open full skill tree <ArrowRight size={14}/></button></section>
-        <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5"><div className="flex items-center gap-3 mb-4"><div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center"><Sparkles size={18}/></div><div><h3 className="font-bold">Recommended for you</h3><p className="text-xs text-slate-400">Based on your career focus</p></div></div><button onClick={() => go("opportunities")} className="w-full text-left p-3 rounded-xl border border-slate-200 mb-2"><b className="text-sm">Build your first project</b><p className="text-xs text-slate-400 mt-1">Create portfolio evidence for {selected}.</p></button><button onClick={() => go("opportunities")} className="w-full text-left p-3 rounded-xl border border-slate-200"><b className="text-sm">Internships & jobs</b><p className="text-xs text-slate-400 mt-1">Find opportunities matching your skills.</p></button></section>
-      </aside>
+      <aside className="space-y-5"><section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5"><div className="flex items-center justify-between mb-4"><h3 className="text-lg font-bold">Skill Summary</h3><span className="text-xs text-slate-400">Verified profile</span></div><div className="space-y-3">{skills.slice(0, 7).map((skill) => <div key={skill.name}><div className="flex justify-between text-xs"><span>{skill.name}</span><span className="font-semibold text-slate-700">{scoreFor(skill.name)}%</span></div><div className="h-1.5 bg-slate-100 rounded-full mt-1.5"><div className="h-full bg-teal-400 rounded-full" style={{ width: `${scoreFor(skill.name)}%` }}/></div></div>)}{!skills.length && <p className="text-sm text-slate-500">Add skills to start your readiness journey.</p>}</div><button onClick={() => go("skills")} className="mt-5 text-sm font-semibold text-teal-700 flex items-center gap-1">Manage my skills <ArrowRight size={14}/></button></section><section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center"><Award size={18}/></div><div><h3 className="font-bold">Proof strength</h3><p className="text-xs text-slate-400 mt-1">Evidence-backed progress</p></div></div><p className="text-3xl font-bold mt-4">{verified}/{skills.length || 0}</p><p className="text-sm text-slate-500 mt-1">skills verified</p><button onClick={() => go("verify")} className="w-full h-10 mt-4 rounded-xl bg-slate-900 text-white text-sm font-semibold">Verify another skill</button></section></aside>
     </div>
   </div>;
 }
