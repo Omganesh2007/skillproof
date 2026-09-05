@@ -6,7 +6,6 @@ import { industryAuthPlugin } from "./src/industryAuthPlugin.js";
 import { industryDashboardPlugin } from "./src/industryDashboardPlugin.js";
 import { studentDashboardRedesignPlugin } from "./src/studentDashboardRedesignPlugin.js";
 import { skillAssessmentPlugin } from "./src/skillAssessmentPlugin.js";
-import { careerSkillGapPagePlugin } from "./src/careerSkillGapPagePlugin.js";
 
 const basePlugins = baseConfig.plugins || [];
 const excluded = new Set([
@@ -29,7 +28,6 @@ export default defineConfig({
   plugins: [
     studentDashboardRedesignPlugin(),
     skillAssessmentPlugin(),
-    careerSkillGapPagePlugin(),
     collegeDashboardEnhancementPlugin(),
     registrationFormPlugin(),
     industryAuthPlugin(),
