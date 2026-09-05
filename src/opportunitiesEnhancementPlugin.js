@@ -18,7 +18,7 @@ const jobs = [
   { title: "Data Analyst Intern", company: "InsightWorks", location: "Mumbai", type: "Internship", role: "Data Analyst", salary: "₹18k–23k / month", skills: ["Python", "SQL", "Data Analysis"] },
   { title: "Cloud Engineering Intern", company: "SkyRoute Systems", location: "Bengaluru", type: "Internship", role: "Cloud Engineer", salary: "₹24k / month", skills: ["AWS", "Docker", "Linux"] },
   { title: "Cloud DevOps Engineer", company: "InfraNova", location: "Hyderabad", type: "Full-time", role: "Cloud Engineer", salary: "₹7–12 LPA", skills: ["AWS", "Docker", "Linux"] },
-  { title: "Cloud Support Associate", company: "ByteCloud", location: "Chennai", type: "Full-time", role: "Cloud Engineer", salary: "₹5–8 LPA", skills: ["AWS", "Linux", "Git & GitHub"] },
+  { title: "Cloud Support Associate", company: "ByteCloud", location: "Chennai", type: "Full-time", role: "Cloud Engineer", salary: "₹5–8 LPA", skills: ["AWS", "Linux", "Git & GitHub"] }
 ];
 
 export function opportunitiesEnhancementPlugin() {
@@ -35,7 +35,7 @@ export function opportunitiesEnhancementPlugin() {
     <PageHeader eyebrow="OPPORTUNITIES" title="Internships & Jobs" subtitle="Explore opportunities matched to the career you want."/>
     <Panel title="Find your next opportunity" subtitle="Choose a target role to narrow the list.">
       <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <div className="flex-1"><label className="text-sm font-semibold text-slate-700">Filter by role</label><select value={role} onChange={e => setRole(e.target.value)} className="w-full h-12 mt-2 rounded-xl border border-slate-200 bg-white px-4"><option value="All roles">All roles</option>{roles.slice(1).map(r => <option key={r} value={r}>{r}</option>)}</select></div>
+        <div className="flex-1"><label className="text-sm font-semibold text-slate-700">Filter by role</label><select value={role} onChange={e => setRole(e.target.value)} className="w-full h-12 mt-2 rounded-xl border border-slate-200 bg-white px-4">{roles.map(r => <option key={r} value={r}>{r}</option>)}</select></div>
         <div className="md:pt-7 text-sm text-slate-500"><b className="text-slate-900">{filtered.length}</b> opportunities found</div>
       </div>
     </Panel>
@@ -43,9 +43,9 @@ export function opportunitiesEnhancementPlugin() {
       {filtered.map(job => <article key={job.title + job.company} className="bg-white border border-slate-200 rounded-2xl p-5 hover:border-teal-300 hover:shadow-md transition-shadow">
         <div className="flex items-start justify-between gap-3"><div className="w-11 h-11 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center"><BriefcaseBusiness size={19}/></div><Badge>{job.type}</Badge></div>
         <h2 className="font-bold text-lg mt-5">{job.title}</h2><p className="text-sm font-medium text-slate-600 mt-1">{job.company}</p>
-        <div className="flex flex-wrap gap-2 mt-4"><span className="text-xs text-slate-500">📍 {job.location}</span><span className="text-xs text-slate-500">💰 {job.salary}</span></div>
+        <div className="flex flex-wrap gap-3 mt-4"><span className="text-xs text-slate-500">📍 {job.location}</span><span className="text-xs text-slate-500">💰 {job.salary}</span></div>
         <div className="flex flex-wrap gap-2 mt-4">{job.skills.map(skill => <span key={skill} className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-100 text-xs text-slate-600">{skill}</span>)}</div>
-        <button type="button" className="w-full h-10 mt-5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800">View opportunity</button>
+        <button type="button" className="w-full h-10 mt-5 rounded-xl bg-slate-900 text-white text-sm font-semibold">View opportunity</button>
       </article>)}
     </div>
   </div>;
@@ -54,11 +54,6 @@ export function opportunitiesEnhancementPlugin() {
       if (start < 0) return null;
       const end = code.indexOf("\nfunction ", start + 10);
       return { code: code.slice(0, start) + replacement + code.slice(end < 0 ? code.length : end), map: null };
-    },
-  };
-}
-`;
-      return { code: next, map: null };
     },
   };
 }
